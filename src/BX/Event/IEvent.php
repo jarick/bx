@@ -3,6 +3,6 @@ namespace BX\Event;
 
 interface IEvent
 {
-	public function on($sName,$oFunc,$iSort = 500);
-	public function fire($sName,$aParams,$bHalt = true);
+	public function on($name,$func,$sort = 500);
+	public function fire($name,$params,$halt = true);
 }

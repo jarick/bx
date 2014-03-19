@@ -4,34 +4,33 @@ use BX\Manager;
 use BX\Event\IEvent;
 use Illuminate\Events\Dispatcher;
 use BX\Registry;
+use BX\DI;
 
 class EventManager extends Manager implements IEvent
 {
 	private function getDispatcher()
 	{
-		static $oManager;
-		if(!isset($oManager)){
+		if(DI::get('event_dispatcher') === null){
 			if(Registry::exists('event')){
-				$oDispatcher = Registry::get('event'); 
-				if(is_string($oDispatcher)){
-					$oManager = new $oDispatcher();
-				} else{
-					$oManager = $oDispatcher;
+				$dispatcher = Registry::get('event'); 
+				if(is_string($dispatcher)){
+					$dispatcher = new $dispatcher();
 				}
 			} else{
-				$oManager = new Dispatcher();
+				$dispatcher = new Dispatcher();
 			}
+			DI::set('event_dispatcher',$dispatcher);
 		}
-		return $oManager;
+		return DI::get('event_dispatcher');
 	}
 	
-	public function on($sName,$oFunc,$iSort = 500)
+	public function on($name,$func,$sort = 500)
 	{
-		return $this->getDispatcher()->listen($sName,$oFunc,$iSort);
+		return $this->getDispatcher()->listen($name,$func,$sort);
 	}
 	
-	public function fire($sName,$aParams,$bHalt = true)
+	public function fire($name,$params,$halt = true)
 	{
-		return $this->getDispatcher()->fire($sName,$aParams,$bHalt);
+		return $this->getDispatcher()->fire($name,$params,$halt);
 	}
 }

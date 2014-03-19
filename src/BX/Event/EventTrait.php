@@ -12,13 +12,13 @@ trait EventTrait
 		}
 		return DI::get($key);
 	}
-	public function on($sName,$oFunc,$iSort = 500)
+	public function on($name,$func,$sort = 500)
 	{
-		$this->getEventManager()->on($sName,$oFunc,$iSort);
+		$this->getEventManager()->on($name,$func,$sort);
 		return $this;
 	}
-	public function fire($sName,$aParams = [],$bHalt = true)
+	public function fire($name,$params = [],$halt = true)
 	{
-		return $this->getEventManager()->fire($sName,$aParams,$bHalt);
+		return $this->getEventManager()->fire($name,$params,$halt);
 	}
 }
