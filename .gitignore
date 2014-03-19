@@ -1,1 +1,5 @@
-src\BX\_.*
+test/BX/ZendSearch/search
+src/BX/_Admin/
+src/BX/_Gii/
+src/BX/_Queue/
+

@@ -7,41 +7,61 @@ use Symfony\Component\Translation\Loader\ArrayLoader;
 
 class Translate extends Manager
 {
-	protected $sLang = 'en';
-	protected $aFiles = [];
+	/**
+	 * @var string
+	 */
+	protected $lang = 'en';
+	/**
+	 * @var array
+	 */
+	protected $files = [];
+	/**
+	 *
+	 * @var Translator
+	 */
 	private static $adaptor;
 
-	public function setLocale($sLang)
+	public function setLocale($lang)
 	{
-		$this->sLang = $sLang;
+		$this->lang = $lang;
 	}
-
+	/**
+	 * Init
+	 */
 	public function init()
 	{
 		if(!isset(self::$adaptor)){
-			self::$adaptor = new Translator($this->sLang);
+			self::$adaptor = new Translator($this->lang);
 			self::$adaptor->addLoader('array', new ArrayLoader());
 		}
 	}
-
+	/**
+	 * Get translator
+	 * @return Translator
+	 */
 	private function adaptor()
 	{
 		return self::$adaptor;
 	}
-
-	private function load($sLang,$sPackage,$sService)
+	/**
+	 * Load messages from php class
+	 * @param string $lang
+	 * @param string $package
+	 * @param string $service
+	 */
+	private function load($lang,$package,$service)
 	{
-		$sKey = $sPackage.'.'.$sService.'.'.$sLang;
-		if(!array_key_exists($sKey, $this->aFiles))
+		$key = $package.'.'.$service.'.'.$lang;
+		if(!array_key_exists($key, $this->files))
 		{
-			$sClass = $sPackage."\\".$sService."\\Message\\".ucwords($sLang);
-			if(class_exists($sClass)){
-				$aMessage = call_user_func([$sClass,'get']);
+			$class = $package."\\".$service."\\Message\\".ucwords($lang);
+			if(class_exists($class)){
+				$aMessage = call_user_func([$class,'get']);
 				if(!empty($aMessage)){
-					$this->adaptor()->addResource('array',$aMessage, $sLang);
+					$this->adaptor()->addResource('array',$aMessage, $lang);
 				}
 			}
-			$this->aFiles[] = $sKey;
+			$this->files[] = $key;
 		}
 	}
 
@@ -50,15 +70,15 @@ class Translate extends Manager
 		$this->adaptor()->addResource('array', $resource, $locale);
 	}
 
-	public function trans($sMessage,$aParams,$sLang,$sPackage,$sService)
+	public function trans($message,$params,$lang,$package,$service)
 	{
-		$this->load($sLang, $sPackage, $sService);
-		return $this->adaptor()->trans($sMessage,$aParams);
+		$this->load($lang, $package, $service);
+		return $this->adaptor()->trans($message,$params);
 	}
 
-	public function choice($sMessage,$iNumber,$aParams,$sLang,$sPackage,$sService)
+	public function choice($message,$number,$params,$lang,$package,$service)
 	{
-		$this->load($sLang, $sPackage, $sService);
-		return $this->adaptor()->transChoice($sMessage,$iNumber,$aParams);
+		$this->load($lang, $package, $service);
+		return $this->adaptor()->transChoice($message,$number,$params);
 	}
 }

@@ -2,17 +2,22 @@
 namespace BX\Translate;
 use BX\Translate\Manager\Translate;
 use BX\Registry;
+use BX\DI;
 
 trait TranslateTrait
 {
+	/**
+	 * Get translate manager
+	 * @return Translate
+	 */
 	private function getTranslateManager()
 	{
-		static $oTranslate;
-		if(!isset($oTranslate)){
-			$sLang = (Registry::exists('lang')) ? Registry::get('lang') : 'en';
-			$oTranslate = Translate::getManager(false,['locale' => $sLang]);
+		$manager = 'translate';
+		if(DI::get($manager) === null){
+			$lang = (Registry::exists('lang')) ? Registry::get('lang') : 'en';
+			DI::set($manager,Translate::getManager(false,['locale' => $lang]));
 		}
-		return $oTranslate;
+		return DI::get($manager);
 	}
 	
 	public function translator()
@@ -20,22 +25,17 @@ trait TranslateTrait
 		return $this->getTranslateManager();
 	}
 	
-	public function trans($sMessage,$aParams = [],$sLang = false,$sPackage = false,$sService=false)
+	public function trans($message,$params = [],$lang = false,$package = false,$service=false)
 	{
-		if($sPackage === false){
-			$sPackage = static::getPackage();
+		if($package === false){
+			$package = static::getPackage();
 		}
-		if($sService === false){
-			$sService = static::getService();
+		if($service === false){
+			$service = static::getService();
 		}
-		if($sLang === false){
-			$sLang = (Registry::exists('lang')) ? Registry::get('lang') : 'en';
+		if($lang === false){
+			$lang = (Registry::exists('lang')) ? Registry::get('lang') : 'en';
 		}
-		return $this->getTranslateManager(false)->trans($sMessage, $aParams, $sLang,$sPackage,$sService);
+		return $this->getTranslateManager(false)->trans($message, $params, $lang,$package,$service);
 	}	
-	
-	#public function choice($sMessage,$iNumber,$aParams = [],$sLang = false,$sPackage = false,$sService=false)
-	#{
-	#	
-	#}
 }
