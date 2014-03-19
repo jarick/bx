@@ -1,16 +1,15 @@
-<?php
-namespace BX\Translate\Manager;
+<?php namespace BX\Translate\Manager;
 use BX\Manager;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\Loader\ArrayLoader;
-
+use BX\Registry;
 
 class Translate extends Manager
 {
 	/**
 	 * @var string
 	 */
-	protected $lang = 'en';
+	protected $lang = null;
 	/**
 	 * @var array
 	 */
@@ -19,8 +18,7 @@ class Translate extends Manager
 	 *
 	 * @var Translator
 	 */
-	private static $adaptor;
-
+	private $adaptor;
 	public function setLocale($lang)
 	{
 		$this->lang = $lang;
@@ -30,9 +28,12 @@ class Translate extends Manager
 	 */
 	public function init()
 	{
-		if(!isset(self::$adaptor)){
-			self::$adaptor = new Translator($this->lang);
-			self::$adaptor->addLoader('array', new ArrayLoader());
+		if ($this->lang === null){
+			$this->lang = (Registry::exists('lang')) ? Registry::get('lang') : 'en';
+		}
+		if (!isset(self::$adaptor)){
+			$this->adaptor = new Translator($this->lang);
+			$this->adaptor->addLoader('array',new ArrayLoader());
 		}
 	}
 	/**
@@ -41,7 +42,7 @@ class Translate extends Manager
 	 */
 	private function adaptor()
 	{
-		return self::$adaptor;
+		return $this->adaptor;
 	}
 	/**
 	 * Load messages from php class
@@ -52,33 +53,55 @@ class Translate extends Manager
 	private function load($lang,$package,$service)
 	{
 		$key = $package.'.'.$service.'.'.$lang;
-		if(!array_key_exists($key, $this->files))
-		{
+		if (!array_key_exists($key,$this->files)){
 			$class = $package."\\".$service."\\Message\\".ucwords($lang);
-			if(class_exists($class)){
-				$aMessage = call_user_func([$class,'get']);
-				if(!empty($aMessage)){
-					$this->adaptor()->addResource('array',$aMessage, $lang);
+			if (class_exists($class)){
+				$messages = call_user_func([$class,'get']);
+				if (!empty($messages)){
+					$this->adaptor()->addResource('array',$messages,$lang);
 				}
 			}
 			$this->files[] = $key;
 		}
 	}
-
-	public function addArrayResource($resource, $locale = 'en')
+	/**
+	 * Add array translate
+	 * @param array $resource
+	 * @param string $locale
+	 * @return self
+	 */
+	public function addArrayResource(array $resource,$locale = 'en')
 	{
-		$this->adaptor()->addResource('array', $resource, $locale);
+		$this->adaptor()->addResource('array',$resource,$locale);
+		return $this;
 	}
-
-	public function trans($message,$params,$lang,$package,$service)
+	/**
+	 * Translate message
+	 * @param string $message
+	 * @param array $params
+	 * @param string $lang
+	 * @param type $package
+	 * @param type $service
+	 * @return type
+	 */
+	public function trans($message,array $params = [],$lang = false,$package = false,$service = false)
 	{
-		$this->load($lang, $package, $service);
+		$this->load($lang,$package,$service);
 		return $this->adaptor()->trans($message,$params);
 	}
-
-	public function choice($message,$number,$params,$lang,$package,$service)
+	/**
+	 * Translate choice message
+	 * @param straing $message
+	 * @param integer $number
+	 * @param array $params
+	 * @param string $lang
+	 * @param string $package
+	 * @param string $service
+	 * @return string
+	 */
+	public function choice($message,$number,array $params = [],$lang = false,$package = false,$service = false)
 	{
-		$this->load($lang, $package, $service);
+		$this->load($lang,$package,$service);
 		return $this->adaptor()->transChoice($message,$number,$params);
 	}
 }

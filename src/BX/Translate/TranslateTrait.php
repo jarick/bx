@@ -1,8 +1,7 @@
-<?php
-namespace BX\Translate;
+<?php namespace BX\Translate;
 use BX\Translate\Manager\Translate;
-use BX\Registry;
 use BX\DI;
+use BX\Registry;
 
 trait TranslateTrait
 {
@@ -13,29 +12,39 @@ trait TranslateTrait
 	private function getTranslateManager()
 	{
 		$manager = 'translate';
-		if(DI::get($manager) === null){
-			$lang = (Registry::exists('lang')) ? Registry::get('lang') : 'en';
-			DI::set($manager,Translate::getManager(false,['locale' => $lang]));
+		if (DI::get($manager) === null){
+			DI::set($manager,Translate::getManager());
 		}
 		return DI::get($manager);
 	}
-	
+	/**
+	 * Get translator
+	 * @return Translate
+	 */
 	public function translator()
 	{
 		return $this->getTranslateManager();
 	}
-	
-	public function trans($message,$params = [],$lang = false,$package = false,$service=false)
+	/**
+	 * Translate message
+	 * @params string $message
+	 * @params array $params
+	 * @params string $lang
+	 * @params string $package
+	 * @params string $service
+	 * @return string
+	 */
+	public function trans($message,array $params = [],$lang = null,$package = null,$service = null)
 	{
-		if($package === false){
+		if ($package === null){
 			$package = static::getPackage();
 		}
-		if($service === false){
+		if ($service === null){
 			$service = static::getService();
 		}
-		if($lang === false){
+		if ($lang === null){
 			$lang = (Registry::exists('lang')) ? Registry::get('lang') : 'en';
 		}
-		return $this->getTranslateManager(false)->trans($message, $params, $lang,$package,$service);
-	}	
+		return $this->getTranslateManager()->trans($message,$params,$lang,$package,$service);
+	}
 }

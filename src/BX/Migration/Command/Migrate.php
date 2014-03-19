@@ -4,37 +4,46 @@ use BX\Migration\Manager\Migrate as MigrateManager;
 
 class Migrate extends Console
 {
+	/**
+	 * Run
+	 * @param array $args
+	 * @throws \InvalidArgumentException
+	 */
 	public function run(array $args)
 	{
-		if (!isset($aArgv[0])){
+		if (!isset($args[0])){
 			throw new \InvalidArgumentException('Action is not set.');
 		}
-		$sAction = $aArgv[0];
-		if (!isset($aArgv[1])){
-			throw new \InvalidArgumentException("`$aArgv[1]` service is not set.");
+		$action = $args[0];
+		if (!isset($args[1])){
+			throw new \InvalidArgumentException("`$args[1]` service is not set.");
 		}
-		$sService = $aArgv[1];
-		if (substr_count($sService,':') > 0){
-			list($sPackage,$sService) = explode(':',$sService);
+		$service = $args[1];
+		if (substr_count($service,':') > 0){
+			list($package,$service) = explode(':',$service);
 		} else{
-			$sPackage = self::getPackage();
+			$package = self::getPackage();
 		}
-		$oMigrate = MigrateManager::getManager(false,[
-				'package'	 => $sPackage,
-				'service'	 => $sService,
+		$migrate = MigrateManager::getManager(false,[
+				'package'	 => $package,
+				'service'	 => $service,
 		]);
-		switch ($sAction){
-			case 'up': $oMigrate->up();break;
-			case 'redo': $oMigrate->redo();break;
-			case 'down': $oMigrate->down();break;
-			default: throw new \InvalidArgumentException("Action `$sAction` is not found, allow action: `up,redo,down`.");
+		switch ($action){
+			case 'up': $migrate->up();break;
+			case 'redo': $migrate->redo();break;
+			case 'down': $migrate->down();break;
+			default: throw new \InvalidArgumentException("Action `$action` is not found, allow action: `up,redo,down`.");
 		}
-		if (!$oMigrate->isFound()){
+		if (!$migrate->isFound()){
 			$this->getWriter()->error('Next migrate is not found.');
 		} else{
 			$this->getWriter()->success('Success.');
 		}
 	}
+	/**
+	 * Get command
+	 * @return string
+	 */
 	public function command()
 	{
 		return 'migrate';
