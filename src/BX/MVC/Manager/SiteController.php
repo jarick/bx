@@ -3,6 +3,7 @@ use BX\Manager;
 use BX\MVC\Entity\Site;
 use BX\MVC\Exception\Exception;
 use BX\Collection;
+use BX\DI;
 
 class SiteController extends Manager
 {
@@ -49,10 +50,6 @@ class SiteController extends Manager
 	{
 		return $this->view;
 	}
-	public function setView($view)
-	{
-		$this->view = $view;
-	}
 	public function getSiteFolder()
 	{
 		return $this->site_folder;
@@ -79,9 +76,11 @@ class SiteController extends Manager
 	}
 	public function init()
 	{
-		if ($this->getView() === false){
-			$this->setView(View::getManager());
+		$manager = 'view';
+		if (DI::get($manager) === null){
+			DI::set($manager,View::getManager());
 		}
+		$this->view = DI::get($manager);
 		$this->site = new Collection(get_class());
 	}
 	protected function getUri()

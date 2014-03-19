@@ -51,7 +51,7 @@ class Request extends Manager implements IRequest
 			$this->get = $_GET;
 		}
 		if (is_array($this->get)){
-			$this->get = new Dictionary($this->get,true);
+			$this->get = new Dictionary($this->get);
 		}
 		return $this->get;
 	}
@@ -65,7 +65,7 @@ class Request extends Manager implements IRequest
 			$this->post = $_POST;
 		}
 		if (is_array($this->post)){
-			$this->post = new Dictionary($this->post,true);
+			$this->post = new Dictionary($this->post);
 		}
 		return $this->post;
 	}
@@ -79,7 +79,7 @@ class Request extends Manager implements IRequest
 			$this->files = $_FILES;
 		}
 		if (is_array($this->files)){
-			$this->files = new Dictionary($this->files,true);
+			$this->files = new Dictionary($this->files);
 		}
 		return $this->files;
 	}
@@ -93,7 +93,7 @@ class Request extends Manager implements IRequest
 			$this->server = $_SERVER;
 		}
 		if (is_array($this->server)){
-			$this->server = new Dictionary($this->server,true);
+			$this->server = new Dictionary($this->server);
 		}
 		return $this->server;
 	}

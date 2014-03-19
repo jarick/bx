@@ -3,3 +3,19 @@ src/BX/_Admin/
 src/BX/_Gii/
 src/BX/_Queue/
 
+/vendor/
+/www/
+/nbproject/
+/cache/
+/todo/
+/coffee/
+/db.db
+/phpunit.xml
+/:memory
+/phpunit
+/composer.lock
+/composer.phar
+/config/
+/haml/
+/less/
+/search/

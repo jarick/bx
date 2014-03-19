@@ -42,10 +42,10 @@ class Dictionary extends Object implements \IteratorAggregate, \ArrayAccess, \Co
 	}
 	public function offsetSet($offset,$value)
 	{
-		return $this->set($offset,$value);
+		throw new \InvalidArgumentException('Is read only');
 	}
 	public function offsetUnset($offset)
 	{
-		$this->delete($offset);
+		throw new \InvalidArgumentException('Is read only');
 	}
 }
