@@ -4,6 +4,7 @@ use BX\Migration\Manager\Migrate as MigrateManager;
 
 class Migrate extends Console
 {
+	use \BX\String\StringTrait;
 	/**
 	 * Run
 	 * @param array $args
@@ -19,7 +20,7 @@ class Migrate extends Console
 			throw new \InvalidArgumentException("`$args[1]` service is not set.");
 		}
 		$service = $args[1];
-		if (substr_count($service,':') > 0){
+		if ($this->string()->countSubstr($service,':') > 0){
 			list($package,$service) = explode(':',$service);
 		} else{
 			$package = self::getPackage();

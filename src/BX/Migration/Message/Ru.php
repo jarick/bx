@@ -1,16 +1,15 @@
-<?php 
-namespace BX\Migration\Message;
+<?php namespace BX\Migration\Message;
 
 class Ru
 {
 	static public function get()
 	{
 		return [
-			'entity.migration.package' => 'Пакет',
-			'entity.migration.service' => 'Сервис',
-			'entity.migration.function' => 'Функция',
-			'entity.migration.timestamp' => 'Дата выполнения',
-			'entity.migration.guid' => 'GUID',
-		];	
+			'migration.entity.migration.package'	 => 'Пакет',
+			'migration.entity.migration.service'	 => 'Сервис',
+			'migration.entity.migration.function'	 => 'Функция',
+			'migration.entity.migration.timestamp'	 => 'Дата выполнения',
+			'migration.entity.migration.guid'		 => 'GUID',
+		];
 	}
 }

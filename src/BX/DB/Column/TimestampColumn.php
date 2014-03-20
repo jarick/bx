@@ -22,7 +22,7 @@ class TimestampColumn extends BaseColumn
 	{
 		$timestamp = $this->date()->makeTimeStamp($value,$this->format);
 		if ($timestamp > 0){
-			return $timestamp - $this->date()->getOffset();
+			return $timestamp + $this->date()->getOffset();
 		} else{
 			throw new \InvalidArgumentException('Bad format for timestamp');
 		}
@@ -30,7 +30,7 @@ class TimestampColumn extends BaseColumn
 	public function convertFromDB($key,$value,array $values)
 	{
 		if ($value > 0){
-			$value = intval($value) + $this->date()->getOffset();
+			$value = intval($value) - $this->date()->getOffset();
 			return $this->date()->convertTimeStamp($value,$this->format);
 		} else{
 			throw new \InvalidArgumentException('Bad format for timestamp');

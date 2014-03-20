@@ -51,15 +51,19 @@ class Validator extends Manager
 		foreach ($rules as $rule){
 			$aRulesArray = (is_array($rule[0])) ? $rule[0] : explode(',',$rule[0]);
 			foreach ($aRulesArray as $key){
-				if ($rule[1] instanceof Setter){
-					continue;
-				}
-				if ($rule[1]->isNew() !== 'all'){
-					if ($rule[1]->isNew() !== $bNew){
+				if ($this->string()->length($key) > 0){
+					if ($rule[1] instanceof Setter){
 						continue;
 					}
+					if ($rule[1]->isNew() !== 'all'){
+						if ($rule[1]->isNew() !== $bNew){
+							continue;
+						}
+					}
+					$result[$key][] = $rule[1];
+				} else{
+					$this->log()->warning('Empty name field');
 				}
-				$result[$key][] = $rule[1];
 			}
 		}
 		foreach (array_keys($aFields) as $key){
@@ -98,15 +102,19 @@ class Validator extends Manager
 		foreach ($rules as $rule){
 			$aRulesArray = (is_array($rule[0])) ? $rule[0] : explode(',',$rule[0]);
 			foreach ($aRulesArray as $key){
-				if ($rule[1]->isNew() !== 'all'){
-					if ($rule[1]->isNew() !== $bNew){
-						continue;
+				if ($this->string()->length($key) > 0){
+					if ($rule[1]->isNew() !== 'all'){
+						if ($rule[1]->isNew() !== $bNew){
+							continue;
+						}
 					}
+					if ($rule[1] instanceof Setter){
+						$rule[1]->set($key,$arFields,$aLabels[$key]);
+					}
+					$result[$key][] = $rule[1];
+				} else{
+					$this->log()->warning('Empty name field');
 				}
-				if ($rule[1] instanceof Setter){
-					$rule[1]->set($key,$arFields,$aLabels[$key]);
-				}
-				$result[$key][] = $rule[1];
 			}
 		}
 		foreach ($result as $key => $field){

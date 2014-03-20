@@ -307,11 +307,19 @@ class SqlBuilder extends Object
 		}
 		return $result;
 	}
+	public function all()
+	{
+		if ($this->callback !== false){
+			return call_user_func_array($this->callback,[$result->getData()]);
+		} else{
+			return $result;
+		}
+	}
 	/**
 	 * Find all rows
 	 * @return DBResult
 	 */
-	public function all()
+	public function asArray()
 	{
 		$sql = $this->getSql();
 		if (is_array($this->cache)){
@@ -334,11 +342,7 @@ class SqlBuilder extends Object
 		} else{
 			$result = $this->query($sql);
 		}
-		if ($this->callback !== false){
-			return call_user_func_array($this->callback,[$result->getData()]);
-		} else{
-			return $result;
-		}
+		return $result;
 	}
 	/**
 	 * Find first row

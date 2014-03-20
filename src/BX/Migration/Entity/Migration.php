@@ -13,7 +13,7 @@ class Migration extends ActiveRecord
 	const C_FUNCTION = 'FUNCTION';
 	const C_TIMESTAMP_X = 'TIMESTAMP_X';
 	const C_GUID = 'GUID';
-
+	const C_ID = 'ID';
 	public function settings()
 	{
 		return [
@@ -41,11 +41,11 @@ class Migration extends ActiveRecord
 	public function columns()
 	{
 		return [
-			self::C_PACKAGE	 => StringColumn::create('T.PACKAGE'),
-			self::C_SERVICE	 => StringColumn::create('T.SERVICE'),
-			self::C_FUNCTION => StringColumn::create('T.FUNCTION'),
-			self::C_GUID	 => StringColumn::create('T.GUID'),
-			self::C_TIMESTAMP_X => TimestampColumn::create('T.TIMESTAMP_X'),
+			self::C_PACKAGE		 => StringColumn::create('T.PACKAGE'),
+			self::C_SERVICE		 => StringColumn::create('T.SERVICE'),
+			self::C_FUNCTION	 => StringColumn::create('T.FUNCTION'),
+			self::C_GUID		 => StringColumn::create('T.GUID'),
+			self::C_TIMESTAMP_X	 => TimestampColumn::create('T.TIMESTAMP_X'),
 		];
 	}
 }
