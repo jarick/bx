@@ -26,7 +26,7 @@ class LoggerManager extends Manager
 	 * @param string $message
 	 * @param array $context
 	 */
-	public function log($level,$message,$context = [])
+	public function log($level,$message,array $context = [])
 	{
 		if ($this->fire('AddMessageToLog') === false){
 			return;

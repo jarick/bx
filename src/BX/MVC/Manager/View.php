@@ -51,16 +51,19 @@ class View extends Manager implements \ArrayAccess
 		$this->response()->redirect($url,$status);
 		throw new Abort();
 	}
-	public function send($content,$status = false,$headers = false)
+	public function send($content,$status = false,array $headers = [])
 	{
+		if (!isset($headers['Cache-Control'])){
+			$headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0';
+		}
+		if (!isset($headers['Pragma'])){
+			$headers['Pragma'] = 'no-cache';
+		}
 		$oResponse = $this->response();
-		if ($status){
+		if ($status > 0){
 			$oResponse->setStatus($status);
 		}
-		if ($headers){
-			$oResponse->addHeader($headers);
-		}
-		$oResponse->send($content);
+		$oResponse->addHeader($headers)->send($content);
 	}
 	public function widget($widget,$params = [])
 	{

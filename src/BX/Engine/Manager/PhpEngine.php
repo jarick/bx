@@ -61,7 +61,7 @@ class PhpEngine extends Manager implements IEngine, \ArrayAccess
 		}
 		$yml = $this->folder.DIRECTORY_SEPARATOR.$path.$this->suffix_yml;
 		if (file_exists($yml)){
-			$this->meta = Yaml::parse(file_get_contents($yml));
+			#$this->meta = Yaml::parse(file_get_contents($yml));
 		}
 		if (is_array($params)){
 			extract($params,EXTR_PREFIX_SAME,'data');

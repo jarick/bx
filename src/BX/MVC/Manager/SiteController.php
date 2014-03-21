@@ -197,17 +197,13 @@ class SiteController extends Manager
 			$this->log()->debug('end render');
 			return $this->getView()->response();
 		} catch (Exception $e){
+			$this->getView()->buffer()->flush();
 			if (strlen($e->getMessage()) > 0){
-				var_dump($e->getMessage());
-				var_dump($e->getFile());
-				var_dump($e->getLine());
 				$this->log()->error($e->getMessage());
 			}
 			return $e->render($this);
 		} catch (\Exception $e){
-			var_dump($e->getMessage());
-			var_dump($e->getFile());
-			var_dump($e->getLine());
+			$this->getView()->buffer()->flush();
 			$this->log()->error($e->getMessage());
 			$eExection = new Exception($e->getMessage(),500);
 			return $eExection->render($this);
