@@ -2,6 +2,12 @@
 
 class Safe extends BaseValidator
 {
+	private $security = false;
+	public function setSecurity($security = true)
+	{
+		$this->security = (bool) $security;
+		return this;
+	}
 	/**
 	 * Validate
 	 * @param string $key
@@ -12,6 +18,11 @@ class Safe extends BaseValidator
 	 */
 	public function validate($key,$value,$label,&$fields)
 	{
-		return true;
+		if ($this->security){
+			$fields['~'.$key] = $value;
+			unset($fields[$key]);
+		} else{
+			return true;
+		}
 	}
 }

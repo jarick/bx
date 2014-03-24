@@ -34,8 +34,8 @@ class Site extends Entity
 		return [
 			[[self::C_NAME,self::C_FOLDER],String::create()->notEmpty()],
 			[self::C_REGEX,Multy::create(String::create()->notEmpty())],
-			[self::C_LAYOUT_RULE,Custom::create([$this,'validateLayoutRule'],$this->trans('mvc.entity.site.layout_rule'))],
-			[self::C_URL_REWITE,Custom::create([$this,'validateUrlRewrite'],$this->trans('mvc.entity.site.url_rewrite'))],
+			[self::C_LAYOUT_RULE,Custom::create([$this,'validateLayoutRule'])],
+			[self::C_URL_REWITE,Custom::create([$this,'validateUrlRewrite'])],
 		];
 	}
 	/**
@@ -45,7 +45,10 @@ class Site extends Entity
 	 */
 	public function validateLayoutRule($aLayoutRule)
 	{
-		return is_array($aLayoutRule);
+		if (!is_array($aLayoutRule)){
+			return $this->trans('mvc.entity.site.error_layout_rule');
+		}
+		return true;
 	}
 	/**
 	 * Validate url rewrite
@@ -54,6 +57,9 @@ class Site extends Entity
 	 */
 	public function validateUrlRewrite($aUrlRewrite)
 	{
-		return is_array($aUrlRewrite);
+		if (!is_array($aUrlRewrite)){
+			return $this->trans('mvc.entity.site.error_url_rewrite');
+		}
+		return true;
 	}
 }

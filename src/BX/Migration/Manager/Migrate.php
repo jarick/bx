@@ -112,7 +112,7 @@ class Migrate extends Manager
 		$entity = Migration::getEntity();
 		$this->found = true;
 		$class = $this->package.'\\'.$this->service.'\\Migration';
-		if(!class_exists($class)){
+		if (!class_exists($class)){
 			throw new \LogicException("Class `{$class}` is not found");
 		}
 		$instance = new $class();
@@ -128,7 +128,7 @@ class Migrate extends Manager
 	{
 		$this->found = true;
 		$class = $this->package.'\\'.$this->service.'\\Migration';
-		if(!class_exists($class)){
+		if (!class_exists($class)){
 			throw new \LogicException("Class `{$class}` is not found");
 		}
 		$instance = new $class();
@@ -147,12 +147,12 @@ class Migrate extends Manager
 	 * Down command
 	 * @return boolean
 	 */
-	private function down()
+	public function down()
 	{
 		$entity = Migration::getEntity();
 		$this->found = true;
 		$class = $this->package.'\\'.$this->service.'\\Migration';
-		if(!class_exists($class)){
+		if (!class_exists($class)){
 			throw new \LogicException("Class `{$class}` is not found");
 		}
 		$instance = new $class();

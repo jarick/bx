@@ -8,7 +8,6 @@ src/BX/_Queue/
 /nbproject/
 /cache/
 /todo/
-/coffee/
 /db.db
 /phpunit.xml
 /:memory
@@ -17,5 +16,5 @@ src/BX/_Queue/
 /composer.phar
 /config/
 /haml/
-/less/
 /search/
+/app/

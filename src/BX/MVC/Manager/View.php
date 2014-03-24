@@ -53,17 +53,17 @@ class View extends Manager implements \ArrayAccess
 	}
 	public function send($content,$status = false,array $headers = [])
 	{
+		$response = $this->response();
+		if ($status > 0){
+			$response->setStatus($status);
+		}
 		if (!isset($headers['Cache-Control'])){
-			$headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0';
+			$response['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0';
 		}
 		if (!isset($headers['Pragma'])){
-			$headers['Pragma'] = 'no-cache';
+			$response['Pragma'] = 'no-cache';
 		}
-		$oResponse = $this->response();
-		if ($status > 0){
-			$oResponse->setStatus($status);
-		}
-		$oResponse->addHeader($headers)->send($content);
+		$response->send($content);
 	}
 	public function widget($widget,$params = [])
 	{

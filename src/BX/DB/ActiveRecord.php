@@ -1,15 +1,13 @@
 <?php namespace BX\DB;
-use BX\DB\Manager\Database;
 use BX\Entity;
 use BX\DB\Filter\SqlBuilder;
 use BX\Collection;
-use BX\DI;
 
 class ActiveRecord extends Entity
 {
 	use \BX\ZendSearch\SearchTrait,
-	 \BX\Cache\CacheTrait;
-	const LOG_TYPE = 'log_type';
+	 \BX\Cache\CacheTrait,
+	 DBTrait;
 	const CACHE_TAG = 'cache_tag';
 	const EVENT = 'event';
 	const DB_TABLE = 'db_table';
@@ -66,27 +64,11 @@ class ActiveRecord extends Entity
 	}
 	/**
 	 *
-	 * @return type
+	 * @return string|boolean
 	 */
 	public function getPermissionTable()
 	{
 		return $this->getSettings(self::PERMISSION_TABLE);
-	}
-	public function getEventType()
-	{
-		return $this->getSettings(self::LOG_TYPE);
-	}
-	/**
-	 * Get database manager
-	 * @return Database
-	 */
-	public function db()
-	{
-		$key = 'db';
-		if (DI::get($key) === null){
-			DI::set($key,Database::getManager());
-		}
-		return DI::get($key);
 	}
 	/**
 	 * Get acl rules

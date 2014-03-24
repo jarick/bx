@@ -1,50 +1,45 @@
-<?php
+<?php namespace BX\Validator\Manager;
 use BX\Validator\Manager\Validator;
 use BX\Validator\Manager\Number;
 
-class NumberValidatorTest extends PHPUnit_Framework_TestCase
+class NumberTest extends \BX_Test
 {
 	private $validator;
-
 	public function setUp()
 	{
 		$aLang = [
-			'validator.manager.number.invalid' => '#LABEL# INVALID',
-			'validator.manager.number.empty' => '#LABEL# EMPTY',
-			'validator.manager.number.min' => '#LABEL# MIN #MIN#',
-			'validator.manager.number.max' => '#LABEL# MAX #MAX#',
-			'validator.manager.number.integer' => '#LABEL# INTEGER',
+			'validator.manager.number.invalid'	 => '#LABEL# INVALID',
+			'validator.manager.number.empty'	 => '#LABEL# EMPTY',
+			'validator.manager.number.min'		 => '#LABEL# MIN #MIN#',
+			'validator.manager.number.max'		 => '#LABEL# MAX #MAX#',
+			'validator.manager.number.integer'	 => '#LABEL# INTEGER',
 		];
 		$this->validator = Validator::getManager(false,[
-			'rules' => [
-				['TEST',Number::create()->notEmpty()],
-			],
-			'labels' => ['TEST' => 'TEST'],
-			'new' => true,
+				'rules'	 => [
+					['TEST',Number::create()->notEmpty()],
+				],
+				'labels' => ['TEST' => 'TEST'],
+				'new'	 => true,
 		]);
 		$this->validator->translator()->addArrayResource($aLang);
 	}
-
 	public function testTrue()
 	{
 		$fields = ['TEST' => 12345];
 		$this->assertTrue($this->validator->check($fields));
 	}
-
 	public function testInvalid()
 	{
 		$fields = ['TEST' => ['12345']];
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(), ['TEST' => ['TEST INVALID']]);
+		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST INVALID']]);
 	}
-
 	public function testEmpty()
 	{
-		$fields = ['TEST'=>''];
+		$fields = ['TEST' => ''];
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(), ['TEST' => ['TEST EMPTY']]);
+		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST EMPTY']]);
 	}
-
 	public function testInteger()
 	{
 		$fields = ['TEST' => '12345.12'];
@@ -52,10 +47,8 @@ class NumberValidatorTest extends PHPUnit_Framework_TestCase
 			['TEST',Number::create()->integer()],
 		]);
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(), ['TEST' => ['TEST INTEGER']]);
+		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST INTEGER']]);
 	}
-
-
 	public function testMin()
 	{
 		$fields = ['TEST' => 3];
@@ -63,9 +56,8 @@ class NumberValidatorTest extends PHPUnit_Framework_TestCase
 			['TEST',Number::create()->setMin(4)],
 		]);
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(), ['TEST' => ['TEST MIN 4']]);
+		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST MIN 4']]);
 	}
-
 	public function testMax()
 	{
 		$fields = ['TEST' => 5];
@@ -73,6 +65,6 @@ class NumberValidatorTest extends PHPUnit_Framework_TestCase
 			['TEST',Number::create()->setMax(4)],
 		]);
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(), ['TEST' => ['TEST MAX 4']]);
+		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST MAX 4']]);
 	}
 }

@@ -4,6 +4,7 @@ use BX\Validator\Manager\String;
 use BX\Validator\Manager\Setter;
 use BX\DB\Column\StringColumn;
 use BX\DB\Column\TimestampColumn;
+use BX\DB\Column\NumberColumn;
 
 class Migration extends ActiveRecord
 {
@@ -41,6 +42,7 @@ class Migration extends ActiveRecord
 	public function columns()
 	{
 		return [
+			self::C_ID			 => NumberColumn::create('T.ID',true),
 			self::C_PACKAGE		 => StringColumn::create('T.PACKAGE'),
 			self::C_SERVICE		 => StringColumn::create('T.SERVICE'),
 			self::C_FUNCTION	 => StringColumn::create('T.FUNCTION'),

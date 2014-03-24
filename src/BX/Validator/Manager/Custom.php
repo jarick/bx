@@ -6,10 +6,6 @@ class Custom extends BaseValidator implements IValidator
 {
 	use \BX\String\StringTrait;
 	/**
-	 * @var string
-	 */
-	private $message;
-	/**
 	 * @var \Closure
 	 */
 	private $function;
@@ -20,13 +16,12 @@ class Custom extends BaseValidator implements IValidator
 	 * @return self
 	 * @throws \InvalidArgumentException
 	 */
-	public static function create($function,$message)
+	public static function create($function)
 	{
 		$validator = static::getManager();
 		if (!is_callable($function)){
 			throw new \InvalidArgumentException('Function must be collable');
 		}
-		$validator->message = $message;
 		$validator->function = $function;
 		return $validator;
 	}
@@ -41,13 +36,12 @@ class Custom extends BaseValidator implements IValidator
 	 */
 	public function validate($key,$value,$label,&$fields)
 	{
-		if ($this->string()->length($this->message) === 0){
-			throw new \InvalidArgumentException('Is not set message');
-		}
-		if (call_user_func_array($this->function,[$value]) !== true){
-			$this->addError($this->message);
+		$return = call_user_func_array($this->function,[$value]);
+		if ($this->string()->length($return) > 1){
+			$this->addError($return);
 			return false;
 		}
+		$fields[$key] = $value;
 		return true;
 	}
 }

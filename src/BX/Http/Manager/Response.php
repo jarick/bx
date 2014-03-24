@@ -4,43 +4,16 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponce;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\HeaderBag;
 
-class Response extends Manager
+class Response extends Manager implements \ArrayAccess
 {
 	/**
-	 * @var HeaderBag
+	 * @var array
 	 */
-	protected $oHeaders;
-	public function init()
-	{
-		$this->oHeaders = new HeaderBag();
-	}
+	protected $headers;
 	protected $iCode = 200;
 	public function setStatus($iCode)
 	{
 		$this->iCode = $iCode;
-		return $this;
-	}
-	public function addHeader($aHeader)
-	{
-		$this->oHeaders->add($aHeader);
-		return $this;
-	}
-	public function hasHeader($sKey)
-	{
-		return $this->oHeaders->has($sKey);
-	}
-	public function getHeader($sKey,$mDefault = null,$bFirst = true)
-	{
-		return $this->oHeaders->get($sKey,$mDefault,$bFirst);
-	}
-	public function setHeader($sKey,$sValues,$bReplace = true)
-	{
-		$this->oHeaders->set($sKey,$sValues,$bReplace);
-		return $this;
-	}
-	public function removeHeader($sKey)
-	{
-		$this->oHeaders->remove($sKey);
 		return $this;
 	}
 	/**
@@ -57,7 +30,7 @@ class Response extends Manager
 	}
 	public function send($sContent)
 	{
-		$this->setResponce(new SymfonyResponce($sContent,$this->iCode,$this->oHeaders->all()));
+		$this->setResponce(new SymfonyResponce($sContent,$this->iCode,$this->headers));
 	}
 	public function redirect($sUrl,$iStatus = 302)
 	{
@@ -66,5 +39,21 @@ class Response extends Manager
 	public function end()
 	{
 		$this->getResponce()->send();
+	}
+	public function offsetExists($offset)
+	{
+		return isset($this->headers[$offset]);
+	}
+	public function offsetGet($offset)
+	{
+		return isset($this->headers[$offset]) ? $this->headers[$offset] : null;
+	}
+	public function offsetSet($offset,$value)
+	{
+		$this->headers[$offset] = $value;
+	}
+	public function offsetUnset($offset)
+	{
+		unset($this->headers[$offset]);
 	}
 }

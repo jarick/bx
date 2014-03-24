@@ -1,8 +1,8 @@
-<?php
+<?php namespace BX\Validator\Manager;
 use BX\Validator\Manager\Validator;
 use BX\Validator\Manager\DateTime;
 
-class DateValidatorTest extends PHPUnit_Framework_TestCase
+class DateTest extends \BX_Test
 {
 	private $validator;
 	public function setUp()
@@ -13,8 +13,7 @@ class DateValidatorTest extends PHPUnit_Framework_TestCase
 			'validator.manager.date.min'	 => '#LABEL# MIN #MIN#',
 			'validator.manager.date.max'	 => '#LABEL# MAX #MAX#',
 		];
-		$this->validator = Validator::getManager(false,
-										   [
+		$this->validator = Validator::getManager(false,[
 				'rules'	 => [
 					['TEST',DateTime::create()->notEmpty()],
 				],
@@ -32,14 +31,13 @@ class DateValidatorTest extends PHPUnit_Framework_TestCase
 	{
 		$fields = ['TEST' => '12345'];
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(),
-					  ['TEST' => ['TEST INVALID']]);
+		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST INVALID']]);
 	}
 	public function testEmpty()
 	{
 		$fields = ['TEST' => ''];
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(), ['TEST' => ['TEST EMPTY']]);
+		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST EMPTY']]);
 	}
 	public function testMin()
 	{
@@ -48,8 +46,7 @@ class DateValidatorTest extends PHPUnit_Framework_TestCase
 			['TEST',DateTime::create()->setMin('21.01.2012')],
 		]);
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(),
-					  ['TEST' => ['TEST MIN 21.01.2012']]);
+		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST MIN 21.01.2012']]);
 	}
 	public function testMax()
 	{
@@ -58,7 +55,6 @@ class DateValidatorTest extends PHPUnit_Framework_TestCase
 			['TEST',DateTime::create()->setMax('21.01.2012')],
 		]);
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(),
-					  ['TEST' => ['TEST MAX 21.01.2012']]);
+		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST MAX 21.01.2012']]);
 	}
 }

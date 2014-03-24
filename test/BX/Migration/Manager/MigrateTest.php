@@ -66,6 +66,7 @@ class MigrateTest extends \BX_Test
 		$db = $this->getMock('BX\DB\Manager\Database',['query'],[]);
 		$db->expects($this->once())->method('query')->with($this->equalTo($sql),$this->equalTo($params))
 			->will($this->returnValue($db_return));
+		DI::set('db',$db);
 		$this->invokeMethod($this->migrate,'getLastFunctions');
 	}
 }

@@ -10,15 +10,15 @@ class Entity extends Object
 	/**
 	 * @var array
 	 */
-	private $value = [];
+	protected $value = [];
 	/**
 	 * @var array
 	 */
-	public $labels = [];
+	protected $labels = [];
 	/**
 	 * @var array
 	 */
-	public $rules = [];
+	protected $rules = [];
 	/**
 	 * Constructor
 	 */
@@ -223,8 +223,8 @@ class Entity extends Object
 		if (array_key_exists($key,$this->value)){
 			$this->value[$key] = $value;
 		} else{
-			throw new \InvalidArgumentException(strtr("`#KEY#` is not field #MODEL#",array('#KEY#' => get_class($this),'#MODEL#' => get_class($this))
-			));
+			$fields = ['#KEY#' => $key,'#MODEL#' => get_class($this)];
+			throw new \InvalidArgumentException(strtr("`#KEY#` is not field #MODEL#",$fields));
 		}
 		return $this;
 	}
@@ -250,6 +250,7 @@ class Entity extends Object
 	public function setData(array $values)
 	{
 		foreach ($values as $key => $value){
+			$key = $this->string()->toUpper($key);
 			if (array_key_exists($key,$this->value)){
 				$this->value[$key] = $value;
 			}

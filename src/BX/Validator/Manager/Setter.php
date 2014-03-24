@@ -83,9 +83,9 @@ class Setter extends Manager implements IValidator
 		$this->new = false;
 		return $this;
 	}
-	public function setValue($sValue)
+	public function setValue($value)
 	{
-		$this->value = $sValue;
+		$this->value = $value;
 		return $this;
 	}
 	public function setFunction($oFunction,$aFunctionParams = [])

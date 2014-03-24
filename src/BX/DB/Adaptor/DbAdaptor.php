@@ -12,7 +12,7 @@ class DbAdaptor extends Object
 	public function pdo()
 	{
 		if (DI::get('pdo') === null){
-			$dsn = (Registry::exists('pdo','dsn')) ? Registry::get('pdo','dsn') : 'sqlite::memory';
+			$dsn = (Registry::exists('pdo','dsn')) ? Registry::get('pdo','dsn') : 'sqlite:memory';
 			$username = (Registry::exists('pdo','username')) ? Registry::get('pdo','username') : '';
 			$passwd = (Registry::exists('pdo','passwd')) ? Registry::get('pdo','passwd') : '';
 			$options = (Registry::exists('pdo','options')) ? Registry::get('pdo','options') : [];

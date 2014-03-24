@@ -309,6 +309,7 @@ class SqlBuilder extends Object
 	}
 	public function all()
 	{
+		$result = $this->asArray();
 		if ($this->callback !== false){
 			return call_user_func_array($this->callback,[$result->getData()]);
 		} else{

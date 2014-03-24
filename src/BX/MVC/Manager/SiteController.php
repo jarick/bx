@@ -4,6 +4,7 @@ use BX\MVC\Entity\Site;
 use BX\MVC\Exception\Exception;
 use BX\Collection;
 use BX\DI;
+use BX\Registry;
 
 class SiteController extends Manager
 {
@@ -82,6 +83,12 @@ class SiteController extends Manager
 		}
 		$this->view = DI::get($manager);
 		$this->site = new Collection(get_class());
+		if (Registry::exists('sites')){
+			foreach (Registry::get('sites') as $site){
+				$entity = Site::getEntity(false,['data' => $site]);
+				$this->addSite($entity);
+			}
+		}
 	}
 	protected function getUri()
 	{
@@ -115,6 +122,8 @@ class SiteController extends Manager
 				throw new \InvalidArgumentException('Error site must be Site type');
 			}
 			if (!$site->checkFields()){
+				var_dump($site->getErrors());
+				die();
 				throw new \InvalidArgumentException('Error validate site');
 			}
 			$this->site->attach($site);

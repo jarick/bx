@@ -11,13 +11,14 @@
         "bojaspus/zendsearch": "dev-master",
         "illuminate/cache": "4.1.*",
         "nesbot/carbon": "1.8.*",
-        "symfony/yaml": "2.3.*"
+        "symfony/yaml": "2.3.*",
+		"leafo/lessphp": "0.4.*",
+		"ircmaxell/password-compat": "1.0.*"
     },
     "autoload": {
-        "psr-0": {
-            "BX\\": "src/",
-            "BxProvider\\": "src/",
-            "Urist39\\": "src/"
+        "psr-4": {
+            "BX\\": "src/BX/",
+			"App\\": "app/App/"
         }
     },
     "support": {
