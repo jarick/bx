@@ -1,7 +1,7 @@
 <?php namespace BX\Event\Manager;
 use BX\Event\Manager\EventManager;
 
-class EventManagerTest extends \BX_Test
+class EventManagerTest extends \BX\Test
 {
 	public function event($param)
 	{

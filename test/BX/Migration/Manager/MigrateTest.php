@@ -1,7 +1,7 @@
 <?php namespace BX\Migration\Manager;
 use BX\DI;
 
-class MigrateTest extends \BX_Test
+class MigrateTest extends \BX\Test
 {
 	use \BX\Date\DateTrait;
 	private $migrate;
@@ -56,6 +56,7 @@ class MigrateTest extends \BX_Test
 			'upRoot'	 => false,
 		];
 		$this->invokeMethod($this->migrate,'parseTree',$return);
+		DI::set('db',null);
 	}
 	public function testGetLastFunctions()
 	{
@@ -68,5 +69,6 @@ class MigrateTest extends \BX_Test
 			->will($this->returnValue($db_return));
 		DI::set('db',$db);
 		$this->invokeMethod($this->migrate,'getLastFunctions');
+		DI::set('db',null);
 	}
 }

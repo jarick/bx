@@ -1,36 +1,28 @@
 <?php namespace BX\User\Entity;
-use BX\DI;
+use BX\DBTest;
 
-class UserEntityTest extends \BX_Test
+class UserEntityTest extends DBTest
 {
 	use \BX\Translate\TranslateTrait;
 	/**
 	 * @var UserEntity
 	 */
 	private $entity;
-	public static function setUpBeforeClass()
-	{
-		$db = __DIR__.DIRECTORY_SEPARATOR.'db.db';
-		if (file_exists($db)){
-			unlink($db);
-		}
-		$pdo = new \PDO("sqlite:{$db}");
-		$pdo->setAttribute(\PDO::ATTR_ERRMODE,\PDO::ERRMODE_EXCEPTION);
-		DI::set('pdo',$pdo);
-		$migrate = new \BX\User\Migration();
-		$migrate->upCreateTable(true);
-		$user = UserEntity::getEntity();
-		$user->login = 'admin';
-		$user->active = 'Y';
-		$user->display_name = 'admin';
-		$user->email = 'no@email.com';
-		$user->registered = 'Y';
-		$user->active = 'Y';
-		$user->add();
-	}
 	public function setUp()
 	{
+		parent::setUp();
 		$this->entity = UserEntity::getEntity();
+		$this->assertGreaterThan(0,$this->entity->add([
+				'ID'			 => 1,
+				'LOGIN'			 => 'admin',
+				'ACTIVE'		 => 'Y',
+				'DISPLAY_NAME'	 => 'admin',
+				'EMAIL'			 => 'no@email.com',
+				'REGISTERED'	 => 'Y',
+				'ACTIVE'		 => 'Y',
+				'PASSWORD'		 => '123456',
+			])
+		);
 	}
 	public function testValidatePasswordEmpty()
 	{
@@ -52,15 +44,5 @@ class UserEntityTest extends \BX_Test
 		$return = $this->entity->validatePassword($value);
 		$this->assertEmpty($return);
 		$this->assertTrue(password_verify('123456',$value));
-	}
-	public function testLoginByLogin()
-	{
-		var_dump($this->entity->filter()->all());
-	}
-	public static function tearDownAfterClass()
-	{
-		$migrate = new \BX\User\Migration();
-		$migrate->upCreateTable(false);
-		DI::set('pdo',null);
 	}
 }

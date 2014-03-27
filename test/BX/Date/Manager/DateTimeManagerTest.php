@@ -1,6 +1,6 @@
 <?php namespace BX\Date\Manager;
 
-class DateTimeManagerTest extends \BX_Test
+class DateTimeManagerTest extends \BX\Test
 {
 	/**
 	 * @var DateTimeManager

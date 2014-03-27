@@ -236,7 +236,6 @@ class ActiveRecord extends Entity
 	 */
 	public function add($fields = false)
 	{
-		$this->resetErrors();
 		$pk = $this->getPkColumn();
 		$this->log()->debug('call '.self::getClassName().'::add');
 		if ($fields === false){
@@ -335,7 +334,6 @@ class ActiveRecord extends Entity
 	 */
 	public function update($id,$fields = false)
 	{
-		$this->resetErrors();
 		$pk = $this->getPkColumn();
 		$this->log()->debug('call '.self::getClassName().'::update');
 		if ($fields === false){
@@ -404,7 +402,6 @@ class ActiveRecord extends Entity
 	 */
 	public function delete($id)
 	{
-		$this->resetErrors();
 		$pk = $this->getPkColumn();
 		$this->log()->debug("call ".self::getClassName()."::delete($id)");
 		if (!$this->onBeforeDelete($id)){

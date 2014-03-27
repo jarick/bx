@@ -3,7 +3,7 @@ use BX\Validator\Manager\Validator;
 use BX\Validator\Manager\String;
 use BX\Registry;
 
-class StringTest extends \BX_Test
+class StringTest extends \BX\Test
 {
 	private $validator;
 	public function setUp()
@@ -37,13 +37,13 @@ class StringTest extends \BX_Test
 			'TEST' => [''],
 		];
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST INVALID']]);
+		$this->assertEquals($this->validator->getErrors()->get('TEST'),['TEST INVALID']);
 	}
 	public function testEmpty()
 	{
 		$fields = ['TEST' => ''];
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST EMPTY']]);
+		$this->assertEquals($this->validator->getErrors()->get('TEST'),['TEST EMPTY']);
 	}
 	public function testMin()
 	{
@@ -52,7 +52,7 @@ class StringTest extends \BX_Test
 			['TEST',String::create()->notEmpty()->setMin(4)],
 		]);
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST MIN 4']]);
+		$this->assertEquals($this->validator->getErrors()->get('TEST'),['TEST MIN 4']);
 	}
 	public function testMax()
 	{
@@ -61,7 +61,7 @@ class StringTest extends \BX_Test
 			['TEST',String::create()->notEmpty()->setMax(4)],
 		]);
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST MAX 4']]);
+		$this->assertEquals($this->validator->getErrors()->get('TEST'),['TEST MAX 4']);
 	}
 	public function testIs()
 	{
@@ -70,6 +70,6 @@ class StringTest extends \BX_Test
 			['TEST',String::create()->notEmpty()->setLength(4)],
 		]);
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST IS 4']]);
+		$this->assertEquals($this->validator->getErrors()->get('TEST'),['TEST IS 4']);
 	}
 }

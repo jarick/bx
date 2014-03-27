@@ -4,7 +4,7 @@ use BX\Validator\Manager\String;
 use BX\Registry;
 use BX\Validator\Manager\Boolean;
 
-class BooleanTest extends \BX_Test
+class BooleanTest extends \BX\Test
 {
 	private $validator;
 	public function setUp()
@@ -30,7 +30,7 @@ class BooleanTest extends \BX_Test
 	{
 		$fields = ['TEST' => '2'];
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST INVALID']]);
+		$this->assertEquals($this->validator->getErrors()->get('TEST'),['TEST INVALID']);
 	}
 	public function testStrict()
 	{
@@ -39,6 +39,6 @@ class BooleanTest extends \BX_Test
 			['TEST',Boolean::create()->setValue(1,0)->strict()],
 		]);
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST INVALID']]);
+		$this->assertEquals($this->validator->getErrors()->get('TEST'),['TEST INVALID']);
 	}
 }

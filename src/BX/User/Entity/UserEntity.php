@@ -15,7 +15,7 @@ use BX\Registry;
  * @property-read string $password
  * @property sting $email
  * @property string $code
- * @property-read string $create
+ * @property-read string $create_date
  * @property-read string $timestamp_x
  * @property string $url
  * @property string $registered
@@ -32,7 +32,7 @@ class UserEntity extends ActiveRecord
 	const C_PASSWORD = 'PASSWORD';
 	const C_EMAIL = 'EMAIL';
 	const C_CODE = 'CODE';
-	const C_CREATE = 'CREATE';
+	const C_CREATE_DATE = 'CREATE_DATE';
 	const C_TIMESTAMP_X = 'TIMESTAMP_X';
 	const C_URL = 'URL';
 	const C_REGISTERED = 'REGISTERED';
@@ -58,7 +58,7 @@ class UserEntity extends ActiveRecord
 			self::C_PASSWORD		 => $this->trans('user.entity.user.password'),
 			self::C_EMAIL			 => $this->trans('user.entity.user.email'),
 			self::C_CODE			 => $this->trans('user.entity.user.code'),
-			self::C_CREATE			 => $this->trans('user.entity.user.create'),
+			self::C_CREATE_DATE		 => $this->trans('user.entity.user.create_date'),
 			self::C_TIMESTAMP_X		 => $this->trans('user.entity.user.timestamp_x'),
 			self::C_URL				 => $this->trans('user.entity.user.url'),
 			self::C_REGISTERED		 => $this->trans('user.entity.user.registered'),
@@ -71,12 +71,12 @@ class UserEntity extends ActiveRecord
 	{
 		return [
 			[[self::C_LOGIN,self::C_EMAIL],String::create()->notEmpty()->setMax(50)],
-			[[self::C_PASSWORD],Custom::create([$this,'validatePassword'])],
+			[[self::C_PASSWORD],Custom::create([$this,'validatePassword'])->notEmpty()],
 			[[self::C_CODE],Setter::create()->setFunction([$this,'filterCode'])->setValidator(
 					String::create()->notEmpty()->setMax(50)
 				)
 			],
-			[[self::C_CREATE],Setter::create()->setValue($this->date()->convertTimeStamp())->onAdd()],
+			[[self::C_CREATE_DATE],Setter::create()->setValue($this->date()->convertTimeStamp())->onAdd()],
 			[[self::C_TIMESTAMP_X],Setter::create()->setValue($this->date()->convertTimeStamp())],
 			[[self::C_DISPLAY_NAME],String::create()->setMax(100)],
 			[[self::C_URL],String::create()->setMax(255)],
@@ -86,12 +86,13 @@ class UserEntity extends ActiveRecord
 	protected function columns()
 	{
 		return [
-			self::C_LOGIN			 => StringColumn::create('T.COLUMN'),
+			self::C_LOGIN			 => StringColumn::create('T.Login'),
 			self::C_PASSWORD		 => StringColumn::create('T.PASSWORD'),
 			self::C_EMAIL			 => StringColumn::create('T.EMAIL'),
 			self::C_CODE			 => StringColumn::create('T.CODE'),
-			self::C_CREATE			 => TimestampColumn::create('T.CREATE'),
+			self::C_CREATE_DATE		 => TimestampColumn::create('T.CREATE_DATE'),
 			self::C_TIMESTAMP_X		 => TimestampColumn::create('T.TIMESTAMP_X'),
+			self::C_DISPLAY_NAME	 => StringColumn::create('T.DISPLAY_NAME'),
 			self::C_URL				 => StringColumn::create('T.URL'),
 			self::C_REGISTERED		 => BooleanColumn::create('T.REGISTERED'),
 			self::C_ACTIVATION_KEY	 => StringColumn::create('T.ACTIVATION_KEY'),
@@ -119,5 +120,38 @@ class UserEntity extends ActiveRecord
 	public function filterCode()
 	{
 		return $this->string()->substr($this->string()->getSlug($this->getValue(self::C_LOGIN)),0,50);
+	}
+	/**
+	 *
+	 * @param string|integer $id
+	 */
+	public static function findIdentity($id)
+	{
+
+	}
+	/**
+	 *
+	 */
+	public static function findIdentityByAccessToken($token)
+	{
+
+	}
+	/**
+	 */
+	public function getId()
+	{
+
+	}
+	/**
+	 */
+	public function getAuthKey()
+	{
+
+	}
+	/**
+	 */
+	public function validateAuthKey($authKey)
+	{
+
 	}
 }

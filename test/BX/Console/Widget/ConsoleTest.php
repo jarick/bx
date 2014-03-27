@@ -23,7 +23,7 @@ class ConsoleTest extends \PHPUnit_Framework_TestCase
 			$this->returnCallback(function($file,$params) use($post){
 				$this->assertFalse($file);
 				$this->assertEquals($post['FORM'],$params['post']);
-				$this->assertFalse($params['validator']->hasError());
+				$this->assertFalse($params['validator']->hasErrors());
 			})
 		);
 		$widget->run();
@@ -46,7 +46,7 @@ class ConsoleTest extends \PHPUnit_Framework_TestCase
 			$this->returnCallback(function($file,$params) use($post){
 				$this->assertFalse($file);
 				$this->assertEquals($post['FORM'],$params['post']);
-				$this->assertTrue($params['validator']->hasError());
+				$this->assertTrue($params['validator']->hasErrors());
 			})
 		);
 		$widget->run();

@@ -1,6 +1,6 @@
 <?php namespace BX\Migration;
 
-class Migration extends \BX_Test
+class Migration extends \BX\Test
 {
 	/**
 	 * @root

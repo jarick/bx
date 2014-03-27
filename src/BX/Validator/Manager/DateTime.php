@@ -1,5 +1,4 @@
-<?php
-namespace BX\Validator\Manager;
+<?php namespace BX\Validator\Manager;
 
 class DateTime extends BaseValidator
 {
@@ -66,7 +65,7 @@ class DateTime extends BaseValidator
 	public function getMessageInvalid()
 	{
 		$message = $this->message_invalid;
-		if($message === false){
+		if ($message === false){
 			$message = $this->trans('validator.manager.date.invalid');
 		}
 		return $message;
@@ -88,7 +87,7 @@ class DateTime extends BaseValidator
 	public function getMessageEmpty()
 	{
 		$message = $this->message_empty;
-		if($message === false){
+		if ($message === false){
 			$message = $this->trans('validator.manager.date.empty');
 		}
 		return $message;
@@ -110,7 +109,7 @@ class DateTime extends BaseValidator
 	public function getMessageMin()
 	{
 		$message = $this->message_min;
-		if($message === false){
+		if ($message === false){
 			$message = $this->trans('validator.manager.date.min');
 		}
 		return $message;
@@ -132,7 +131,7 @@ class DateTime extends BaseValidator
 	public function getMessageMax()
 	{
 		$message = $this->message_max;
-		if($message === false){
+		if ($message === false){
 			$message = $this->trans('validator.manager.date.max');
 		}
 		return $message;
@@ -202,36 +201,36 @@ class DateTime extends BaseValidator
 	 */
 	public function validate($key,$value,$label,&$fields)
 	{
-		if(!$this->empty && $this->isEmpty($value)){
-			$this->addError($this->getMessageEmpty(),[
-				'#LABEL#' => $label,
-				]);
-			return false;
-		}
-		if(is_array($value)){
-			$this->addError($this->getMessageInvalid(),[
+		if (!$this->empty && $this->isEmpty($value)){
+			$this->addError($key,$this->getMessageEmpty(),[
 				'#LABEL#' => $label,
 			]);
 			return false;
 		}
-		if(!$this->date()->checkDateTime($value,$this->format_input)){
-			$this->addError($this->getMessageInvalid(),[
+		if (is_array($value)){
+			$this->addError($key,$this->getMessageInvalid(),[
+				'#LABEL#' => $label,
+			]);
+			return false;
+		}
+		if (!$this->date()->checkDateTime($value,$this->format_input)){
+			$this->addError($key,$this->getMessageInvalid(),[
 				'#LABEL#' => $label,
 			]);
 			return false;
 		}
 		$timestamp = $this->date()->makeTimeStamp($value,$this->format_input);
-		if($this->min !==null && $timestamp < $this->date()->makeTimeStamp($this->min,$this->format_rules)){
-			$this->addError($this->getMessageMin(),[
-				'#LABEL#' => $label,
-				'#MIN#' => $this->min,
+		if ($this->min !== null && $timestamp < $this->date()->makeTimeStamp($this->min,$this->format_rules)){
+			$this->addError($key,$this->getMessageMin(),[
+				'#LABEL#'	 => $label,
+				'#MIN#'		 => $this->min,
 			]);
 			return false;
 		}
-		if($this->max !== null && $timestamp > $this->date()->makeTimeStamp($this->max,$this->format_rules)){
-			$this->addError($this->getMessageMax(),[
-				'#LABEL#' => $label,
-				'#MAX#' => $this->max,
+		if ($this->max !== null && $timestamp > $this->date()->makeTimeStamp($this->max,$this->format_rules)){
+			$this->addError($key,$this->getMessageMax(),[
+				'#LABEL#'	 => $label,
+				'#MAX#'		 => $this->max,
 			]);
 			return false;
 		}

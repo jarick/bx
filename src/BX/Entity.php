@@ -311,13 +311,13 @@ class Entity extends Object
 	 * Is has error
 	 * @return boolean
 	 */
-	public function hasError()
+	public function hasErrors()
 	{
-		return $this->getValidator()->hasError();
+		return $this->getValidator()->hasErrors();
 	}
 	/**
 	 * Get errors
-	 * @return array
+	 * @return \Illuminate\Support\MessageBag
 	 */
 	public function getErrors()
 	{
@@ -332,15 +332,6 @@ class Entity extends Object
 	public function addError($key,$error)
 	{
 		$this->getValidator()->addError($key,$error);
-		return $this;
-	}
-	/**
-	 * Reset error
-	 * @return \BX\Entity
-	 */
-	public function resetErrors()
-	{
-		$this->getValidator()->resetErrors();
 		return $this;
 	}
 	/**

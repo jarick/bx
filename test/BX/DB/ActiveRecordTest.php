@@ -30,7 +30,7 @@ class MockActiveRecordTest extends ActiveRecord
 	}
 }
 
-class ActiveRecordTest extends \BX_Test
+class ActiveRecordTest extends \BX\Test
 {
 	/**
 	 * @var ActiveRecord
@@ -72,6 +72,7 @@ class ActiveRecordTest extends \BX_Test
 			'TITLE'	 => 'title',
 			'CODE'	 => 'code',
 		]);
+		DI::set('db',null);
 	}
 	public function testUpdate()
 	{
@@ -90,6 +91,7 @@ class ActiveRecordTest extends \BX_Test
 			'TITLE'	 => 'title',
 			'CODE'	 => 'code',
 		]);
+		DI::set('db',null);
 	}
 	public function testDelete()
 	{
@@ -101,6 +103,7 @@ class ActiveRecordTest extends \BX_Test
 		$db->expects($this->once())->method('execute')->with($this->equalTo($sql),$this->equalTo($params));
 		DI::set('db',$db);
 		$this->ar->delete(10);
+		DI::set('db',null);
 	}
 	public function testFilter()
 	{

@@ -1,7 +1,7 @@
 <?php namespace BX\Translate\Manager;
 use BX\Registry;
 
-class TranslateTest extends \BX_Test
+class TranslateTest extends \BX\Test
 {
 	private $trans;
 	public static function setUpBeforeClass()

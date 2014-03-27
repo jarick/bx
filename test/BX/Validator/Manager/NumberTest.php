@@ -2,7 +2,7 @@
 use BX\Validator\Manager\Validator;
 use BX\Validator\Manager\Number;
 
-class NumberTest extends \BX_Test
+class NumberTest extends \BX\Test
 {
 	private $validator;
 	public function setUp()
@@ -32,13 +32,13 @@ class NumberTest extends \BX_Test
 	{
 		$fields = ['TEST' => ['12345']];
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST INVALID']]);
+		$this->assertEquals($this->validator->getErrors()->get('TEST'),['TEST INVALID']);
 	}
 	public function testEmpty()
 	{
 		$fields = ['TEST' => ''];
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST EMPTY']]);
+		$this->assertEquals($this->validator->getErrors()->get('TEST'),['TEST EMPTY']);
 	}
 	public function testInteger()
 	{
@@ -47,7 +47,7 @@ class NumberTest extends \BX_Test
 			['TEST',Number::create()->integer()],
 		]);
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST INTEGER']]);
+		$this->assertEquals($this->validator->getErrors()->get('TEST'),['TEST INTEGER']);
 	}
 	public function testMin()
 	{
@@ -56,7 +56,7 @@ class NumberTest extends \BX_Test
 			['TEST',Number::create()->setMin(4)],
 		]);
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST MIN 4']]);
+		$this->assertEquals($this->validator->getErrors()->get('TEST'),['TEST MIN 4']);
 	}
 	public function testMax()
 	{
@@ -65,6 +65,6 @@ class NumberTest extends \BX_Test
 			['TEST',Number::create()->setMax(4)],
 		]);
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST MAX 4']]);
+		$this->assertEquals($this->validator->getErrors()->get('TEST'),['TEST MAX 4']);
 	}
 }

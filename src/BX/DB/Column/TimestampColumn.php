@@ -20,6 +20,9 @@ class TimestampColumn extends BaseColumn
 	}
 	public function convertToDB($key,$value,array $values)
 	{
+		if (!$this->date()->checkDateTime($value,$this->format)){
+			throw new \InvalidArgumentException('Bad format for timestamp');
+		}
 		$timestamp = $this->date()->makeTimeStamp($value,$this->format);
 		if ($timestamp > 0){
 			return $timestamp + $this->date()->getOffset();

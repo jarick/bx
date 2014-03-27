@@ -7,7 +7,10 @@ class String extends BaseValidator
 	protected $max = null;
 	protected $is = null;
 	protected $massage_invalid = false;
-	protected $massage_empty = false;
+	/**
+	 * @var string
+	 */
+	protected $message_empty = null;
 	protected $massage_min = false;
 	protected $massage_max = false;
 	protected $massage_is = false;
@@ -25,18 +28,27 @@ class String extends BaseValidator
 		}
 		return $sMessage;
 	}
-	public function setMessageEmpty($massage_empty)
+	/**
+	 * Set empty message
+	 * @param string $message
+	 * @return \BX\Validator\Manager\Custom
+	 */
+	public function setMessageEmpty($message)
 	{
-		$this->massage_empty = $massage_empty;
+		$this->message_empty = (string) $message;
 		return $this;
 	}
+	/**
+	 * Get empty message
+	 * @return string
+	 */
 	protected function getMessageEmpty()
 	{
-		$sMessage = $this->massage_empty;
-		if ($sMessage === false){
-			$sMessage = $this->trans('validator.manager.string.empty');
+		$message = $this->message_empty;
+		if ($message === null){
+			$message = $this->trans('validator.manager.string.empty');
 		}
-		return $sMessage;
+		return $message;
 	}
 	public function setMessageMin($massage_min)
 	{
@@ -139,16 +151,16 @@ class String extends BaseValidator
 	public function validate($key,$value,$label,&$fields)
 	{
 		if (is_array($value)){
-			$this->addError($this->getMessageInvalid(),['#LABEL#' => $label]);
+			$this->addError($key,$this->getMessageInvalid(),['#LABEL#' => $label]);
 			return false;
 		}
 		if (!$this->empty && $this->isEmpty($value)){
-			$this->addError($this->getMessageEmpty(),['#LABEL#' => $label]);
+			$this->addError($key,$this->getMessageEmpty(),['#LABEL#' => $label]);
 			return false;
 		}
 		$length = $this->string()->length($value);
 		if ($this->min !== null && $length < $this->min){
-			$this->addError($this->getMessageMin(),[
+			$this->addError($key,$this->getMessageMin(),[
 				'#LABEL#'	 => $label,
 				'#MIN#'		 => $this->min,
 				'#WORD#'	 => $this->string()->convertNumber($this->min,$this->getWords()),
@@ -156,7 +168,7 @@ class String extends BaseValidator
 			return false;
 		}
 		if ($this->max !== null && $length > $this->max){
-			$this->addError($this->getMessageMax(),[
+			$this->addError($key,$this->getMessageMax(),[
 				'#LABEL#'	 => $label,
 				'#MAX#'		 => $this->max,
 				'#WORD#'	 => $this->string()->convertNumber($this->max,$this->getWords()),
@@ -164,7 +176,7 @@ class String extends BaseValidator
 			return false;
 		}
 		if ($this->is !== null && $length !== $this->is){
-			$this->addError($this->getMessageLength(),[
+			$this->addError($key,$this->getMessageLength(),[
 				'#LABEL#'	 => $label,
 				'#LENGTH#'	 => $this->is,
 				'#WORD#'	 => $this->string()->convertNumber($this->is,$this->getWords()),

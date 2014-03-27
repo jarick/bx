@@ -1,6 +1,6 @@
 <?php namespace BX\Event;
 
-class EventTraitTest extends \BX_Test
+class EventTraitTest extends \BX\Test
 {
 	use EventTrait;
 	public function event($param)

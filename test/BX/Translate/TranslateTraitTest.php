@@ -1,6 +1,6 @@
 <?php namespace BX\Translate;
 
-class TranslateTraitTest extends \BX_Test
+class TranslateTraitTest extends \BX\Test
 {
 	use TranslateTrait;
 	public function test()

@@ -122,8 +122,7 @@ class SiteController extends Manager
 				throw new \InvalidArgumentException('Error site must be Site type');
 			}
 			if (!$site->checkFields()){
-				var_dump($site->getErrors());
-				die();
+				$this->log()->error('Site add error: '.implode(',',$site->getErrors()->all()));
 				throw new \InvalidArgumentException('Error validate site');
 			}
 			$this->site->attach($site);

@@ -1,6 +1,6 @@
 <?php namespace BX\Date;
 
-class DateTraitTest extends \BX_Test
+class DateTraitTest extends \BX\Test
 {
 	use DateTrait;
 	public function test()

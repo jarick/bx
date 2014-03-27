@@ -3,7 +3,7 @@ use BX\Validator\Manager\Validator;
 use BX\Validator\Manager\Custom;
 use BX\Registry;
 
-class CustomTest extends \BX_Test
+class CustomTest extends \BX\Test
 {
 	public function returnTrue($value)
 	{
@@ -38,6 +38,6 @@ class CustomTest extends \BX_Test
 		]);
 		$aFields = ['TEST' => 'TEST'];
 		$this->assertFalse($validator->check($aFields));
-		$this->assertEquals($validator->getErrors(),['TEST' => ['TEST ERROR']]);
+		$this->assertEquals($validator->getErrors()->get('TEST'), ['TEST ERROR']);
 	}
 }

@@ -10,6 +10,32 @@ class Custom extends BaseValidator implements IValidator
 	 */
 	private $function;
 	/**
+	 * @var string
+	 */
+	protected $message_empty = null;
+	/**
+	 * Set empty message
+	 * @param string $message
+	 * @return \BX\Validator\Manager\Custom
+	 */
+	public function setMessageEmpty($message)
+	{
+		$this->message_empty = (string) $message;
+		return $this;
+	}
+	/**
+	 * Get empty message
+	 * @return string
+	 */
+	protected function getMessageEmpty()
+	{
+		$message = $this->message_empty;
+		if ($message === null){
+			$message = $this->trans('validator.manager.custom.empty');
+		}
+		return $message;
+	}
+	/**
 	 * Create
 	 * @param \Closure $function
 	 * @param string $message
@@ -36,9 +62,13 @@ class Custom extends BaseValidator implements IValidator
 	 */
 	public function validate($key,$value,$label,&$fields)
 	{
-		$return = call_user_func_array($this->function,[$value]);
+		if (!$this->empty && $this->isEmpty($value)){
+			$this->addError($key,$this->getMessageEmpty(),['#LABEL#' => $label]);
+			return false;
+		}
+		$return = call_user_func_array($this->function,[&$value]);
 		if ($this->string()->length($return) > 1){
-			$this->addError($return);
+			$this->addError($key,$return);
 			return false;
 		}
 		$fields[$key] = $value;

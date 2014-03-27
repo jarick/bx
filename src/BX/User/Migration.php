@@ -18,7 +18,7 @@ class Migration
 				TableColumn::getString(UserEntity::C_PASSWORD,255)->toArray(),
 				TableColumn::getString(UserEntity::C_EMAIL,50)->toArray(),
 				TableColumn::getString(UserEntity::C_CODE,50)->toArray(),
-				TableColumn::getTimestamp(UserEntity::C_CREATE)->toArray(),
+				TableColumn::getTimestamp(UserEntity::C_CREATE_DATE)->toArray(),
 				TableColumn::getTimestamp(UserEntity::C_TIMESTAMP_X)->toArray(),
 				TableColumn::getString(UserEntity::C_URL,255)->toArray(),
 				TableColumn::getBoolean(UserEntity::C_REGISTERED)->toArray(),

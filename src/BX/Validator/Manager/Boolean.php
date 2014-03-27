@@ -35,7 +35,7 @@ class Boolean extends BaseValidator
 	protected function getMessageInvalid()
 	{
 		$sMessage = $this->message_invalid;
-		if ($sMessage === false) {
+		if ($sMessage === false){
 			$sMessage = $this->trans('validator.manager.boolean.invalid');
 		}
 		return $sMessage;
@@ -46,7 +46,7 @@ class Boolean extends BaseValidator
 	 * @param mixed $false_value
 	 * @return \BX\Validator\Manager\Boolean
 	 */
-	public function setValue($true_value, $false_value)
+	public function setValue($true_value,$false_value)
 	{
 		$this->true_value = $true_value;
 		$this->false_value = $false_value;
@@ -59,7 +59,7 @@ class Boolean extends BaseValidator
 	 */
 	public function strict($strict = true)
 	{
-		$this->strict = (bool)$strict;
+		$this->strict = (bool) $strict;
 		return $this;
 	}
 	/**
@@ -70,15 +70,14 @@ class Boolean extends BaseValidator
 	 * @param array $fields
 	 * @return boolean
 	 */
-	public function validate($key, $value, $label, &$fields)
+	public function validate($key,$value,$label,&$fields)
 	{
-		$value = $this->getValueByKey($fields, $key);
-		if ($this->empty && $this->isEmpty($value)) {
+		$value = $this->getValueByKey($fields,$key);
+		if ($this->empty && $this->isEmpty($value)){
 			return true;
 		}
-		if ((!$this->strict && $value != $this->true_value && $value != $this->false_value)
-			|| ($this->strict && $value !== $this->true_value && $value !== $this->false_value)) {
-			$this->addError($this->getMessageInvalid(),[
+		if ((!$this->strict && $value != $this->true_value && $value != $this->false_value) || ($this->strict && $value !== $this->true_value && $value !== $this->false_value)){
+			$this->addError($key,$this->getMessageInvalid(),[
 				'#LABEL#'	 => $label,
 				'#TRUE#'	 => $this->true_value,
 				'#FALSE#'	 => $this->false_value,

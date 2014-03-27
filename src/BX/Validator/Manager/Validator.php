@@ -1,13 +1,14 @@
 <?php namespace BX\Validator\Manager;
 use BX\Manager;
+use Illuminate\Support\MessageBag;
 
 class Validator extends Manager
 {
 	use \BX\String\StringTrait;
 	/**
-	 * @var array
+	 * @var MessageBag
 	 */
-	private $errors = [];
+	private $error;
 	/**
 	 * @var labels
 	 */
@@ -16,6 +17,10 @@ class Validator extends Manager
 	 * @var array
 	 */
 	private $rules = [];
+	/**
+	 * @var boolean
+	 */
+	protected $new = true;
 	/**
 	 * Set labels
 	 * @param array $labels
@@ -38,10 +43,21 @@ class Validator extends Manager
 		}
 		return $this->labels;
 	}
+	/**
+	 * Set rules
+	 * @param type $rules
+	 * @return \BX\Validator\Manager\Validator
+	 */
 	public function setRules($rules)
 	{
 		$this->rules = $rules;
+		return $this;
 	}
+	/**
+	 * Get rules
+	 * @return type
+	 * @throws \LogicException
+	 */
 	private function getRules()
 	{
 		if (empty($this->rules)){
@@ -49,34 +65,52 @@ class Validator extends Manager
 		}
 		return $this->rules;
 	}
-	protected $bNew = true;
-	public function setNew($bNew)
+	/**
+	 * Set is new
+	 * @param boolean $new
+	 * @return \BX\Validator\Manager\Validator
+	 */
+	public function setNew($new)
 	{
-		$this->bNew = $bNew;
+		$this->new = $new;
 		return $this;
 	}
+	/**
+	 * Get is new
+	 * @return type
+	 */
 	private function isNew()
 	{
-		return $this->bNew;
+		return $this->new;
 	}
+	/**
+	 * Check fields
+	 * @param array $fields
+	 * @return boolean
+	 */
 	public function check(array &$fields)
 	{
 		return $this->clear($fields)->validate($fields);
 	}
+	/**
+	 * Clear fields
+	 * @param array $fields
+	 * @return \BX\Validator\Manager\Validator
+	 */
 	protected function clear(array &$fields)
 	{
 		$result = array();
-		$bNew = $this->bNew;
+		$new = $this->new;
 		$rules = $this->getRules();
 		foreach ($rules as $rule){
-			$rulesArray = (is_array($rule[0])) ? $rule[0] : explode(',',$rule[0]);
-			foreach ($rulesArray as $key){
+			$rules_array = (is_array($rule[0])) ? $rule[0] : explode(',',$rule[0]);
+			foreach ($rules_array as $key){
 				if ($this->string()->length($key) > 0){
 					if ($rule[1] instanceof Setter){
 						continue;
 					}
 					if ($rule[1]->isNew() !== 'all'){
-						if ($rule[1]->isNew() !== $bNew){
+						if ($rule[1]->isNew() !== $new){
 							continue;
 						}
 					}
@@ -93,43 +127,64 @@ class Validator extends Manager
 		}
 		return $this;
 	}
-	public function hasError()
+	/**
+	 * Has errors
+	 * @return array
+	 */
+	public function hasErrors()
 	{
-		return !empty($this->errors);
+		if ($this->error === null){
+			return false;
+		}
+		return count($this->error->all()) > 0;
 	}
+	/**
+	 * Get errors
+	 * @return MessageBag
+	 */
 	public function getErrors()
 	{
-		return $this->errors;
-	}
-	public function addError($key,$error)
-	{
-		if ($key === false){
-			$key = 'unknow';
+		if ($this->error === null){
+			throw new \LogicException('Get error before validate');
 		}
-		$this->errors[$this->string()->toUpper($key)][] = $error;
+		return $this->error;
 	}
-	public function resetErrors()
+	/**
+	 * Add error
+	 * @param string $key
+	 * @param string $message
+	 * @param array $params
+	 */
+	public function addError($key,$message,$params = [])
 	{
-		$this->errors = [];
+		if ($this->error === null){
+			$this->error = new MessageBag();
+		}
+		$this->error->add($this->string()->toUpper($key),(!empty($params)) ? strtr($message,$params) : $message);
 	}
-	protected function validate(&$arFields)
+	/**
+	 * Validate fields
+	 * @param array $fields
+	 * @return boolean
+	 */
+	protected function validate(array &$fields)
 	{
-		$this->errors = [];
+		$this->error = new MessageBag();
 		$result = [];
-		$bNew = $this->bNew;
+		$new = $this->new;
 		$rules = $this->getRules();
 		$labels = $this->getLabels();
 		foreach ($rules as $rule){
-			$rulesArray = (is_array($rule[0])) ? $rule[0] : explode(',',$rule[0]);
-			foreach ($rulesArray as $key){
+			$rules_array = (is_array($rule[0])) ? $rule[0] : explode(',',$rule[0]);
+			foreach ($rules_array as $key){
 				if ($this->string()->length($key) > 0){
 					if ($rule[1]->isNew() !== 'all'){
-						if ($rule[1]->isNew() !== $bNew){
+						if ($rule[1]->isNew() !== $new){
 							continue;
 						}
 					}
 					if ($rule[1] instanceof Setter){
-						$rule[1]->set($key,$arFields,$labels[$key]);
+						$rule[1]->set($key,$fields,$labels[$key]);
 					}
 					$result[$key][] = $rule[1];
 				} else{
@@ -139,15 +194,15 @@ class Validator extends Manager
 		}
 		foreach ($result as $key => $field){
 			foreach ($field as $action){
-				$bStop = $action->validateField($key,$arFields,$labels[$key]);
-				foreach ($action->getErrors() as $sError){
-					$this->addError($key,$sError);
+				$stop = $action->validateField($key,$fields,$labels[$key]);
+				if ($action->hasErrors()){
+					$this->error->merge($action->getErrors());
 				}
-				if ($bStop !== true){
+				if ($stop !== true){
 					break;
 				}
 			}
 		}
-		return empty($this->getErrors());
+		return !$this->hasErrors();
 	}
 }

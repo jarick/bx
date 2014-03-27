@@ -2,7 +2,7 @@
 use BX\Validator\Manager\Validator;
 use BX\Validator\Manager\DateTime;
 
-class DateTest extends \BX_Test
+class DateTest extends \BX\Test
 {
 	private $validator;
 	public function setUp()
@@ -31,13 +31,13 @@ class DateTest extends \BX_Test
 	{
 		$fields = ['TEST' => '12345'];
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST INVALID']]);
+		$this->assertEquals($this->validator->getErrors()->get('TEST'),['TEST INVALID']);
 	}
 	public function testEmpty()
 	{
 		$fields = ['TEST' => ''];
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST EMPTY']]);
+		$this->assertEquals($this->validator->getErrors()->get('TEST'),['TEST EMPTY']);
 	}
 	public function testMin()
 	{
@@ -46,7 +46,7 @@ class DateTest extends \BX_Test
 			['TEST',DateTime::create()->setMin('21.01.2012')],
 		]);
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST MIN 21.01.2012']]);
+		$this->assertEquals($this->validator->getErrors()->get('TEST'),['TEST MIN 21.01.2012']);
 	}
 	public function testMax()
 	{
@@ -55,6 +55,6 @@ class DateTest extends \BX_Test
 			['TEST',DateTime::create()->setMax('21.01.2012')],
 		]);
 		$this->assertFalse($this->validator->check($fields));
-		$this->assertEquals($this->validator->getErrors(),['TEST' => ['TEST MAX 21.01.2012']]);
+		$this->assertEquals($this->validator->getErrors()->get('TEST'),['TEST MAX 21.01.2012']);
 	}
 }

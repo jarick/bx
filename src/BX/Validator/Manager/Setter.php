@@ -1,6 +1,7 @@
 <?php namespace BX\Validator\Manager;
 use BX\Manager;
 use BX\Validator\IValidator;
+use Illuminate\Support\MessageBag;
 
 class Setter extends Manager implements IValidator
 {
@@ -10,9 +11,9 @@ class Setter extends Manager implements IValidator
 	protected $function_params = [];
 	protected $validator = false;
 	/**
-	 * @var array
+	 * @var MessageBag
 	 */
-	private $error = [];
+	private $error = null;
 	/**
 	 * Create
 	 * @return \self
@@ -50,28 +51,39 @@ class Setter extends Manager implements IValidator
 		return $this->new;
 	}
 	/**
-	 * Reset errors
+	 * Has errors
+	 * @return array
 	 */
-	public function resetErrors()
+	public function hasErrors()
 	{
-		$this->error = [];
+		if ($this->error === null){
+			return false;
+		}
+		return count($this->error->all()) > 0;
 	}
 	/**
 	 * Get errors
-	 * @return array
+	 * @return MessageBag
 	 */
 	public function getErrors()
 	{
+		if ($this->error === null){
+			throw new \LogicException('Get error before validate');
+		}
 		return $this->error;
 	}
 	/**
 	 * Add error
+	 * @param string $key
 	 * @param string $message
 	 * @param array $params
 	 */
-	protected function addError($message,$params = [])
+	public function addError($key,$message,$params = [])
 	{
-		$this->error[] = (!empty($params)) ? strtr($message,$params) : $message;
+		if ($this->error === null){
+			$this->error = new MessageBag();
+		}
+		$this->error->add($this->string()->toUpper($key),(!empty($params)) ? strtr($message,$params) : $message);
 	}
 	public function onAdd()
 	{
@@ -104,8 +116,16 @@ class Setter extends Manager implements IValidator
 	}
 	public function validateField($key,&$fields,$label)
 	{
-		return empty($this->error);
+		return $this->hasErrors();
 	}
+	/**
+	 * Set value
+	 * @param string $key
+	 * @param array $fields
+	 * @param string $label
+	 * @return boolean
+	 * @throws \LogicException
+	 */
 	public function set($key,&$fields,$label)
 	{
 		$value = $this->getValueByKey($fields,$key);
@@ -119,8 +139,8 @@ class Setter extends Manager implements IValidator
 		if (!$this->isEmpty($value)){
 			if ($this->validator !== false){
 				if (!$this->validator->validate($key,$value,$label,$fields)){
-					foreach ($this->validator->getErrors() as $error){
-						$this->addError($error);
+					if ($this->validator->hasErrors()){
+						$this->error->merge($this->validator->getErrors());
 					}
 					return false;
 				}

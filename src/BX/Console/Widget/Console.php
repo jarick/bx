@@ -43,10 +43,8 @@ class Console extends Widget
 			if ($validator->check($post)){
 				$this->controller()->exec($post['CODE']);
 			} else{
-				foreach($validator->getErrors() as $messages){ 
-					foreach($messages as $message){
-						$this->view()->widget('message',['message' => $message,'type' => 'danger']);
-					}
+				foreach($validator->getErrors()->all() as $message){ 
+					$this->view()->widget('message',['message' => $message,'type' => 'danger']);
 				}
 			}
 			$this->view()->abort();

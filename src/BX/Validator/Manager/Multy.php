@@ -118,12 +118,12 @@ class Multy extends BaseValidator
 		}
 		$value = (array) $value;
 		if (!$this->empty && empty($value)){
-			$this->addError($this->getMessageEmpty(),['#LABEL#' => $label]);
+			$this->addError($key,$this->getMessageEmpty(),['#LABEL#' => $label]);
 			return false;
 		}
 		$iLength = count($value);
 		if ($this->min !== null && $iLength < $this->min){
-			$this->addError($this->getMessageMin(),[
+			$this->addError($key,$this->getMessageMin(),[
 				'#LABEL#'	 => $label,
 				'#MIN#'		 => $this->min,
 				'#WORD#'	 => $this->string()->convertNumber($this->min,$this->getWords()),
@@ -131,7 +131,7 @@ class Multy extends BaseValidator
 			return false;
 		}
 		if ($this->max !== null && $iLength > $this->max){
-			$this->addError($this->getMessageMax(),[
+			$this->addError($key,$this->getMessageMax(),[
 				'#LABEL#'	 => $label,
 				'#MAX#'		 => $this->max,
 				'#WORD#'	 => $this->string()->convertNumber($this->max,$this->getWords()),
@@ -139,22 +139,24 @@ class Multy extends BaseValidator
 			return false;
 		}
 		if ($this->is !== null && $iLength !== $this->is){
-			$this->addError($this->getMessageLength(),[
+			$this->addError($key,$this->getMessageLength(),[
 				'#LABEL#'	 => $label,
 				'#LENGTH#'	 => $this->is,
 				'#WORD#'	 => $this->string()->convertNumber($this->is,$this->getWords()),
 			]);
 			return false;
 		}
-		$bError = false;
+		$has_error = false;
 		foreach ($value as $sItem){
 			if (!$this->validator->validate($key,$sItem,$label,$fields)){
-				$bError = true;
+				$has_error = true;
 			}
 		}
-		if ($bError){
-			foreach ($this->validator->getErrors() as $sError){
-				$this->addError($sError);
+		if ($has_error){
+			foreach ($this->validator->getErrors()->toArray() as $key => $messages){
+				foreach ($messages as $message){
+					$this->addError($key,$message);
+				}
 			}
 			return false;
 		}

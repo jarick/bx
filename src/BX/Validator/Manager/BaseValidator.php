@@ -1,6 +1,7 @@
 <?php namespace BX\Validator\Manager;
 use BX\Validator\IValidator;
 use BX\Manager;
+use Illuminate\Support\MessageBag;
 
 abstract class BaseValidator extends Manager implements IValidator
 {
@@ -17,9 +18,9 @@ abstract class BaseValidator extends Manager implements IValidator
 	 */
 	protected $empty = true;
 	/**
-	 * @var array
+	 * @var MessageBag
 	 */
-	private $error = [];
+	private $error = null;
 	/**
 	 * Set default value
 	 * @param string $default
@@ -91,28 +92,39 @@ abstract class BaseValidator extends Manager implements IValidator
 		return $this->new;
 	}
 	/**
-	 * Reset errors
+	 * Has errors
+	 * @return array
 	 */
-	public function resetErrors()
+	public function hasErrors()
 	{
-		$this->error = [];
+		if ($this->error === null){
+			return false;
+		}
+		return count($this->error->all()) > 0;
 	}
 	/**
 	 * Get errors
-	 * @return array
+	 * @return MessageBag
 	 */
 	public function getErrors()
 	{
+		if ($this->error === null){
+			throw new \LogicException('Get error before validate');
+		}
 		return $this->error;
 	}
 	/**
 	 * Add error
+	 * @param string $key
 	 * @param string $message
 	 * @param array $params
 	 */
-	protected function addError($message,$params = [])
+	public function addError($key,$message,$params = [])
 	{
-		$this->error[] = (!empty($params)) ? strtr($message,$params) : $message;
+		if ($this->error === null){
+			$this->error = new MessageBag();
+		}
+		$this->error->add($this->string()->toUpper($key),(!empty($params)) ? strtr($message,$params) : $message);
 	}
 	/**
 	 * Validate field
@@ -123,6 +135,7 @@ abstract class BaseValidator extends Manager implements IValidator
 	 */
 	public function validateField($key,&$fields,$label)
 	{
+		$this->error = new MessageBag();
 		$value = $this->getValueByKey($fields,$key);
 		if ($this->isEmpty($value)){
 			$fields[$key] = $this->default;

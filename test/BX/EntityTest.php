@@ -67,12 +67,6 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 	public function testAddError()
 	{
 		$this->entity->addError('unknow','unknow');
-		$this->assertEquals($this->entity->getErrors(),['UNKNOW' => ['unknow']]);
-	}
-	public function testResetError()
-	{
-		$this->entity->addError('unknow','unknow');
-		$this->entity->resetErrors();
-		$this->assertFalse($this->entity->hasError());
+		$this->assertEquals($this->entity->getErrors()->get('UNKNOW'),['unknow']);
 	}
 }
