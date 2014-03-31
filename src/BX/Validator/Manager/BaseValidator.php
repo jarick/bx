@@ -30,11 +30,13 @@ abstract class BaseValidator extends Manager implements IValidator
 		$this->default = $default;
 	}
 	/**
+	 * Create validator
+	 * @param array $params
 	 * @return self
 	 * */
-	static public function create()
+	static public function create(array $params = [])
 	{
-		return static::getManager();
+		return static::getManager(false,$params);
 	}
 	/**
 	 * Validate if add value

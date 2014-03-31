@@ -1,12 +1,5 @@
 <?php namespace BX\User\Entity;
 use BX\DB\ActiveRecord;
-use BX\Validator\Manager\String;
-use BX\Validator\Manager\Custom;
-use BX\Validator\Manager\Setter;
-use BX\Validator\Manager\Boolean;
-use BX\DB\Column\StringColumn;
-use BX\DB\Column\TimestampColumn;
-use BX\DB\Column\BooleanColumn;
 use BX\Registry;
 
 /**
@@ -25,8 +18,7 @@ use BX\Registry;
  */
 class UserEntity extends ActiveRecord
 {
-	use \BX\String\StringTrait,
-	 \BX\Date\DateTrait;
+	use \BX\Date\DateTrait;
 	const C_ID = 'ID';
 	const C_LOGIN = 'LOGIN';
 	const C_PASSWORD = 'PASSWORD';
@@ -39,6 +31,22 @@ class UserEntity extends ActiveRecord
 	const C_ACTIVATION_KEY = 'ACTIVATION_KEY';
 	const C_ACTIVE = 'ACTIVE';
 	const C_DISPLAY_NAME = 'DISPLAY_NAME';
+	/**
+	 * Get self
+	 * @param string|boolean $entity
+	 * @param array $params
+	 * @return UserEntity
+	 */
+	static public function getEntity($entity = false,$params = [])
+	{
+		$instance = static::autoload($entity,'entities',$params);
+		$instance->init();
+		return $instance;
+	}
+	/**
+	 * Get settings
+	 * @return array
+	 */
 	protected function settings()
 	{
 		return [
@@ -70,33 +78,57 @@ class UserEntity extends ActiveRecord
 	protected function rules()
 	{
 		return [
-			[[self::C_LOGIN,self::C_EMAIL],String::create()->notEmpty()->setMax(50)],
-			[[self::C_PASSWORD],Custom::create([$this,'validatePassword'])->notEmpty()],
-			[[self::C_CODE],Setter::create()->setFunction([$this,'filterCode'])->setValidator(
-					String::create()->notEmpty()->setMax(50)
+			[
+				[self::C_LOGIN,self::C_EMAIL],
+				$this->rule()->string()->notEmpty()->setMax(50)
+			],
+			[
+				[self::C_PASSWORD],
+				$this->rule()->custom([$this,'validatePassword'])->notEmpty()
+			],
+			[
+				[self::C_CODE],
+				$this->rule()->setter()->setFunction([$this,'filterCode'])->setValidator(
+					$this->rule()->string()->notEmpty()->setMax(50)
 				)
 			],
-			[[self::C_CREATE_DATE],Setter::create()->setValue($this->date()->convertTimeStamp())->onAdd()],
-			[[self::C_TIMESTAMP_X],Setter::create()->setValue($this->date()->convertTimeStamp())],
-			[[self::C_DISPLAY_NAME],String::create()->setMax(100)],
-			[[self::C_URL],String::create()->setMax(255)],
-			[[self::C_REGISTERED,self::C_ACTIVE],Boolean::create()],
+			[
+				[self::C_CREATE_DATE],
+				$this->rule()->setter()->setValue($this->date()->convertTimeStamp())->onAdd()
+			],
+			[
+				[self::C_TIMESTAMP_X],
+				$this->rule()->setter()->setValue($this->date()->convertTimeStamp())
+			],
+			[
+				[self::C_DISPLAY_NAME],
+				$this->rule()->string()->setMax(100)
+			],
+			[
+				[self::C_URL],
+				$this->rule()->string()->setMax(255)
+			],
+			[
+				[self::C_REGISTERED,self::C_ACTIVE],
+				$this->rule()->boolean()
+			],
 		];
 	}
 	protected function columns()
 	{
 		return [
-			self::C_LOGIN			 => StringColumn::create('T.Login'),
-			self::C_PASSWORD		 => StringColumn::create('T.PASSWORD'),
-			self::C_EMAIL			 => StringColumn::create('T.EMAIL'),
-			self::C_CODE			 => StringColumn::create('T.CODE'),
-			self::C_CREATE_DATE		 => TimestampColumn::create('T.CREATE_DATE'),
-			self::C_TIMESTAMP_X		 => TimestampColumn::create('T.TIMESTAMP_X'),
-			self::C_DISPLAY_NAME	 => StringColumn::create('T.DISPLAY_NAME'),
-			self::C_URL				 => StringColumn::create('T.URL'),
-			self::C_REGISTERED		 => BooleanColumn::create('T.REGISTERED'),
-			self::C_ACTIVATION_KEY	 => StringColumn::create('T.ACTIVATION_KEY'),
-			self::C_ACTIVE			 => BooleanColumn::create('T.ACTIVE'),
+			self::C_ID				 => $this->column()->int('T.ID'),
+			self::C_LOGIN			 => $this->column()->string('T.Login'),
+			self::C_PASSWORD		 => $this->column()->string('T.PASSWORD'),
+			self::C_EMAIL			 => $this->column()->string('T.EMAIL'),
+			self::C_CODE			 => $this->column()->string('T.CODE'),
+			self::C_CREATE_DATE		 => $this->column()->datetime('T.CREATE_DATE'),
+			self::C_TIMESTAMP_X		 => $this->column()->datetime('T.TIMESTAMP_X'),
+			self::C_DISPLAY_NAME	 => $this->column()->string('T.DISPLAY_NAME'),
+			self::C_URL				 => $this->column()->string('T.URL'),
+			self::C_REGISTERED		 => $this->column()->bool('T.REGISTERED'),
+			self::C_ACTIVATION_KEY	 => $this->column()->string('T.ACTIVATION_KEY'),
+			self::C_ACTIVE			 => $this->column()->bool('T.ACTIVE'),
 		];
 	}
 	protected function getMinLengthPassword()
@@ -120,38 +152,5 @@ class UserEntity extends ActiveRecord
 	public function filterCode()
 	{
 		return $this->string()->substr($this->string()->getSlug($this->getValue(self::C_LOGIN)),0,50);
-	}
-	/**
-	 *
-	 * @param string|integer $id
-	 */
-	public static function findIdentity($id)
-	{
-
-	}
-	/**
-	 *
-	 */
-	public static function findIdentityByAccessToken($token)
-	{
-
-	}
-	/**
-	 */
-	public function getId()
-	{
-
-	}
-	/**
-	 */
-	public function getAuthKey()
-	{
-
-	}
-	/**
-	 */
-	public function validateAuthKey($authKey)
-	{
-
 	}
 }

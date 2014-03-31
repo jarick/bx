@@ -14,7 +14,7 @@ class CustomTest extends \BX\Test
 	{
 		$validator = Validator::getManager(false,[
 				'rules'	 => [
-					['TEST',Custom::create([$this,'returnTrue'],'TEST ERROR')],
+					['TEST',Custom::create([$this,'returnTrue'])],
 				],
 				'labels' => ['TEST' => 'TEST'],
 				'new'	 => true,

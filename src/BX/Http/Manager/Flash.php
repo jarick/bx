@@ -8,61 +8,63 @@ class Flash extends Manager
 	const VALUE = 'value';
 	const IS_MULTY = 'is_multy';
 	const FLASH_KEY = 'BX.Http.Manager.Flash';
-	protected static  $aData = [];
-	protected static $aSaveData = [];
-	protected static $bStart = false;
-	
-	protected $oSession = false;
-	
-	public function setSession($oSession)
-	{
-		$this->oSession = $oSession;
-	}
-	
+	protected static $data = [];
+	protected static $save_data = [];
+	protected static $start = false;
+	protected $session = null;
 	/**
+	 * Set session manager
+	 * @param Session $session
+	 */
+	public function setSession($session)
+	{
+		$this->session = $session;
+	}
+	/**
+	 * Get session manager
 	 * @return Session
 	 */
 	public function getSession()
 	{
-		return $this->oSession;
+		if ($this->session === null){
+			$this->session = Session::getManager();
+		}
+		return $this->session;
 	}
-	
+	/**
+	 * Init session
+	 */
 	public function init()
 	{
-		if($this->getSession() === false){
-			$this->setSession(Session::getManager());
-		}
-		if(!self::$bStart){
-			$arSave = get_session(self::FLASH_KEY);
-			if(!empty($arSave))
-			{
-				foreach($arSave as $strKey => $aFlash)
-				{
-					self::$aData[$strKey] = $aFlash[self::VALUE];
+		if (!self::$start){
+			$save = $this->getSession()->get(self::FLASH_KEY);
+			if (!empty($save)){
+				foreach ($save as $key => $aFlash){
+					self::$data[$key] = $aFlash[self::VALUE];
 					if($aFlash[self::IS_MULTY] === true){
-						self::$aSaveData[$strKey] = $aFlash;
+						self::$save_data[$key] = $aFlash;
 					}
 				}
 			}
-			set_session(self::FLASH_KEY, self::$aSaveData);
-			self::$bStart = true;
+			$this->getSession()->get(self::FLASH_KEY,self::FLASH_KEY,self::$save_data);
+			self::$start = true;
 		}
 	}
 
-	public function set($strKey,$strValue,$bMultyHits = false)
+	public function set($key,$value,$multy = false)
 	{
-		self::$aData[$strKey] = $strValue;
-		self::$aSaveData[$strKey] = array(
-			self::VALUE => $strValue,
-			self::IS_MULTY=>$bMultyHits
+		self::$data[$key] = $value;
+		self::$save_data[$key] = array(
+			self::VALUE => $value,
+			self::IS_MULTY => $multy
 		);
-		$this->getSession()->set(self::FLASH_KEY, self::$aSaveData);
+		$this->getSession()->set(self::FLASH_KEY,self::$save_data);
 	}
-	
-	public function get($strKey)
+
+	public function get($key)
 	{
-		if (array_key_exists($strKey, self::$aData)){
-			return self::$aData[$strKey];
+		if (array_key_exists($key,self::$data)){
+			return self::$data[$key];
 		}
 		return null;
 	}

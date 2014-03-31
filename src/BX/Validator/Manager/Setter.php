@@ -16,11 +16,11 @@ class Setter extends Manager implements IValidator
 	private $error = null;
 	/**
 	 * Create
-	 * @return \self
+	 * @return Setter
 	 */
-	public static function create()
+	public static function create(array $params = [])
 	{
-		return new self();
+		return static::getManager(false,$params);
 	}
 	/**
 	 * Get value by key

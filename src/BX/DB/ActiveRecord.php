@@ -1,7 +1,11 @@
 <?php namespace BX\DB;
-use BX\Entity;
-use BX\DB\Filter\SqlBuilder;
 use BX\Collection;
+use BX\DB\Filter\SqlBuilder;
+use BX\DB\Helper\ColumnHelper;
+use BX\DB\Helper\RuleHelper;
+use BX\DI;
+use BX\Entity;
+use InvalidArgumentException;
 
 class ActiveRecord extends Entity
 {
@@ -119,6 +123,14 @@ class ActiveRecord extends Entity
 		return $this->search();
 	}
 	/**
+	 * Get rule helper
+	 * @return RuleHelper
+	 */
+	protected function rule()
+	{
+		return new RuleHelper();
+	}
+	/**
 	 * Add search index
 	 * @param string|integer $id
 	 * @return boolean
@@ -144,6 +156,17 @@ class ActiveRecord extends Entity
 			return true;
 		}
 		return false;
+	}
+	/**
+	 * Get column helper
+	 * @return ColumnHelper
+	 */
+	protected function column()
+	{
+		if (DI::get('column_helper') === null){
+			DI::set('column_helper',new ColumnHelper());
+		}
+		return DI::get('column_helper');
 	}
 	/**
 	 * Get filter fields
@@ -332,11 +355,17 @@ class ActiveRecord extends Entity
 	 * @param array|boolean $fields
 	 * @return boolean
 	 */
-	public function update($id,$fields = false)
+	public function update($id = null,$fields = null)
 	{
 		$pk = $this->getPkColumn();
 		$this->log()->debug('call '.self::getClassName().'::update');
-		if ($fields === false){
+		if ($id === null){
+			$id = $this->getValue($pk);
+		}
+		if ($this->string()->length($id) === 0){
+			throw new InvalidArgumentException('PK field is not set');
+		}
+		if ($fields === null){
 			$fields = $this->getData();
 		} else{
 			$this->setData($fields);
@@ -400,10 +429,16 @@ class ActiveRecord extends Entity
 	 * @param integer|string $id
 	 * @return boolean
 	 */
-	public function delete($id)
+	public function delete($id = null)
 	{
 		$pk = $this->getPkColumn();
 		$this->log()->debug("call ".self::getClassName()."::delete($id)");
+		if ($id === null){
+			$id = $this->getValue($pk);
+		}
+		if ($this->string()->length($id) === 0){
+			throw new InvalidArgumentException('PK field is not set');
+		}
 		if (!$this->onBeforeDelete($id)){
 			return false;
 		}
@@ -426,9 +461,9 @@ class ActiveRecord extends Entity
 	private function prepareArrayFromDb(array $fields)
 	{
 		$columns = $this->getColumns();
-		foreach ($fields as $field => &$value){
+		foreach($fields as $field => &$value){
 			if (array_key_exists($field,$columns)){
-				$value = $columns[$field]->convertFromDB($field,$value,$fields);
+				$value = $columns[$field]->convertFromDB($value);
 			}
 		}
 		unset($value);
@@ -442,12 +477,12 @@ class ActiveRecord extends Entity
 	private function prepareArrayToDb(array $fields)
 	{
 		$columns = $this->getColumns();
-		foreach ($fields as $field => &$value){
+		foreach($fields as $field => &$value){
 			if ($this->string()->startsWith($field,'~')){
 				$field = $this->string()->substr($field,1);
 			}
 			if (array_key_exists($field,$columns)){
-				$value = $columns[$field]->convertToDB($field,$value,$fields);
+				$value = $columns[$field]->convertToDB($value);
 			} else{
 				$this->log()->error("Column `$field` is not found");
 			}
@@ -458,12 +493,12 @@ class ActiveRecord extends Entity
 	/**
 	 * Convert values from db
 	 * @param array $values
-	 * @return \BX\Collection
+	 * @return Collection
 	 */
 	public function convertFromArray(array $values)
 	{
 		$collection = new Collection(self::getClassName());
-		foreach ($values as $value){
+		foreach($values as $value){
 			$entity = static::getEntity();
 			$entity->setData($this->prepareArrayFromDb($value));
 			$collection->add($entity);
@@ -480,13 +515,13 @@ class ActiveRecord extends Entity
 	}
 	/**
 	 * Get filter
-	 * @return \BX\DB\Filter\SqlBuilder
+	 * @return SqlBuilder
 	 */
 	public function getFilter()
 	{
 		$fields = [];
 		$rules = [];
-		foreach ($this->getColumns() as $field => $column){
+		foreach($this->getColumns() as $field => $column){
 			$fields[$field] = $column->getColumn();
 			$rules[$field] = $column->getFilterRule();
 		}
@@ -495,11 +530,11 @@ class ActiveRecord extends Entity
 	/**
 	 * Get join sql
 	 * @param string $table
-	 * @param string|ActiveRecord $pk
+	 * @param string|\BX\DB\ActiveRecord $pk
 	 */
 	public function hasMany($table,$db_table,$pk = null)
 	{
-		if ($db_table instanceof ActiveRecord){
+		if ($db_table instanceof \BX\DB\ActiveRecord){
 			$pk = $db_table->getPkColumn();
 			$db_table = $db_table->getDbTable();
 		}

@@ -1,14 +1,32 @@
 <?php namespace BX\Http\Manager;
-use BX\Manager;
-use BX\Http\IRequest;
+use BX\Http\Cookie;
 use BX\Http\Dictionary;
+use BX\Http\IRequest;
+use BX\Manager;
+use LogicException;
 
 class Request extends Manager implements IRequest
 {
-	private $get = false;
-	private $post = false;
-	private $files = false;
-	private $server = false;
+	/**
+	 * @var Dictionary|array
+	 */
+	private $get = null;
+	/**
+	 * @var Dictionary|array
+	 */
+	private $post = null;
+	/**
+	 * @var Dictionary|array
+	 */
+	private $files = null;
+	/**
+	 * @var Dictionary|array
+	 */
+	private $server = null;
+	/**
+	 * @var Cookie|array
+	 */
+	private $cookie = null;
 	/**
 	 * Set query
 	 * @param array|Dictionary $get
@@ -42,40 +60,40 @@ class Request extends Manager implements IRequest
 		$this->server = $server;
 	}
 	/**
-	 * Get query
+	 * Get query dictionary
 	 * @return Dictionary
 	 */
 	public function query()
 	{
-		if ($this->get === false){
-			$this->get = $_GET;
+		if ($this->get === null){
+			$this->get = INPUT_GET;
 		}
-		if (is_array($this->get)){
+		if (!is_object($this->get)){
 			$this->get = new Dictionary($this->get);
 		}
 		return $this->get;
 	}
 	/**
-	 * Get post
+	 * Get post dictionary
 	 * @return Dictionary
 	 */
 	public function post()
 	{
-		if ($this->post === false){
-			$this->post = $_POST;
+		if ($this->post === null){
+			$this->post = INPUT_POST;
 		}
-		if (is_array($this->post)){
+		if (!is_object($this->post)){
 			$this->post = new Dictionary($this->post);
 		}
 		return $this->post;
 	}
 	/**
-	 * Get files
+	 * Get files dictionary
 	 * @return Dictionary
 	 */
 	public function files()
 	{
-		if ($this->files === false){
+		if ($this->files === null){
 			$this->files = $_FILES;
 		}
 		if (is_array($this->files)){
@@ -84,18 +102,32 @@ class Request extends Manager implements IRequest
 		return $this->files;
 	}
 	/**
-	 * Get server
+	 * Get server dictionary
 	 * @return Dictionary
 	 */
 	public function server()
 	{
-		if ($this->server === false){
-			$this->server = $_SERVER;
+		if ($this->server === null){
+			$this->server = INPUT_SERVER;
 		}
-		if (is_array($this->server)){
+		if (!is_object($this->server)){
 			$this->server = new Dictionary($this->server);
 		}
 		return $this->server;
+	}
+	/**
+	 * Get server dictionary
+	 * @return Dictionary
+	 */
+	public function cookie()
+	{
+		if ($this->cookie === null){
+			$this->cookie = INPUT_COOKIE;
+		}
+		if (!is_object($this->cookie)){
+			$this->cookie = new Cookie($this->cookie);
+		}
+		return $this->cookie;
 	}
 	/**
 	 * Get request method
@@ -152,7 +184,7 @@ class Request extends Manager implements IRequest
 	}
 	/**
 	 * init
-	 * @throws \LogicException
+	 * @throws LogicException
 	 */
 	public function init()
 	{
@@ -164,9 +196,9 @@ class Request extends Manager implements IRequest
 				'QUERY_STRING',
 				'SERVER_NAME',
 			];
-			foreach ($nead_keys as $key){
+			foreach($nead_keys as $key){
 				if (!$this->server()->has($key)){
-					throw new \LogicException("Server array doesn't have key `$key`");
+					throw new LogicException("Server array doesn't have key `$key`");
 				}
 			}
 		}

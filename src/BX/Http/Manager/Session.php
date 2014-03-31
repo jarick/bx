@@ -1,53 +1,84 @@
-<?php
-namespace BX\Http\Manager;
+<?php namespace BX\Http\Manager;
 use BX\Manager;
-use BX\Http\Manager\Flash;
 
 class Session extends Manager
 {
-	protected $bStart;
-	
-	public function isStarted()
+	private $start = false;
+	private $session = null;
+	/**
+	 * Set session array
+	 * @param array $session
+	 * @return Session
+	 */
+	public function setSession(array $session)
 	{
-		return $this->bStart;
+		$this->session = $session;
+		return $this;
 	}
-	
- 	public function start()
-    {
-    	$this->bStart = true;
-        session_start();
-        Flash::getManager()->recalc();
-    }
-
-    public function has($sKey)
-    {
-    	if(!$this->isStarted()){
-    		$this->start();
-    	}
-        return array_key_exists($sKey, $_SESSION);
-    }
-
-    public function get($sKey = false)
-    {
-    	if(!$this->isStarted()){
-    		$this->start();
-    	}
-    	return ($sKey === false) ? $_SESSION : $_SESSION[$sKey];
-    }
-
-    public function set($sKey, $sValue)
-    {
-    	if(!$this->isStarted()){
-    		$this->start();
-    	}
-    	$_SESSION[$sKey] = $sValue;
-    }
-    
-    public function getSessionId()
-    {
-    	if(!$this->isStarted()){
-    		$this->start();
-    	}
-    	return session_id();
-    }
+	/**
+	 * Init
+	 */
+	public function init()
+	{
+		if ($this->session === null){
+			$this->session = &$_SESSION;
+		}
+	}
+	/**
+	 * Start session
+	 */
+	public function start()
+	{
+		$this->start = true;
+		session_start();
+	}
+	/**
+	 * Has key in sesion
+	 * @param string $key
+	 * @return boolean
+	 */
+	public function has($key)
+	{
+		if (!$this->start){
+			$this->start();
+		}
+		return array_key_exists($key,$this->session);
+	}
+	/**
+	 * Get value in sesion by key
+	 * @param string $key
+	 * @return array|string
+	 */
+	public function get($key = false)
+	{
+		if (!$this->start){
+			$this->start();
+		}
+		return ($key === false) ? $this->session : $this->session[$key];
+	}
+	/**
+	 * Set value in sesion
+	 * @param string $key
+	 * @param string $value
+	 * @return Session
+	 */
+	public function set($key,$value)
+	{
+		if (!$this->start){
+			$this->start();
+		}
+		$this->session[$key] = $value;
+		return $this;
+	}
+	/**
+	 * Get session id
+	 * @return string
+	 */
+	public function getSessionId()
+	{
+		if (!$this->start){
+			$this->start();
+		}
+		return session_id();
+	}
 }

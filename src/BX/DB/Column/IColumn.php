@@ -2,8 +2,8 @@
 
 interface IColumn
 {
-	public function convertToDB($key,$value,array $values);
-	public function convertFromDB($key,$value,array $values);
+	public function convertToDB($value);
+	public function convertFromDB($value);
 	public function getColumn();
 	public function getFilterRule();
 }

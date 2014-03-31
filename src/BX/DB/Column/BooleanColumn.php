@@ -2,13 +2,34 @@
 
 class BooleanColumn extends BaseColumn
 {
+	/**
+	 * @var mixed
+	 */
 	public $true;
+	/**
+	 * @var mixed
+	 */
 	public $false;
+	/**
+	 * @var boolean
+	 */
 	public $strict;
+	/**
+	 * Get filter rule name
+	 * @return string
+	 */
 	public function getFilterRule()
 	{
 		return 'boolean';
 	}
+	/**
+	 * Create column
+	 * @param string $column
+	 * @param mixed $true
+	 * @param mixed $false
+	 * @param boolean $strict
+	 * @return BooleanColumn
+	 */
 	public static function create($column,$true = 'Y',$false = 'N',$strict = false)
 	{
 		$return = parent::create($column);
@@ -17,18 +38,37 @@ class BooleanColumn extends BaseColumn
 		$return->strict = $strict;
 		return $return;
 	}
-	public function convertToDB($key,$value,array $values)
+	/**
+	 * Convert value to db
+	 * @param mixed $value
+	 * @return string
+	 */
+	public function convertToDB($value)
 	{
 		if ($this->strict){
+			if ($value != $this->true && $value != $this->false){
+				throw new \InvalidArgumentException("Bad format, must be `{$this->true}` or `{$this->false}`");
+			}
 			$value = intval($value == $this->true);
 		} else{
+			if ($value !== $this->true && $value !== $this->false){
+				throw new \InvalidArgumentException("Bad format, must be `{$this->true}` or `{$this->false}`");
+			}
 			$value = intval($value === $this->true);
 		}
 		return $value;
 	}
-	public function convertFromDB($key,$value,array $values)
+	/**
+	 * Convert value from db
+	 * @param string $value
+	 * @return mixed
+	 */
+	public function convertFromDB($value)
 	{
-		if ($value === 1){
+		if ($value != 0 && $value != 1){
+			throw new \InvalidArgumentException("Bad format, must be `0` or `1`");
+		}
+		if ($value == 1){
 			return $this->true;
 		} else{
 			return $this->false;

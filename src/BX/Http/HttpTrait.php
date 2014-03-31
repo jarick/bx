@@ -8,6 +8,7 @@ use BX\DI;
 trait HttpTrait
 {
 	/**
+	 * Get request manager
 	 * @return Request
 	 */
 	public function request()
@@ -19,6 +20,7 @@ trait HttpTrait
 		return DI::get($key);
 	}
 	/**
+	 * Get response manager
 	 * @return Response
 	 */
 	public function response()
@@ -29,6 +31,10 @@ trait HttpTrait
 		}
 		return DI::get($key);
 	}
+	/**
+	 * Get flash manager
+	 * @return Flash
+	 */
 	public function flash()
 	{
 		$key = 'flash';
@@ -37,6 +43,10 @@ trait HttpTrait
 		}
 		return DI::get($key);
 	}
+	/**
+	 * Get session manager
+	 * @return Session
+	 */
 	public function session()
 	{
 		$key = 'session';

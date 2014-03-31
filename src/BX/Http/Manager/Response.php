@@ -1,8 +1,7 @@
 <?php namespace BX\Http\Manager;
 use BX\Manager;
-use Symfony\Component\HttpFoundation\Response as SymfonyResponce;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\HeaderBag;
 
 class Response extends Manager implements \ArrayAccess
 {
@@ -10,48 +9,97 @@ class Response extends Manager implements \ArrayAccess
 	 * @var array
 	 */
 	protected $headers;
-	protected $iCode = 200;
-	public function setStatus($iCode)
+	/**
+	 * @var integer
+	 */
+	protected $code = 200;
+	/**
+	 * @var SymfonyResponse
+	 */
+	protected $response = false;
+	/**
+	 * Set http status
+	 * @param integer $code
+	 * @return \BX\Http\Manager\Response
+	 */
+	public function setStatus($code)
 	{
-		$this->iCode = $iCode;
+		$this->code = $code;
 		return $this;
 	}
 	/**
-	 * @var SymfonyResponce
+	 * Set http response
+	 * @param SymfonyResponse $response
+	 * @return Response
 	 */
-	protected $oResponce = false;
-	protected function setResponce($oResponce)
+	protected function setResponse(SymfonyResponse $response)
 	{
-		$this->oResponce = $oResponce;
+		$this->response = $response;
+		return $this;
 	}
-	protected function getResponce()
+	/**
+	 * Get http response
+	 * @return SymfonyResponse
+	 */
+	protected function getResponse()
 	{
-		return $this->oResponce;
+		return $this->response;
 	}
+	/**
+	 * Send response
+	 * @param type $sContent
+	 */
 	public function send($sContent)
 	{
-		$this->setResponce(new SymfonyResponce($sContent,$this->iCode,$this->headers));
+		$this->setResponse(new SymfonyResponse($sContent,$this->code,$this->headers));
 	}
-	public function redirect($sUrl,$iStatus = 302)
+	/**
+	 * Redirect
+	 * @param string $url
+	 * @param integer $status
+	 */
+	public function redirect($url,$status = 302)
 	{
-		$this->setResponce(new RedirectResponse($sUrl,$iStatus));
+		$this->setResponse(new RedirectResponse($url,$status));
 	}
+	/**
+	 * End response
+	 */
 	public function end()
 	{
-		$this->getResponce()->send();
+		$this->getResponse()->send();
 	}
+	/**
+	 * Offset exists
+	 * @param string $offset
+	 * @return string
+	 */
 	public function offsetExists($offset)
 	{
 		return isset($this->headers[$offset]);
 	}
+	/**
+	 * Offset get
+	 * @param string $offset
+	 * @return string
+	 */
 	public function offsetGet($offset)
 	{
 		return isset($this->headers[$offset]) ? $this->headers[$offset] : null;
 	}
+	/**
+	 * Offset set
+	 * @param string $offset
+	 * @param string $value
+	 */
 	public function offsetSet($offset,$value)
 	{
 		$this->headers[$offset] = $value;
 	}
+	/**
+	 * Offset unset
+	 * @param string $offset
+	 */
 	public function offsetUnset($offset)
 	{
 		unset($this->headers[$offset]);

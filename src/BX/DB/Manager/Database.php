@@ -1,11 +1,14 @@
 <?php namespace BX\DB\Manager;
-use BX\Manager;
-use BX\Registry;
-use BX\DB\Exception\DbException;
-use BX\DB\Adaptor\Sqlite;
+use BX\DB\Adaptor\IAdaptor;
 use BX\DB\Adaptor\Mysql;
+use BX\DB\Adaptor\Sqlite;
+use BX\DB\Exception\DbException;
+use BX\DB\Helper\TableColumn;
 use BX\DB\IDatabase;
 use BX\DI;
+use BX\Manager;
+use BX\Registry;
+use InvalidArgumentException;
 
 class Database extends Manager implements IDatabase
 {
@@ -19,8 +22,8 @@ class Database extends Manager implements IDatabase
 	const ZF = 'ZF';
 	/**
 	 * Get adaptor
-	 * @return \BX\DB\Adaptor\IAdaptor
-	 * @throws \InvalidArgumentException
+	 * @return IAdaptor
+	 * @throws InvalidArgumentException
 	 */
 	public function adaptor()
 	{
@@ -29,13 +32,15 @@ class Database extends Manager implements IDatabase
 				$adaptor = new Sqlite();
 			} elseif (is_string($adaptor_str = Registry::get('db'))){
 				switch ($adaptor_str){
-					case 'sqlite': $adaptor = new Sqlite();break;
-					case 'mysql': $adaptor = new Mysql();break;
+					case 'sqlite': $adaptor = new Sqlite();
+						break;
+					case 'mysql': $adaptor = new Mysql();
+						break;
 					default:
 						if (class_exists($adaptor_str)){
 							$adaptor = new $adaptor_str();
 						} else{
-							throw new \InvalidArgumentException("DB adaptor `$adaptor_str` is not exists");
+							throw new InvalidArgumentException("DB adaptor `$adaptor_str` is not exists");
 						}
 						break;
 				}
@@ -55,7 +60,7 @@ class Database extends Manager implements IDatabase
 	{
 		$result = [];
 		$columns = $this->adaptor()->showColumns($table);
-		foreach ($columns as $column){
+		foreach($columns as $column){
 			$result[$column['NAME']] = $column['DEF'];
 		}
 		return $result;
@@ -85,15 +90,12 @@ class Database extends Manager implements IDatabase
 	 */
 	public function createTable($table,$fields)
 	{
-		$schema = [
-			'PK'		 => [],
-			'FK'		 => [],
-			'UQ'		 => [],
-			'COLUMNS'	 => [],
-			'TABLE'		 => '',
-		];
+		$schema = [ 'PK' => [],'FK' => [],'UQ' => [],'COLUMNS' => [],'TABLE' => ''];
 		$schema['TABLE'] = $this->esc($table);
-		foreach ($fields as $field){
+		foreach($fields as $field){
+			if ($field instanceof TableColumn){
+				$field = $field->toArray();
+			}
 			$column = $this->esc($field[0]).' '.$this->adaptor()->getColumnType($this->string()->toUpper($field[1]));
 			$length = intval($field[2]);
 			if ($length > 0){
@@ -147,13 +149,13 @@ class Database extends Manager implements IDatabase
 		$this->log()->debug("Insert row into table `$table`");
 		$sql = 'INSERT INTO '.$this->esc($table).'(';
 		$columns = [];
-		foreach (array_keys($fields) as $key){
+		foreach(array_keys($fields) as $key){
 			$columns[] = $this->esc($key);
 		}
 		$sql .= implode(',',$columns).') VALUES (';
 		$values = [];
 		$vars = [];
-		foreach ($fields as $key => $value){
+		foreach($fields as $key => $value){
 			if ($this->string()->startsWith($key,'~')){
 				$values[] = "'$value'";
 			} else{
@@ -183,7 +185,7 @@ class Database extends Manager implements IDatabase
 		$sql = 'UPDATE '.$this->esc($table).' SET ';
 		$columns = [];
 		$vars = [];
-		foreach ($fields as $key => $value){
+		foreach($fields as $key => $value){
 			if ($this->string()->startsWith($key,'~')){
 				$columns[] = $this->esc($key)." = '$value'";
 			} else{
@@ -230,10 +232,10 @@ class Database extends Manager implements IDatabase
 	 * Query sql
 	 * @param string $sql
 	 * @param array $vars
-	 * @return DBResult
+	 * @return \BX\DB\Manager\DBResult
 	 */
 	public function query($sql,array $vars = [])
 	{
-		return DBResult::getManager(false,['result' => $this->adaptor()->query($sql,$vars)]);
+		return \BX\DB\Manager\DBResult::getManager(false,['result' => $this->adaptor()->query($sql,$vars)]);
 	}
 }

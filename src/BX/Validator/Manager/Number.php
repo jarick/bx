@@ -122,14 +122,8 @@ class Number extends BaseValidator
 		$this->number_pattern = $sPattern;
 		return $this;
 	}
-	public function validate($key,$value,$label,&$fields)
+	public function validateFormate($key,$value,$label)
 	{
-		if (!$this->empty && $this->isEmpty($value)){
-			$this->addError($key,$this->getMessageEmpty(),[
-				'#LABEL#' => $label,
-			]);
-			return false;
-		}
 		if (!is_numeric($value)){
 			$this->addError($key,$this->getMessageInvalid(),[
 				'#LABEL#' => $label,
@@ -150,6 +144,19 @@ class Number extends BaseValidator
 				]);
 				return false;
 			}
+		}
+		return true;
+	}
+	public function validate($key,$value,$label,&$fields)
+	{
+		if (!$this->empty && $this->isEmpty($value)){
+			$this->addError($key,$this->getMessageEmpty(),[
+				'#LABEL#' => $label,
+			]);
+			return false;
+		}
+		if (!$this->validateFormate($key,$value,$label)){
+			return false;
 		}
 		if ($this->min !== null && $value < $this->min){
 			$this->addError($key,$this->getMessageMin(),[

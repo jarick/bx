@@ -102,9 +102,9 @@ class Validator extends Manager
 		$result = array();
 		$new = $this->new;
 		$rules = $this->getRules();
-		foreach ($rules as $rule){
+		foreach($rules as $rule){
 			$rules_array = (is_array($rule[0])) ? $rule[0] : explode(',',$rule[0]);
-			foreach ($rules_array as $key){
+			foreach($rules_array as $key){
 				if ($this->string()->length($key) > 0){
 					if ($rule[1] instanceof Setter){
 						continue;
@@ -120,7 +120,7 @@ class Validator extends Manager
 				}
 			}
 		}
-		foreach (array_keys($fields) as $key){
+		foreach(array_keys($fields) as $key){
 			if (!array_key_exists($key,$result)){
 				unset($fields[$key]);
 			}
@@ -174,9 +174,9 @@ class Validator extends Manager
 		$new = $this->new;
 		$rules = $this->getRules();
 		$labels = $this->getLabels();
-		foreach ($rules as $rule){
+		foreach($rules as $rule){
 			$rules_array = (is_array($rule[0])) ? $rule[0] : explode(',',$rule[0]);
-			foreach ($rules_array as $key){
+			foreach($rules_array as $key){
 				if ($this->string()->length($key) > 0){
 					if ($rule[1]->isNew() !== 'all'){
 						if ($rule[1]->isNew() !== $new){
@@ -192,8 +192,8 @@ class Validator extends Manager
 				}
 			}
 		}
-		foreach ($result as $key => $field){
-			foreach ($field as $action){
+		foreach($result as $key => $field){
+			foreach($field as $action){
 				$stop = $action->validateField($key,$fields,$labels[$key]);
 				if ($action->hasErrors()){
 					$this->error->merge($action->getErrors());

@@ -20,7 +20,7 @@ class Custom extends BaseValidator implements IValidator
 	 */
 	public function setMessageEmpty($message)
 	{
-		$this->message_empty = (string) $message;
+		$this->message_empty = (string)$message;
 		return $this;
 	}
 	/**
@@ -38,13 +38,13 @@ class Custom extends BaseValidator implements IValidator
 	/**
 	 * Create
 	 * @param \Closure $function
-	 * @param string $message
-	 * @return self
+	 * @param array $params
+	 * @return Custom
 	 * @throws \InvalidArgumentException
 	 */
-	public static function create($function)
+	public static function create($function,array $params = [])
 	{
-		$validator = static::getManager();
+		$validator = static::getManager(false,$params);
 		if (!is_callable($function)){
 			throw new \InvalidArgumentException('Function must be collable');
 		}

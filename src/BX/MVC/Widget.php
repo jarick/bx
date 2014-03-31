@@ -24,16 +24,16 @@ abstract class Widget extends Object
 	public function getCurPageParam($aParam = [],$aParamKill = [])
 	{
 		$oRequest = $this->request();
-		$aQuery = $oRequest->query()->all();
-		foreach ($aParamKill as $sParam){
-			unset($aQuery[$sParam]);
+		$query = $oRequest->query()->all();
+		foreach($aParamKill as $sParam){
+			unset($query[$sParam]);
 		}
-		$aParam = array_merge($aQuery,$aParam);
+		$aParam = array_merge($query,$aParam);
 		$sPath = $oRequest->getScript().$oRequest->getPathInfo();
 		if (!empty($aParam)){
 			$sPath .= '?';
 		}
-		foreach ($aParam as $sKey => &$sValue){
+		foreach($aParam as $sKey => &$sValue){
 			$sValue = $sKey.'='.$sValue;
 		}
 		return $sPath.implode('&',$aParam);
@@ -69,7 +69,7 @@ abstract class Widget extends Object
 	public function render($file = false,$params = [])
 	{
 		$params['widget'] = $this;
-		if($file === false){
+		if ($file === false){
 			$file = 'console/console';
 		}
 		echo $this->view()->render(self::WIDGETS_DIR.$file,$params);
@@ -84,9 +84,9 @@ abstract class Widget extends Object
 	}
 	public function execRun($aParams)
 	{
-		foreach ($aParams as $sKey => $sValue){
+		foreach($aParams as $sKey => $sValue){
 			$sFunc = 'set';
-			foreach (explode('_',$sKey) as $sItem){
+			foreach(explode('_',$sKey) as $sItem){
 				$sFunc .= $this->string()->ucwords($sItem);
 			}
 			$this->$sFunc($sValue);

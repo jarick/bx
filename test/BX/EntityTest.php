@@ -27,7 +27,6 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 	{
 		$this->entity = new MockEntityTest();
 		$this->entity->test = 'TEST';
-		$this->entity->resetErrors();
 	}
 	public function testGetLabel()
 	{
@@ -62,7 +61,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 	{
 		$data = ['TEST' => ''];
 		$this->assertFalse($this->entity->checkFields($data));
-		$this->assertTrue($this->entity->hasError());
+		$this->assertTrue($this->entity->hasErrors());
 	}
 	public function testAddError()
 	{
