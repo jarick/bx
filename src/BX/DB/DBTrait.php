@@ -1,7 +1,7 @@
 <?php namespace BX\DB;
-use BX\DB\Manager\Database;
-use BX\DB\Manager\TransactionManager;
-use BX\DI;
+use BX\DB\Database;
+use BX\DB\TransactionManager;
+use BX\Base\DI;
 
 trait DBTrait
 {
@@ -13,7 +13,7 @@ trait DBTrait
 	{
 		$key = 'db';
 		if (DI::get($key) === null){
-			DI::set($key,Database::getManager());
+			DI::set($key,new Database());
 		}
 		return DI::get($key);
 	}
@@ -25,7 +25,7 @@ trait DBTrait
 	{
 		$key = 'transaction';
 		if (DI::get($key) === null){
-			DI::set($key,TransactionManager::getManager(false,['db' => $this->db()]));
+			DI::set($key,new TransactionManager($this->db()));
 		}
 		return DI::get($key);
 	}

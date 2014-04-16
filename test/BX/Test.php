@@ -19,4 +19,17 @@ class Test extends \PHPUnit_Framework_TestCase
 		$parameters = func_get_args();
 		return $method->invokeArgs($object,array_slice($parameters,2));
 	}
+	/**
+	 * Set value private property
+	 * @param mixed $object
+	 * @param string $propertyName
+	 * @param mixed $value
+	 */
+	public function setPropertyValue(&$object,$propertyName,$value)
+	{
+		$refObject = new \ReflectionObject($object);
+		$refProperty = $refObject->getProperty($propertyName);
+		$refProperty->setAccessible(true);
+		$refProperty->setValue(null,$value);
+	}
 }

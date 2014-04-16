@@ -7,7 +7,8 @@ class Console extends Widget
 {
 	use \BX\Console\ConsoleTrait,
 	 \BX\Validator\ValidatorTrait;
-	CONST EVENT_LIST_COMMAND = 'console.widget.console.list_command';
+	const C_CODE = 'CODE';
+	const EVENT_LIST_COMMAND = 'console.widget.console.list_command';
 	protected function controller()
 	{
 		$controller = $this->console();
@@ -18,20 +19,22 @@ class Console extends Widget
 	protected function getDefault()
 	{
 		return [
-			'CODE' => null,
+			self::C_CODE => null,
 		];
 	}
 	protected function rules()
 	{
 		return [
-#			['SESSID', ''],
-			['CODE',String::create()->notEmpty()->setMax(1024 * 1024)],
+			[
+				[self::C_CODE],
+				String::create()->notEmpty()->setMax(1024 * 1024)
+			],
 		];
 	}
 	protected function labels()
 	{
 		return [
-			'CODE' => $this->trans('console.widgets.console.label_code'),
+			self::C_CODE => $this->trans('console.widgets.console.label_code'),
 		];
 	}
 	public function run()
@@ -43,7 +46,7 @@ class Console extends Widget
 			if ($validator->check($post)){
 				$this->controller()->exec($post['CODE']);
 			} else{
-				foreach($validator->getErrors()->all() as $message){ 
+				foreach($validator->getErrors()->all() as $message){
 					$this->view()->widget('message',['message' => $message,'type' => 'danger']);
 				}
 			}

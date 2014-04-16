@@ -1,5 +1,6 @@
 <?php namespace BX\String;
-use BX\String\Manager\StringManager;
+use BX\String\StringManager;
+use BX\Base\DI;
 
 trait StringTrait
 {
@@ -9,10 +10,10 @@ trait StringTrait
 	 */
 	public function string()
 	{
-		static $oManager;
-		if ( ! isset($oManager)){
-			$oManager = StringManager::getManager();
+		$key = 'string';
+		if (DI::get($key) === null){
+			DI::set($key,new StringManager());
 		}
-		return $oManager;
+		return DI::get($key);
 	}
 }

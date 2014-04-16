@@ -1,11 +1,10 @@
 <?php namespace BX\DB\Helper;
-use BX\Base;
 use BX\DB\Column\BooleanColumn;
 use BX\DB\Column\NumberColumn;
 use BX\DB\Column\StringColumn;
 use BX\DB\Column\TimestampColumn;
 
-class ColumnHelper extends Base
+class ColumnHelper
 {
 	/**
 	 * Get string column

@@ -33,6 +33,7 @@ class ConsoleException extends \Exception
 	 */
 	public function render()
 	{
+		$this->log()->error($this->message.' FILE: '.$this->file.' LINE: '.$this->line);
 		$this->fire('BeforeConsoleException');
 		$this->writer->error($this->message.' FILE: '.$this->file.' LINE: '.$this->line);
 		$this->fire('AfterConsoleException');

@@ -1,17 +1,19 @@
 <?php namespace BX\Logger;
-use BX\Logger\Manager\LoggerManager;
-use BX\DI;
+use BX\Logger\LoggerManager;
+use BX\Base\DI;
 
 trait LoggerTrait
 {
 	/**
-	 * @return LoggerManager
-	 * */
-	public function log()
+	 * Get logger manager
+	 * @param string $name
+	 * @return \Monolog\Logger
+	 */
+	public function log($name = 'default')
 	{
 		if (DI::get('logger') === null){
-			DI::set('logger',LoggerManager::getManager());
+			DI::set('logger',new LoggerManager());
 		}
-		return DI::get('logger');
+		return DI::get('logger')->get($name = 'default');
 	}
 }

@@ -39,24 +39,24 @@ class Sqlite extends DbAdaptor implements IAdaptor
 	}
 	public function createTable($schema)
 	{
-		$sSql = "CREATE TABLE {$schema['TABLE']}(\n";
-		$sSql .= implode(",\n",$schema['COLUMNS']);
-		$sSql .= "\n);";
-		return $this->execute($sSql);
+		$sql = "CREATE TABLE {$schema['TABLE']}(\n";
+		$sql .= implode(",\n",$schema['COLUMNS']);
+		$sql .= "\n);";
+		return $this->execute($sql);
 	}
 	public function length($name)
 	{
-		return "length($name)";
+		return "LENGTH($name)";
 	}
 	public function upper($value)
 	{
-		return "upper($value)";
+		return "UPPER($value)";
 	}
 	public function showColumns($table)
 	{
 		$result = null;
 		$columns = $this->pdo()->query("PRAGMA table_info($table)")->fetchAll();
-		foreach ($columns as $column){
+		foreach($columns as $column){
 			$result[] = [
 				'NAME'	 => $column['name'],
 				'TYPE'	 => $column['type'],
@@ -65,5 +65,19 @@ class Sqlite extends DbAdaptor implements IAdaptor
 			];
 		}
 		return $result;
+	}
+	public function resetAI($table)
+	{
+		$this->pdo()->exec("delete from sqlite_sequence where name='$table'");
+	}
+	public function lock($tables)
+	{
+		$name = md5(implode('|',(array)$tables));
+		$this->pdo()->exec("BEGIN EXCLUSIVE TRANSACTION $name");
+	}
+	public function unlock($tables)
+	{
+		$name = md5(implode('|',(array)$tables));
+		$this->pdo()->exec("END TRANSACTION $name");
 	}
 }

@@ -1,10 +1,11 @@
 <?php namespace BX\Cache;
+use BX\Test;
 
-class CacheTraitClass extends \PHPUnit_Framework_TestCase
+class CacheTraitClass extends Test
 {
 	use CacheTrait;
 	public function testCache()
 	{
-		$this->assertInstanceOf("BX\Cache\Manager\Cache",$this->cache());
+		$this->assertInstanceOf("BX\Cache\CacheManager",$this->cache());
 	}
 }

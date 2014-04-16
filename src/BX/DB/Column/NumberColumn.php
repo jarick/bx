@@ -12,7 +12,7 @@ class NumberColumn extends BaseColumn
 	 */
 	public function getFilterRule()
 	{
-		return 'numeric';
+		return 'number';
 	}
 	/**
 	 * Create column

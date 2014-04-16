@@ -1,91 +1,103 @@
-<?php
-namespace BX\DB\Filter;
-use BX\Object;
-use BX\Registry;
+<?php namespace BX\DB\Filter;
+use BX\Base\Registry;
 use BX\DB\Filter\Rule\String;
 use BX\DB\Filter\Rule\Number;
 use BX\DB\Filter\Rule\DateTime;
 use BX\DB\Filter\Rule\Boolean;
 
-class LogicBlock extends Object
+class LogicBlock
 {
-	private $oSqlBuilder;
-	private $aFilterRule;
-	
-	public function __construct(SqlBuilder $oSqlBuilder,array $aFilterRule)
+	/**
+	 * @var SqlBuilder
+	 */
+	private $sql_builder;
+	/**
+	 * @var array
+	 */
+	private $filter_rule;
+	/**
+	 * Constructor
+	 * @param \BX\DB\Filter\SqlBuilder $sql_builder
+	 * @param type $filter_rule
+	 * @throws \InvalidArgumentException
+	 */
+	public function __construct(SqlBuilder $sql_builder,array $filter_rule)
 	{
-		foreach($aFilterRule as $sFieldArray => $sRule){
-			unset($aFilterRule[$sFieldArray]);
-			foreach(explode(',', $sFieldArray) as $sField){
-				$aFilterRule[$sField] = $sRule;
-			}
-		}
-		if(empty($aFilterRule)){
+		if (empty($filter_rule)){
 			throw new \InvalidArgumentException("Filter rules is not set");
 		}
-		$this->oSqlBuilder = $oSqlBuilder;
-		$this->aFilterRule = $aFilterRule;
+		$this->sql_builder = $sql_builder;
+		$this->filter_rule = $filter_rule;
 	}
-	
+	/**
+	 * Get special chars array
+	 * @return array
+	 */
 	private function getSpecialCharsArray()
 	{
 		return ['!','=','>','<','%'];
 	}
-	
 	/**
+	 * Get type param
+	 * @param string $key
 	 * @return IParam
-	 **/
-	private function getType($sKey)
+	 * */
+	private function getType($key)
 	{
-		while(in_array(substr($sKey,0,1),$this->getSpecialCharsArray())){
-			$sKey = substr($sKey,1);
+		while (in_array(substr($key,0,1),$this->getSpecialCharsArray())){
+			$key = substr($key,1);
 		}
-		if(array_key_exists($sKey, $this->aFilterRule)){
-			$sType = $this->aFilterRule[$sKey];
-			switch($sType){
-				case 'string': return new String($this->oSqlBuilder,$this->oSqlBuilder->adaptor());
-				case 'number': return new Number($this->oSqlBuilder,$this->oSqlBuilder->adaptor());
-				case 'date': return DateTime::short($this->oSqlBuilder,$this->oSqlBuilder->adaptor());
-				case 'datetime': return DateTime::full($this->oSqlBuilder,$this->oSqlBuilder->adaptor());
-				case 'boolean': return new Boolean($this->oSqlBuilder,$this->oSqlBuilder->adaptor());
+		if (array_key_exists($key,$this->filter_rule)){
+			$type = $this->filter_rule[$key];
+			switch ($type){
+				case 'string': return new String($this->sql_builder);
+				case 'number': return new Number($this->sql_builder);
+				case 'date': return DateTime::short($this->sql_builder);
+				case 'datetime': return DateTime::full($this->sql_builder);
+				case 'boolean': return new Boolean($this->sql_builder);
 				default:
-					if(Registry::exists('filter_rule',$sType)){
-						if(is_string($sClass = Registry::get('filter_rule',$sType))){
-							if(class_exists($sClass)){
-								return new $sClass($this->oSqlBuilder,$this->oSqlBuilder->adaptor());
+					if (Registry::exists('filter_rule',$type)){
+						if (is_string($class = Registry::get('filter_rule',$type))){
+							if (class_exists($class)){
+								return new $class($this->sql_builder);
 							} else{
-								throw new \InvalidArgumentException("Filter rule class `$sClass` is not exists");
+								throw new \InvalidArgumentException("Filter rule class `$class` is not exists");
 							}
 						} else{
-							throw new \InvalidArgumentException("Filter rule .$sType must be string");
+							throw new \InvalidArgumentException("Filter rule .$type must be string");
 						}
 					} else{
-						throw new \InvalidArgumentException("Filter rule `$sType` is not exists");
+						throw new \InvalidArgumentException("Filter rule `$type` is not exists");
 					}
 			}
 		} else{
-			throw new \InvalidArgumentException("Unknow field `$sKey`");
+			throw new \InvalidArgumentException("Unknow field `$key`");
 		}
 	}
-	
-	public function toSql($aFilter)
+	/**
+	 * Get sql
+	 * @param array $filter
+	 * @return string
+	 * @throws \InvalidArgumentException
+	 */
+	public function toSql(array $filter)
 	{
-		$aReturn = [];
-		$sLogic = 'AND';
-		foreach ($aFilter as $sKey => $mValue){
-			if(is_numeric($sKey)){
-				$oBlock = new LogicBlock($this->oSqlBuilder,$this->aFilterRule);
-				$aReturn[] = '('.$oBlock->toSql((array)$mValue).')';
-			} elseif($sKey === 'LOGIC'){
-				if(in_array($mValue, ['OR','AND'])){
-					$sLogic = $mValue;
+		$return = [];
+		$logic = 'AND';
+		foreach($filter as $key => $value){
+			if (is_numeric($key)){
+				$block = new LogicBlock($this->sql_builder,$this->filter_rule);
+				$return[] = '('.$block->toSql((array)$value).')';
+			} elseif ($key === 'LOGIC'){
+				if (in_array($value,['OR','AND'])){
+					$logic = $value;
 				} else{
-					throw new \InvalidArgumentException("Logic must be AND or OR set `$mValue`");
+					throw new \InvalidArgumentException("Logic must be AND or OR set `$value`");
 				}
 			} else{
-				$aReturn[] = $this->getType($sKey)->addCondition($sKey, $mValue);
+				$return[] = $this->getType($key)->addCondition($key,$value);
 			}
 		}
-		return implode(' '.$sLogic.' ', $aReturn); 
+		return implode(' '.$logic.' ',$return);
 	}
 }

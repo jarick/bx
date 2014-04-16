@@ -1,15 +1,23 @@
 <?php namespace BX\DB\Filter;
-use BX\Object;
-use BX\DB\IDatabase;
 use BX\DB\Adaptor\IAdaptor;
 use BX\DB\Manager\DBResult;
+use BX\Base\Collection;
 
-class SqlBuilder extends Object
+class SqlBuilder
 {
 	use \BX\String\StringTrait,
+	 \BX\DB\DBTrait,
 	 \BX\Cache\CacheTrait{
 		cache as protected cacheManager;
 	}
+	/**
+	 * @var array
+	 */
+	private $fields = null;
+	/**
+	 * @var array
+	 */
+	private $relation = null;
 	/**
 	 * @var array
 	 */
@@ -55,48 +63,66 @@ class SqlBuilder extends Object
 	 */
 	private $cache_tags = [];
 	/**
-	 * @var array
+	 * @var \BX\DB\ITable
 	 */
-	private $filter_rule;
-	/**
-	 * @var array
-	 */
-	private $fields;
-	/**
-	 * @var array
-	 */
-	private $relation;
-	/**
-	 * @var \BX\DB\IDatabase $database
-	 */
-	private $database;
+	private $entity;
 	/**
 	 * @var string
 	 */
-	private $table;
-	/**
-	 * @var callable
-	 */
-	private $callback;
+	private $entity_class;
 	const CACHE_KEY_TIME = 'time';
 	const CACHE_KEY_NS = 'namespace';
 	const CACHE_PREFIX = '__SQL_BUILDER__';
 	/**
 	 * Constructor
-	 * @param \BX\DB\IDatabase $database
-	 * @param string $table
-	 * @param array $fields
-	 * @param array $filter_rule
-	 * @param array $relation
+	 * @param \BX\DB\ITable $entity
+	 * @param string $entity_class
 	 */
-	public function __construct(IDatabase $database,$table,array $fields,array $filter_rule = [],array $relation = [],$callback = false)
+	public function __construct(\BX\DB\ITable $entity,$entity_class)
 	{
-		$this->table = $table;
-		$this->database = $database;
+		$this->entity = $entity;
+		$fields = [];
+		foreach($entity->getColumns() as $key => $column){
+			$key = $this->string()->toUpper($key);
+			$fields[$key] = $column->getColumn();
+		}
 		$this->fields = $fields;
-		$this->filter_rule = $filter_rule;
-		$this->relation = $relation;
-		$this->callback = $callback;
+		$relations = $this->entity->getRelations();
+		for($i = 0; $i < count($relations); $i+=2){
+			$this->relation[] = [$relations[$i],$relations[$i + 1]];
+		}
+		$this->entity_class = $entity_class;
+	}
+	/**
+	 * Prepare array from db
+	 * @param array $fields
+	 * @return array
+	 */
+	private function prepareArrayFromDb(array $fields)
+	{
+		$columns = $this->entity->getColumns();
+		foreach($fields as $field => &$value){
+			if (array_key_exists($field,$columns)){
+				$value = $columns[$field]->convertFromDB($value);
+			}
+		}
+		unset($value);
+		return $fields;
+	}
+	/**
+	 * Convert values from db
+	 * @param array $values
+	 * @return \BX\Base\Collection
+	 */
+	public function convertFromArray(array $values)
+	{
+		$collection = new Collection($this->entity_class);
+		foreach($values as $value){
+			$entity = new $this->entity_class();
+			$entity->setData($this->prepareArrayFromDb($value),true);
+			$collection->add($entity);
+		}
+		return $collection;
 	}
 	/**
 	 * Get database adaptor
@@ -104,15 +130,7 @@ class SqlBuilder extends Object
 	 * */
 	public function adaptor()
 	{
-		return $this->database->adaptor();
-	}
-	/**
-	 * Get DB Manager
-	 * @return IDatabase
-	 */
-	public function db()
-	{
-		return $this->database;
+		return $this->db()->adaptor();
 	}
 	/**
 	 * Bind param
@@ -168,12 +186,13 @@ class SqlBuilder extends Object
 	 */
 	public function getColumn($key)
 	{
-		if (array_key_exists($key,$this->fields)){
+		$fields = $this->fields;
+		if (array_key_exists($key,$fields)){
 			if (!in_array($key,$this->columns)){
 				$this->columns[] = $key;
 			}
-			return $this->fields[$key];
-		} else{
+			return $fields[$key];
+		}else{
 			throw new \InvalidArgumentException("Field `$key` is not found");
 		}
 	}
@@ -183,12 +202,13 @@ class SqlBuilder extends Object
 	 */
 	public function group()
 	{
-		$aGroup = func_get_args();
-		if (count($aGroup) === 1 && isset($aGroup[0]) && is_array($aGroup[0])){
-			$aGroup = $aGroup[0];
+		$groups = func_get_args();
+		if (count($groups) === 1 && isset($groups[0]) && is_array($groups[0])){
+			$groups = $groups[0];
 		}
-		if ($aGroup !== false && !empty($aGroup)){
-			foreach ($aGroup as $key){
+		if ($groups !== false && !empty($groups)){
+			foreach($groups as $key){
+				$key = $this->string()->toUpper($key);
 				$this->group_sql[] = $this->getColumn($key);
 			}
 		}
@@ -197,17 +217,18 @@ class SqlBuilder extends Object
 	}
 	/**
 	 * Set sorting
-	 * @param array $aSort
+	 * @param array $sort
 	 * @return \BX\DB\Filter\SqlBuilder
 	 * @throws \InvalidArgumentException
 	 */
-	public function sort(array $aSort = [])
+	public function sort(array $sort = [])
 	{
-		foreach ($aSort as $key => $value){
-			$value = $this->string()->toLower($value);
-			if (in_array($value,['asc','desc'],true)){
+		foreach($sort as $key => $value){
+			$key = $this->string()->toUpper($key);
+			$value = $this->string()->toUpper($value);
+			if (in_array($value,['ASC','DESC'],true)){
 				$this->sort_sql[] = $this->getColumn($key).' '.$value;
-			} else{
+			}else{
 				throw new \InvalidArgumentException('Sorting must be asc or desc');
 			}
 		}
@@ -216,13 +237,30 @@ class SqlBuilder extends Object
 	}
 	/**
 	 * Set filter
-	 * @param array $aFilter
+	 * @param array $filter
 	 * @return \BX\DB\Filter\SqlBuilder
 	 */
-	public function filter(array $aFilter = [])
+	public function where($sql,array $params = [])
 	{
-		$oBlock = new LogicBlock($this,$this->filter_rule);
-		$this->filter_sql[] = $oBlock->toSql($aFilter);
+		$this->filter_sql[] = $sql;
+		foreach($params as $key => $value){
+			$this->vars[$key] = $value;
+		}
+		return $this;
+	}
+	/**
+	 * Set filter
+	 * @param array $filter
+	 * @return \BX\DB\Filter\SqlBuilder
+	 */
+	public function filter(array $filter = [])
+	{
+		$filter_rule = [];
+		foreach($this->entity->getColumns() as $key => $column){
+			$filter_rule[$key] = $column->getFilterRule();
+		}
+		$block = new LogicBlock($this,$filter_rule);
+		$this->filter_sql[] = $block->toSql($filter);
 		return $this;
 	}
 	/**
@@ -241,6 +279,7 @@ class SqlBuilder extends Object
 	 */
 	public function select()
 	{
+		$fields = $this->fields;
 		$select = func_get_args();
 		if (count($select) === 1 && isset($select[0]) && is_array($select[0])){
 			$select = $select[0];
@@ -248,11 +287,13 @@ class SqlBuilder extends Object
 		$all = false;
 		if (in_array('*',$select)){
 			$all = true;
-			foreach ($this->fields as $key => $value){
+			foreach($fields as $key => $value){
+				unset($select[$key]);
+				$key = $this->string()->toUpper($key);
 				$this->select_sql[] = $this->getColumn($key).' as '.$this->db()->esc($key);
 			}
 		}
-		foreach ($select as $key => $value){
+		foreach($select as $key => $value){
 			if ($value === '*'){
 				continue;
 			}
@@ -260,12 +301,12 @@ class SqlBuilder extends Object
 				if ($all === false){
 					$this->select_sql[] = $this->getColumn($value).' as '.$this->db()->esc($value);
 				}
-			} else{
+			}else{
 				$value = $this->string()->toUpper($value);
 				$function = $this->getGroupByFunctionArray();
 				if (in_array($value,$function)){
 					$this->select_sql[] = $value.'('.$this->getColumn($key).') as '.$this->db()->esc($value.'_'.$key);
-				} else{
+				}else{
 					throw new \InvalidArgumentException("Agreegate function must be ".
 					implode('|',$this->getGroupByFunctionArray())." set `$value`");
 				}
@@ -285,21 +326,21 @@ class SqlBuilder extends Object
 		$relations = [];
 		$keys = [];
 		$i = 0;
-		foreach ($relation_array as $column => $relation){
+		foreach($relation_array as $column => $relation){
 			if (is_string($relation)){
 				$columns = explode(',',$column);
 				$relation = $relation;
-			} else{
-				$columns = (array) $relation[0];
+			}else{
+				$columns = (array)$relation[0];
 				$relation = $relation[1];
 			}
-			foreach ($columns as $key){
+			foreach($columns as $key){
 				$keys[$key] = $i;
 			}
 			$relations[$i] = $relation;
 			$i++;
 		}
-		foreach ($this->columns as $column){
+		foreach($this->columns as $column){
 			if (isset($keys[$column]) && isset($relations[$keys[$column]])){
 				$result[] = $relations[$keys[$column]];
 				unset($relations[$keys[$column]]);
@@ -307,20 +348,19 @@ class SqlBuilder extends Object
 		}
 		return $result;
 	}
+	/**
+	 * Get all
+	 * @return \BX\Base\Collection
+	 */
 	public function all()
 	{
-		$result = $this->asArray();
-		if ($this->callback !== false){
-			return call_user_func_array($this->callback,[$result->getData()]);
-		} else{
-			return $result;
-		}
+		return $this->convertFromArray($this->find()->getData());
 	}
 	/**
 	 * Find all rows
 	 * @return DBResult
 	 */
-	public function asArray()
+	public function find()
 	{
 		$sql = $this->getSql();
 		if (is_array($this->cache)){
@@ -337,10 +377,10 @@ class SqlBuilder extends Object
 				}
 				$cache->set($cache_key,$data->getData(),$ns,$time,$tags);
 				return $data;
-			} else{
-				$result = DBResult::getManager(false,['result' => $cache_result]);
+			}else{
+				$result = new DBResult($cache_result);
 			}
-		} else{
+		}else{
 			$result = $this->query($sql);
 		}
 		return $result;
@@ -351,7 +391,9 @@ class SqlBuilder extends Object
 	 */
 	public function get()
 	{
-		return $this->limit(1)->all();
+		$all = $this->limit(1)->all();
+		$all->rewind();
+		return $all->current();
 	}
 	/**
 	 * Send query
@@ -377,7 +419,7 @@ class SqlBuilder extends Object
 			$this->select(['*']);
 		}
 		$sql .= ' '.implode(',',$this->select_sql);
-		$sql .= ' FROM '.$this->table.' T';
+		$sql .= ' FROM '.$this->entity->getDbTable().' T';
 		if (!empty($this->relation)){
 			$relation_array = $this->getRelationArray($this->relation);
 			if (!empty($relation_array)){
@@ -391,7 +433,7 @@ class SqlBuilder extends Object
 			$sql .= ' GROUP BY '.implode(',',$this->group_sql);
 		}
 		if (!empty($this->sort_sql)){
-			$sql .= ' SORT BY '.implode(',',$this->sort_sql);
+			$sql .= ' ORDER BY '.implode(',',$this->sort_sql);
 		}
 		if ($this->limit > 0){
 			$sql .= ' LIMIT '.$this->limit;
@@ -425,7 +467,7 @@ class SqlBuilder extends Object
 		if (!empty($this->group_sql)){
 			$sql .= ' GROUP BY '.implode(',',$this->group_sql);
 		}
-		$result = $this->db()->query($sql,$this->vars)->count();
+		$result = $this->query($sql)->count();
 		return $result[0]['CNT'];
 	}
 	/**
@@ -435,7 +477,7 @@ class SqlBuilder extends Object
 	 */
 	public function setTags($tags)
 	{
-		$this->cache_tags = (array) $tags;
+		$this->cache_tags = (array)$tags;
 		return $this;
 	}
 	/**

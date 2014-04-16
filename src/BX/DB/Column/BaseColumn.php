@@ -1,8 +1,7 @@
 <?php namespace BX\DB\Column;
 use BX\DB\Column\IColumn;
-use BX\Base;
 
-abstract class BaseColumn extends Base implements IColumn
+abstract class BaseColumn implements IColumn
 {
 	/**
 	 * @var string

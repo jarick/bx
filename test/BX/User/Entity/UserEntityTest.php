@@ -12,17 +12,6 @@ class UserEntityTest extends DBTest
 	{
 		parent::setUp();
 		$this->entity = UserEntity::getEntity();
-		$this->assertGreaterThan(0,$this->entity->add([
-				'ID'			 => 1,
-				'LOGIN'			 => 'admin',
-				'ACTIVE'		 => 'Y',
-				'DISPLAY_NAME'	 => 'admin',
-				'EMAIL'			 => 'no@email.com',
-				'REGISTERED'	 => 'Y',
-				'ACTIVE'		 => 'Y',
-				'PASSWORD'		 => '123456',
-			])
-		);
 	}
 	public function testValidatePasswordEmpty()
 	{

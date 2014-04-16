@@ -9,7 +9,7 @@ class ConsoleTest extends \PHPUnit_Framework_TestCase
 	{
 		$post = ['FORM' => ['CODE' => 'test arg1 arg2']];
 		$this->request()->setPost($post);
-		$view = $this->getMock('BX\MVC\Manager\View',['abort']);
+		$view = $this->getMock('BX\MVC\View',['abort']);
 		$view->init();
 		$this->on(Console::EVENT_LIST_COMMAND,function(Collection $commands){
 			$command = $this->getMock('BX\Console\Command\Console',['run','command'],[]);

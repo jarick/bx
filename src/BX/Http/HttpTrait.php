@@ -1,9 +1,8 @@
 <?php namespace BX\Http;
-use BX\Http\Manager\Request;
-use BX\Http\Manager\Response;
-use BX\Http\Manager\Flash;
-use BX\Http\Manager\Session;
-use BX\DI;
+use BX\Http\RequestManager;
+use BX\Http\ResponseManager;
+use BX\Http\FlashManager;
+use BX\Base\DI;
 
 trait HttpTrait
 {
@@ -15,7 +14,7 @@ trait HttpTrait
 	{
 		$key = 'request';
 		if (DI::get($key) === null){
-			DI::set($key,Request::getManager());
+			DI::set($key,new RequestManager());
 		}
 		return DI::get($key);
 	}
@@ -27,7 +26,7 @@ trait HttpTrait
 	{
 		$key = 'response';
 		if (DI::get($key) === null){
-			DI::set($key,Response::getManager());
+			DI::set($key,new ResponseManager());
 		}
 		return DI::get($key);
 	}
@@ -39,19 +38,7 @@ trait HttpTrait
 	{
 		$key = 'flash';
 		if (DI::get($key) === null){
-			DI::set($key,Flash::getManager(false,['session' => $this->session()]));
-		}
-		return DI::get($key);
-	}
-	/**
-	 * Get session manager
-	 * @return Session
-	 */
-	public function session()
-	{
-		$key = 'session';
-		if (DI::get($key) === null){
-			DI::set($key,Session::getManager());
+			DI::set($key,new FlashManager());
 		}
 		return DI::get($key);
 	}

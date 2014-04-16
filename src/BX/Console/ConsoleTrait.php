@@ -1,6 +1,6 @@
 <?php namespace BX\Console;
-use \BX\Console\Manager\ConsoleController;
-use BX\DI;
+use \BX\Console\ConsoleController;
+use BX\Base\DI;
 
 trait ConsoleTrait
 {
@@ -12,7 +12,7 @@ trait ConsoleTrait
 	{
 		$key = 'console';
 		if (DI::get($key) === null){
-			DI::set($key,ConsoleController::getManager());
+			DI::set($key,new ConsoleController());
 		}
 		return DI::get($key);
 	}

@@ -1,21 +1,16 @@
 <?php namespace BX\Validator;
-use BX\Validator\Manager\Validator;
 
 trait ValidatorTrait
 {
 	/**
 	 * Get validator
-	 * @param array $aRules
-	 * @param array $aLabels
-	 * @param array $bNew
+	 * @param array $rules
+	 * @param array $labels
+	 * @param array $new
 	 * @return Validator
 	 */
-	protected function validator($aRules,$aLabels,$bNew = true)
+	protected function validator(array $rules,array $labels,$new = true)
 	{
-		return Validator::getManager(false,[
-				'labels' => $aLabels,
-				'rules'	 => $aRules,
-				'new'	 => $bNew,
-		]);
+		return new Validator($labels,$rules,$new);
 	}
 }

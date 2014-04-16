@@ -1,10 +1,11 @@
 <?php namespace BX\Migration\Command;
 use BX\Console\Command\Console;
-use BX\Migration\Manager\Migrate as MigrateManager;
+use BX\Migration\MigrateManager;
 
 class Migrate extends Console
 {
-	use \BX\String\StringTrait;
+	use \BX\String\StringTrait,
+	 \BX\Migration\MigrationTrait;
 	/**
 	 * Run
 	 * @param array $args
@@ -22,22 +23,22 @@ class Migrate extends Console
 		$service = $args[1];
 		if ($this->string()->countSubstr($service,':') > 0){
 			list($package,$service) = explode(':',$service);
-		} else{
-			$package = self::getPackage();
+		}else{
+			$package = 'BX';
 		}
-		$migrate = MigrateManager::getManager(false,[
-				'package'	 => $package,
-				'service'	 => $service,
-		]);
+		$migrate = $this->migrate($package,$service);
 		switch ($action){
-			case 'up': $migrate->up();break;
-			case 'redo': $migrate->redo();break;
-			case 'down': $migrate->down();break;
+			case 'up': $migrate->up();
+				break;
+			case 'redo': $migrate->redo();
+				break;
+			case 'down': $migrate->down();
+				break;
 			default: throw new \InvalidArgumentException("Action `$action` is not found, allow action: `up,redo,down`.");
 		}
 		if (!$migrate->isFound()){
 			$this->getWriter()->error('Next migrate is not found.');
-		} else{
+		}else{
 			$this->getWriter()->success('Success.');
 		}
 	}

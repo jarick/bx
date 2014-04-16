@@ -1,46 +1,56 @@
-<?php
-namespace BX\DB\Filter\Rule;
+<?php namespace BX\DB\Filter\Rule;
 
-class String extends Base
+class String extends BaseRule
 {
-	private function getNull($sColumn)
+	/**
+	 * Get null sql
+	 * @param string $column
+	 * @return string
+	 */
+	private function getNull($column)
 	{
-		return 	'('.$sColumn." IS NULL OR ".$this->adaptor()->length($sColumn).'=0)';
+		return '('.$column." IS NULL OR ".$this->adaptor()->length($column).'=0)';
 	}
-	
-	public function addCondition($sField, $sValue)
+	/**
+	 * Add condition
+	 * @param string $field
+	 * @param string $value
+	 * @return string
+	 */
+	public function addCondition($field,$value)
 	{
-		$bNot = false;
-		if(substr($sField, 0, 1) === '!'){
-			$sField = substr($sField, 1);
-			$bNot = true;
+		$not = false;
+		if (substr($field,0,1) === '!'){
+			$field = substr($field,1);
+			$not = true;
 		}
-		if(substr($sField, 0, 1) === '%'){
-			$sField = substr($sField, 1);
-			$sColumn = $this->getColumn($sField);
-			if(strlen($sValue)>0){
-				$sSql = $this->adaptor()->upper($sColumn).' LIKE '.$this->adaptor()->upper($this->bindParam($sField,'%'.$sValue.'%'));
+		if (substr($field,0,1) === '%'){
+			$field = substr($field,1);
+			$column = $this->getColumn($field);
+			if (strlen($value) > 0){
+				$sql = $this->adaptor()->upper($column).' LIKE ';
+				$sql .= $this->adaptor()->upper($this->bindParam($field,'%'.$value.'%'));
 			} else{
-				$sSql = $this->getNull($sColumn);
+				$sql = $this->getNull($column);
 			}
-		} elseif(substr($sField, 0, 1) === '='){
-			$sField = substr($sField, 1);
-			$sColumn = $this->getColumn($sField);
-			if(strlen($sValue)>0){
-				$sSql = $sColumn.' = '.$this->bindParam($sField,$sValue);
+		} elseif (substr($field,0,1) === '='){
+			$field = substr($field,1);
+			$column = $this->getColumn($field);
+			if (strlen($value) > 0){
+				$sql = $column.' = '.$this->bindParam($field,$value);
 			} else{
-				$sSql = $this->getNull($sColumn);
+				$sql = $this->getNull($column);
 			}
-		} elseif(strlen($sValue)<=0){
-			$sColumn = $this->getColumn($sField);
-			$sSql = $this->getNull($sColumn);
+		} elseif (strlen($value) <= 0){
+			$column = $this->getColumn($field);
+			$sql = $this->getNull($column);
 		} else{
-			$sColumn = $this->getColumn($sField);
-			$sSql = $sColumn.' LIKE '.$this->bindParam($sField,$sValue);
+			$column = $this->getColumn($field);
+			$sql = $column.' LIKE '.$this->bindParam($field,$value);
 		}
-		if($bNot){
-			$sSql = "NOT($sSql)";
+		if ($not){
+			$sql = "NOT($sql)";
 		}
-		return $sSql;
+		return $sql;
 	}
 }

@@ -1,73 +1,100 @@
-<?php
-namespace BX\DB\Filter\Rule;
+<?php namespace BX\DB\Filter\Rule;
 use BX\DB\Filter\SqlBuilder;
-use BX\DB\Adaptor\IAdaptor;
 
-class DateTime extends Base
+class DateTime extends BaseRule
 {
 	use \BX\Date\DateTrait;
-		
-	private function getNull($sColumn)
+	/**
+	 * @var string
+	 */
+	private $format;
+	/**
+	 * Get sql for null
+	 * @param string $column
+	 * @return string
+	 */
+	private function getNull($column)
 	{
-		return 	'('.$sColumn." IS NULL OR ".$this->adaptor()->length($sColumn).'=0)';
+		return '('.$column." IS NULL OR ".$this->adaptor()->length($column).'=0)';
 	}
-	
-	private $sFormat;
-	
-	public static function short(SqlBuilder $oFilter,IAdaptor $oAdaptor)
+	/**
+	 * Create date rule
+	 * @param \BX\DB\Filter\SqlBuilder $filter
+	 * @return \BX\DB\Filter\Rule\DateTime
+	 */
+	public static function short(SqlBuilder $filter)
 	{
-		$date = new self($oFilter,$oAdaptor);
-		$date->setFormat('short');
-		return $date;
+		$date = new self($filter);
+		return $date->setFormat('short');
 	}
-
-	public static function full(SqlBuilder $oFilter,IAdaptor $oAdaptor)
+	/**
+	 * Create datetime rule
+	 * @param \BX\DB\Filter\SqlBuilder $filter
+	 * @return \BX\DB\Filter\Rule\DateTime
+	 */
+	public static function full(SqlBuilder $filter)
 	{
-		$date = new self($oFilter,$oAdaptor);
-		$date->setFormat('full');
-		return $date;
+		$date = new self($filter);
+		return $date->setFormat('full');
 	}
-	
-	public function setFormat($sFormat = 'short')
+	/**
+	 * Set format date
+	 * @param string $format
+	 * @return \BX\DB\Filter\Rule\DateTime
+	 */
+	public function setFormat($format = 'short')
 	{
-		$this->sFormat = $sFormat;
+		$this->format = $format;
 		return $this;
 	}
-	
-	private function getSql($sField,$sValue,$sOperation)
+	/**
+	 * Get sql
+	 * @param string $field
+	 * @param string $value
+	 * @param string $operation
+	 * @return string
+	 * @throws \InvalidArgumentException
+	 */
+	private function getSql($field,$value,$operation)
 	{
-		$sColumn = $this->getColumn($sField);
-		if(strlen($sValue)>0){
-			if(!$this->date()->checkDateTime($sValue,$this->sFormat)){
-				throw new \InvalidArgumentException("Filter `$sField` must be date input `$sValue`");
+		$column = $this->getColumn($field);
+		if (strlen($value) > 0){
+			if (!$this->date()->checkDateTime($value,$this->format)){
+				throw new \InvalidArgumentException("Filter `$field` must be date input `$value`");
 			}
-			return $sColumn.' '.$sOperation.' '.$this->bindParam($sField,$this->date()->makeTimeStamp($sValue,$this->sFormat) + $this->date()->getOffset());
+			$time = $this->date()->makeTimeStamp($value,$this->format) + $this->date()->getOffset();
+			return $column.' '.$operation.' '.$this->bindParam($field,$time);
 		} else{
-			return $this->getNull($sColumn);
+			return $this->getNull($column);
 		}
 	}
-	
-	public function addCondition($sField, $sValue)
+	/**
+	 * Add condition sql
+	 * @param string $field
+	 * @param string $value
+	 * @return string
+	 */
+	public function addCondition($field,$value)
 	{
-		$bNot = false;
-		if(substr($sField, 0, 1) === '!'){
-			$sField = substr($sField, 1);
-			$bNot = true;
+		$not = false;
+		if (substr($field,0,1) === '!'){
+			$field = substr($field,1);
+			$not = true;
 		}
-		if(substr($sField, 0, 2) === '>='){
-			$sSql = $this->getSql(substr($sField,2), $sValue, '>=');
-		} elseif(substr($sField, 0, 2) === '<='){
-			$sSql = $this->getSql(substr($sField,2), $sValue, '<=');
-		} elseif(substr($sField, 0, 1) === '>'){
-			$sSql = $this->getSql(substr($sField,1), $sValue, '>');
-		} elseif(substr($sField, 0, 1) === '<'){
-			$sSql = $this->getSql(substr($sField,1), $sValue, '<');
+		if (substr($field,0,2) === '>='){
+			$sql = $this->getSql(substr($field,2),$value,'>=');
+		} elseif (substr($field,0,2) === '<='){
+			$sql = $this->getSql(substr($field,2),$value,'<=');
+		} elseif (substr($field,0,1) === '>'){
+			$sql = $this->getSql(substr($field,1),$value,'>');
+		} elseif (substr($field,0,1) === '<'){
+			$sql = $this->getSql(substr($field,1),$value,'<');
 		} else{
-			$sSql = $this->getSql($sField, $sValue, '=');
+			$sql = $this->getSql($field,$value,'=');
 		}
-		if($bNot){
-			$sSql = "NOT($sSql)";
+		if ($not){
+			$sql = "NOT($sql)";
 		}
-		return $sSql;
+		return $sql;
 	}
 }

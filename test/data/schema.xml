@@ -1,5 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
-    <tbl_test />
-	<tbl_user />
+    <tbl_test 
+		ID = "1"
+		TEST = "TEST"
+	/>
+	<tbl_user 
+		ID = "1" 
+		LOGIN = "admin" 
+		DISPLAY_NAME = "admin" 
+		EMAIL = "no@email.com" 
+		REGISTERED = "1" 
+		CREATE_DATE = "1396302774"
+		TIMESTAMP_X = "1396302774"
+		URL = ""
+		ACTIVE = "1" 
+		PASSWORD = "$2y$10$GhaQ8p/vJolWTv2s4YApEugWZQ2V0N.20v2y5Ta9XvNRXulv0FsCG"
+		CODE = "admin"
+	/>
+	<tbl_auth 
+		ID = "1"
+		ACCESS_TOKEN = "$2y$10$GhaQ8p/vJolWTv2s4YApEugWZQ2V0N.20v2y5Ta9XvNRXulv0FsCG"
+		UNIQUE_ID = "121.0.0.1"
+		USER_ID = "1"
+		CREATE_DATE = "1396302774"
+		TIMESTAMP_X = "1396302774"
+		EXPIRE = "0"
+	/>
 </dataset>

@@ -1,24 +1,42 @@
 <?php namespace BX\Event;
-use BX\Event\Manager\EventManager;
-use BX\DI;
+use BX\Event\EventManager;
+use BX\Base\DI;
 
 trait EventTrait
 {
-	private function getEventManager()
+	/**
+	 * Get event manager
+	 * @return EventManager
+	 */
+	private function event()
 	{
 		$key = 'event';
 		if (DI::get($key) === null){
-			DI::set($key,EventManager::getManager());
+			DI::set($key,new EventManager());
 		}
 		return DI::get($key);
 	}
+	/**
+	 * Listner
+	 * @param string $name
+	 * @param string $func
+	 * @param integer $sort
+	 * @return mixed
+	 */
 	public function on($name,$func,$sort = 500)
 	{
-		$this->getEventManager()->on($name,$func,$sort);
+		$this->event()->on($name,$func,$sort);
 		return $this;
 	}
+	/**
+	 * Call event
+	 * @param string $name
+	 * @param array $params
+	 * @param boolean $halt
+	 * @return mixed
+	 */
 	public function fire($name,$params = [],$halt = true)
 	{
-		return $this->getEventManager()->fire($name,$params,$halt);
+		return $this->event()->fire($name,$params,$halt);
 	}
 }

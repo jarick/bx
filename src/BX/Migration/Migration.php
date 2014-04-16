@@ -1,10 +1,10 @@
 <?php namespace BX\Migration;
-use BX\DB\ActiveRecord;
 use BX\DB\Helper\TableColumn;
-use BX\Migration\Entity\Migration as MigrationEntity;
+use BX\Migration\Entity\MigrationEntity;
 
 class Migration
 {
+	use \BX\DB\DBTrait;
 	const MIGRATE_TABLE = 'tbl_migrate';
 	/**
 	 * @root
@@ -12,17 +12,16 @@ class Migration
 	public function up($up)
 	{
 		if ($up){
-			$entity = MigrationEntity::getEntity();
-			$entity->db()->createTable(self::MIGRATE_TABLE,[
-				TableColumn::getPK('ID')->toArray(),
-				TableColumn::getString(MigrationEntity::C_PACKAGE,100)->setNotNull()->toArray(),
-				TableColumn::getString(MigrationEntity::C_SERVICE,100)->setNotNull()->toArray(),
-				TableColumn::getString(MigrationEntity::C_FUNCTION,100)->setNotNull()->toArray(),
-				TableColumn::getString(MigrationEntity::C_GUID,30)->setNotNull()->toArray(),
-				TableColumn::getTimestamp(MigrationEntity::C_TIMESTAMP_X)->setNotNull()->toArray(),
+			$this->db()->createTable(self::MIGRATE_TABLE,[
+				TableColumn::getPK('ID'),
+				TableColumn::getString(MigrationEntity::C_PACKAGE,100)->setNotNull(),
+				TableColumn::getString(MigrationEntity::C_SERVICE,100)->setNotNull(),
+				TableColumn::getString(MigrationEntity::C_FUNCTION,100)->setNotNull(),
+				TableColumn::getString(MigrationEntity::C_GUID,30)->setNotNull(),
+				TableColumn::getTimestamp(MigrationEntity::C_TIMESTAMP_X)->setNotNull(),
 			]);
-		} else{
-			ActiveRecord::getDB()->dropTable(self::MIGRATE_TABLE);
+		}else{
+			$this->db()->dropTable(self::MIGRATE_TABLE);
 		}
 	}
 }

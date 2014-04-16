@@ -1,6 +1,6 @@
 <?php namespace BX\Date;
-use BX\DI;
-use BX\Date\Manager\DateTimeManager;
+use BX\Base\DI;
+use BX\Date\DateTimeManager;
 
 trait DateTrait
 {
@@ -10,7 +10,7 @@ trait DateTrait
 	public function date()
 	{
 		if (DI::get('date') === null){
-			DI::set('date',DateTimeManager::getManager());
+			DI::set('date',new DateTimeManager());
 		}
 		return DI::get('date');
 	}

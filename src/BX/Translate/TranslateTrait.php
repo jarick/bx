@@ -1,29 +1,21 @@
 <?php namespace BX\Translate;
-use BX\Translate\Manager\Translate;
-use BX\DI;
-use BX\Registry;
+use BX\Translate\Translate;
+use BX\Base\DI;
+use BX\Base\Registry;
 
 trait TranslateTrait
 {
-	/**
-	 * Get translate manager
-	 * @return Translate
-	 */
-	private function getTranslateManager()
-	{
-		$manager = 'translate';
-		if (DI::get($manager) === null){
-			DI::set($manager,Translate::getManager());
-		}
-		return DI::get($manager);
-	}
 	/**
 	 * Get translator
 	 * @return Translate
 	 */
 	public function translator()
 	{
-		return $this->getTranslateManager();
+		$manager = 'translate';
+		if (DI::get($manager) === null){
+			DI::set($manager,new TranslateManager());
+		}
+		return DI::get($manager);
 	}
 	/**
 	 * Translate message
@@ -37,14 +29,14 @@ trait TranslateTrait
 	public function trans($message,array $params = [],$lang = null,$package = null,$service = null)
 	{
 		if ($package === null){
-			$package = static::getPackage();
+			$package = explode('\\',get_called_class())[0];
 		}
 		if ($service === null){
-			$service = static::getService();
+			$service = explode('\\',get_called_class())[1];
 		}
 		if ($lang === null){
 			$lang = (Registry::exists('lang')) ? Registry::get('lang') : 'en';
 		}
-		return $this->getTranslateManager()->trans($message,$params,$lang,$package,$service);
+		return $this->translator()->trans($message,$params,$lang,$package,$service);
 	}
 }

@@ -1,9 +1,8 @@
 <?php namespace BX\DB\Adaptor;
-use BX\Registry;
-use BX\Object;
-use BX\DI;
+use BX\Base\Registry;
+use BX\Base\DI;
 
-class DbAdaptor extends Object
+class DbAdaptor
 {
 	/**
 	 * Get pdo
@@ -17,7 +16,6 @@ class DbAdaptor extends Object
 			$passwd = (Registry::exists('pdo','passwd')) ? Registry::get('pdo','passwd') : '';
 			$options = (Registry::exists('pdo','options')) ? Registry::get('pdo','options') : [];
 			$pdo = new \PDO($dsn,$username,$passwd,$options);
-			$pdo->setAttribute(\PDO::ATTR_ERRMODE,\PDO::ERRMODE_EXCEPTION);
 			DI::set('pdo',$pdo);
 		}
 		return DI::get('pdo');
@@ -32,7 +30,7 @@ class DbAdaptor extends Object
 	{
 		$query = $this->pdo()->prepare($sql);
 		if ($query === false){
-			throw new \PDOException("Error sql query :`$sql`");
+			return false;
 		}
 		return $query->execute($vars);
 	}
@@ -54,20 +52,12 @@ class DbAdaptor extends Object
 	{
 		$query = $this->pdo()->prepare($sql);
 		if ($query === false){
-			throw new \PDOException("Error sql query :`$sql`");
+			return false;
 		}
 		if ($query->execute($vars)){
-			return $query->fetchAll();
+			return $query->fetchAll(\PDO::FETCH_ASSOC);
 		} else{
-			throw new \PDOException("Error sql query :`$sql`");
+			return false;
 		}
-	}
-	/**
-	 * Drop table
-	 * @param string $table
-	 */
-	public function dropTable($table)
-	{
-		return $this->execute('DROP TABLE '.$table);
 	}
 }

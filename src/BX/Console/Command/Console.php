@@ -1,8 +1,7 @@
 <?php namespace BX\Console\Command;
-use BX\Console\IWriter;
-use BX\Base;
+use BX\Console\Writer\IWriter;
 
-abstract class Console extends Base
+abstract class Console
 {
 	/**
 	 * @var IWriter
@@ -10,9 +9,9 @@ abstract class Console extends Base
 	protected $writer = false;
 	/**
 	 * Set writer
-	 * @param type $writer
+	 * @param IWriter2 $writer
 	 */
-	public function setWriter($writer)
+	public function setWriter(IWriter2 $writer)
 	{
 		$this->writer = $writer;
 		return $this;

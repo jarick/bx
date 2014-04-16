@@ -1,24 +1,19 @@
-<?php
-namespace BX\FileSystem;
-use BX\Registry;
-use BX\FileSystem\Manager\FileSystemManager;
+<?php namespace BX\FileSystem;
+use BX\Base\DI;
+use BX\FileSystem\FileSystemManager;
 
-trait FileSystemTrait 
+trait FileSystemTrait
 {
 	/**
+	 * Get filesystem manager
 	 * @return FileSystemManager
-	 **/
+	 */
 	public function filesystem()
 	{
-		return $this->getFileSystemManager();
-	}
-	
-	private function getFileSystemManager()
-	{
-		static $oFileSystem;
-		if(!isset($oFileSystem)){
-			$oFileSystem = FileSystemManager::getManager();
+		$key = 'filesystem';
+		if (DI::get($key) === null){
+			DI::set($key,new FileSystemManager());
 		}
-		return $oFileSystem;
+		return DI::get($key);
 	}
 }

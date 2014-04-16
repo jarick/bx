@@ -1,46 +1,63 @@
-<?php
-namespace BX\DB\Filter\Rule;
+<?php namespace BX\DB\Filter\Rule;
 
-class Number extends Base
+class Number extends BaseRule
 {
-	private function getNull($sColumn)
+	/**
+	 * Get Sql for null
+	 * @param type $column
+	 * @return type
+	 */
+	private function getNull($column)
 	{
-		return 	'('.$sColumn." IS NULL OR ".$this->adaptor()->length($sColumn).'=0)';
+		return '('.$column." IS NULL OR ".$this->adaptor()->length($column).'=0)';
 	}
-	private function getSql($sField,$sValue,$sOperation)
+	/**
+	 * Get sql
+	 * @param string $field
+	 * @param string $value
+	 * @param string $operation
+	 * @return string
+	 * @throws \InvalidArgumentException
+	 */
+	private function getSql($field,$value,$operation)
 	{
-		$sColumn = $this->getColumn($sField);
-		if(strlen($sValue)>0){
-			if(!is_numeric($sValue)){
-				throw new \InvalidArgumentException("Filter `$sField` must be numeric input `$sValue`");
+		$column = $this->getColumn($field);
+		if (strlen($value) > 0){
+			if (!is_numeric($value)){
+				throw new \InvalidArgumentException("Filter `$field` must be numeric input `$value`");
 			}
-			return $sColumn.' '.$sOperation.' '.$this->bindParam($sField,$sValue);
+			return $column.' '.$operation.' '.$this->bindParam($field,$value);
 		} else{
-			return $this->getNull($sColumn);
+			return $this->getNull($column);
 		}
 	}
-	
-	public function addCondition($sField, $sValue)
+	/**
+	 * Add condition sql
+	 * @param string $field
+	 * @param string $value
+	 * @return string
+	 */
+	public function addCondition($field,$value)
 	{
-		$bNot = false;
-		if(substr($sField, 0, 1) === '!'){
-			$sField = substr($sField, 1);
-			$bNot = true;
+		$not = false;
+		if (substr($field,0,1) === '!'){
+			$field = substr($field,1);
+			$not = true;
 		}
-		if(substr($sField, 0, 2) === '>='){
-			$sSql = $this->getSql(substr($sField,2), $sValue, '>=');
-		} elseif(substr($sField, 0, 2) === '<='){
-			$sSql = $this->getSql(substr($sField,2), $sValue, '<=');
-		} elseif(substr($sField, 0, 1) === '>'){
-			$sSql = $this->getSql(substr($sField,1), $sValue, '>');
-		} elseif(substr($sField, 0, 1) === '<'){
-			$sSql = $this->getSql(substr($sField,1), $sValue, '<');
+		if (substr($field,0,2) === '>='){
+			$sql = $this->getSql(substr($field,2),$value,'>=');
+		} elseif (substr($field,0,2) === '<='){
+			$sql = $this->getSql(substr($field,2),$value,'<=');
+		} elseif (substr($field,0,1) === '>'){
+			$sql = $this->getSql(substr($field,1),$value,'>');
+		} elseif (substr($field,0,1) === '<'){
+			$sql = $this->getSql(substr($field,1),$value,'<');
 		} else{
-			$sSql = $this->getSql($sField, $sValue, '=');
+			$sql = $this->getSql($field,$value,'=');
 		}
-		if($bNot){
-			$sSql = "NOT($sSql)";
+		if ($not){
+			$sql = "NOT($sql)";
 		}
-		return $sSql;
+		return $sql;
 	}
 }
