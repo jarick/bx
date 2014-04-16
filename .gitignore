@@ -1,8 +1,4 @@
 test/BX/ZendSearch/search
-src/BX/_Admin/
-src/BX/_Gii/
-src/BX/_Queue/
-
 /vendor/
 /www/
 /nbproject/
@@ -10,7 +6,6 @@ src/BX/_Queue/
 /todo/
 /db.db
 /phpunit.xml
-/:memory
 /phpunit
 /composer.lock
 /composer.phar
@@ -18,3 +13,4 @@ src/BX/_Queue/
 /haml/
 /search/
 /app/
+/bin/
