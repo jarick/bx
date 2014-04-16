@@ -62,9 +62,9 @@ class Repository
 	}
 	/**
 	 * Add entity
-	 * @param \BX\DB\ITable $table
+	 * @param ITable $table
 	 * @param IEntity $entity
-	 * @return \BX\Validator\LazyValue
+	 * @return LazyValue
 	 */
 	public function add(ITable $table,$entity = null)
 	{
@@ -79,7 +79,7 @@ class Repository
 	}
 	/**
 	 * Update entity
-	 * @param \BX\DB\ITable $table
+	 * @param ITable $table
 	 * @param IEntity $entity
 	 */
 	public function update(ITable $table,$entity = null)
@@ -88,7 +88,7 @@ class Repository
 	}
 	/**
 	 * Delete entity
-	 * @param \BX\DB\ITable $table
+	 * @param ITable $table
 	 * @param IEntity $entity
 	 */
 	public function delete(ITable $table,$entity = null)
@@ -106,7 +106,7 @@ class Repository
 	}
 	/**
 	 * Validate operation
-	 * @param \BX\Base\Collection $collection
+	 * @param Collection $collection
 	 * @return boolean
 	 */
 	private function prepare(Collection $collection)
@@ -140,7 +140,7 @@ class Repository
 	}
 	/**
 	 * Execute sql query
-	 * @param \BX\Base\Collection $collection
+	 * @param Collection $collection
 	 * @return boolean
 	 */
 	private function send(Collection $collection)
@@ -210,7 +210,7 @@ class Repository
 	}
 	/**
 	 * Set lazy value
-	 * @param \BX\Validator\IEntity $entity
+	 * @param IEntity $entity
 	 * @param string $value
 	 * @return boolean
 	 */
