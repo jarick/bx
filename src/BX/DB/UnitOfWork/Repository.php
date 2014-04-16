@@ -53,7 +53,7 @@ class Repository
 		$this->success = new Collection('BX\DB\UnitOfWork\EntityBase');
 		$this->key = $key;
 		if (!self::$lock){
-			throw new \RuntimeException('abc');
+			throw new \RuntimeException('Nested transactions is not support');
 		}
 		self::$lock = false;
 		if ($key !== null){
