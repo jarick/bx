@@ -1,6 +1,6 @@
 <?php namespace BX\Http;
-use BX\Http\RequestManager;
-use BX\Http\ResponseManager;
+use BX\Http\Request;
+use BX\Http\Response;
 use BX\Http\FlashManager;
 use BX\Base\DI;
 
@@ -14,7 +14,7 @@ trait HttpTrait
 	{
 		$key = 'request';
 		if (DI::get($key) === null){
-			DI::set($key,new RequestManager());
+			DI::set($key,new Request());
 		}
 		return DI::get($key);
 	}
@@ -26,7 +26,7 @@ trait HttpTrait
 	{
 		$key = 'response';
 		if (DI::get($key) === null){
-			DI::set($key,new ResponseManager());
+			DI::set($key,new Response());
 		}
 		return DI::get($key);
 	}

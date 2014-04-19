@@ -4,7 +4,7 @@ use BX\Http\CookieStore;
 use BX\Http\IRequest;
 use BX\Http\Store;
 
-class RequestManager implements IRequest
+class Request implements IRequest
 {
 	/**
 	 * @var Store|array
@@ -65,7 +65,7 @@ class RequestManager implements IRequest
 	public function query()
 	{
 		if ($this->get === null){
-			$this->get = filter_input_array(INPUT_GET);
+			$this->get = (array)filter_input_array(INPUT_GET);
 		}
 		if (!is_object($this->get)){
 			$this->get = new Store($this->get);
@@ -79,7 +79,7 @@ class RequestManager implements IRequest
 	public function post()
 	{
 		if ($this->post === null){
-			$this->post = filter_input_array(INPUT_POST);
+			$this->post = (array)filter_input_array(INPUT_POST);
 		}
 		if (!is_object($this->post)){
 			$this->post = new Store($this->post);
@@ -107,7 +107,7 @@ class RequestManager implements IRequest
 	public function server()
 	{
 		if ($this->server === null){
-			$this->server = filter_input_array(INPUT_SERVER);
+			$this->server = (array)filter_input_array(INPUT_SERVER);
 		}
 		if (!is_object($this->server)){
 			$this->server = new Store($this->server);
@@ -150,7 +150,7 @@ class RequestManager implements IRequest
 	 */
 	public function getPathInfo()
 	{
-		return $this->server()->get('PATH_INFO');
+		return explode('?',$this->server()->get('REQUEST_URI'))[0];
 	}
 	/**
 	 * Get path info with index page
@@ -191,7 +191,7 @@ class RequestManager implements IRequest
 			$nead_keys = [
 				'REQUEST_METHOD',
 				'SCRIPT_NAME',
-				'PATH_INFO',
+				'REQUEST_URI',
 				'QUERY_STRING',
 				'SERVER_NAME',
 			];

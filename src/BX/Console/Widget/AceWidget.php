@@ -1,7 +1,7 @@
 <?php namespace BX\Console\Widget;
 use BX\MVC\Widget;
 
-class Ace extends Widget
+class AceWidget extends Widget
 {
 	/**
 	 * @var string

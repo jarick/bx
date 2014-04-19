@@ -7,7 +7,7 @@ trait EngineTrait
 {
 	/**
 	 * Get engine
-	 * @return \BX\Engine\Manager\IEngine
+	 * @return EngineManager
 	 * @throws InvalidArgumentException
 	 */
 	public function engine()

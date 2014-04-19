@@ -34,7 +34,7 @@ abstract class BaseValidator implements IValidator
 	 * Create validator
 	 * @return self
 	 * */
-	static public function create()
+	public static function create()
 	{
 		return new static();
 	}
@@ -143,7 +143,7 @@ abstract class BaseValidator implements IValidator
 			$fields[$key] = $this->default;
 			if ($this->empty){
 				return true;
-			} else{
+			}else{
 				$value = $fields[$key];
 			}
 		}

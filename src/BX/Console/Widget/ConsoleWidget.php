@@ -1,19 +1,21 @@
 <?php namespace BX\Console\Widget;
 use BX\MVC\Widget;
 use BX\Migration\Command\Migrate;
-use \BX\Validator\Manager\String;
+use BX\Validator\Collection\String;
+use BX\MVC\Widget\MessageWidget;
 
-class Console extends Widget
+class ConsoleWidget extends Widget
 {
 	use \BX\Console\ConsoleTrait,
-	 \BX\Validator\ValidatorTrait;
+	 \BX\Validator\ValidatorTrait,
+	 \BX\Translate\TranslateTrait;
 	const C_CODE = 'CODE';
 	const EVENT_LIST_COMMAND = 'console.widget.console.list_command';
 	protected function controller()
 	{
 		$controller = $this->console();
 		$this->fire(self::EVENT_LIST_COMMAND,[$controller->command]);
-		$controller->command->attach(new Migrate());
+		$controller->command->add(new Migrate());
 		return $controller;
 	}
 	protected function getDefault()
@@ -42,19 +44,21 @@ class Console extends Widget
 		$post = $this->request()->post()->get('FORM');
 		$validator = $this->validator($this->rules(),$this->labels());
 		if ($post !== null){
+			$post = array_map('trim',$post);
 			$this->view()->buffer()->flush();
 			if ($validator->check($post)){
 				$this->controller()->exec($post['CODE']);
-			} else{
+			}else{
 				foreach($validator->getErrors()->all() as $message){
-					$this->view()->widget('message',['message' => $message,'type' => 'danger']);
+					$params = ['message' => $message,'type' => 'danger'];
+					MessageWidget::widget($this->view(),$params);
 				}
 			}
 			$this->view()->abort();
-		} else{
+		}else{
 			$post = $this->getDefault();
 		}
-		$this->render(false,[
+		$this->render('console/console',[
 			'validator'	 => $validator,
 			'post'		 => $post,
 		]);

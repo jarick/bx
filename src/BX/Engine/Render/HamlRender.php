@@ -13,6 +13,10 @@ class HamlRender implements IRender
 	/**
 	 * @var string
 	 */
+	public $ext_php = '.php';
+	/**
+	 * @var string
+	 */
 	public $suffix_php = '.cache.php';
 	/**
 	 * @var string
@@ -74,7 +78,7 @@ class HamlRender implements IRender
 	{
 		$path = realpath(str_replace('~',$this->request()->server()->get('DOCUMENT_ROOT'),$path));
 		if ($path === false){
-			throw new \RuntimeException("Path `$path` is not found");
+			$this->view->throwPageNotFound();
 		}
 		return $path;
 	}
@@ -175,6 +179,24 @@ class HamlRender implements IRender
 		}
 	}
 	/**
+	 * Is exists page
+	 * @param string $path
+	 * @return boolean
+	 */
+	public function exists($path)
+	{
+		$haml = $this->getFolder().DIRECTORY_SEPARATOR.$path.$this->suffix_haml;
+		if (file_exists($haml)){
+			return true;
+		}else{
+			$file = $this->getFolder().DIRECTORY_SEPARATOR.$path.$this->suffix_php;
+			if (file_exists($file)){
+				return true;
+			}
+		}
+		return false;
+	}
+	/**
 	 * Render
 	 * @param View $view
 	 * @param string $path
@@ -193,6 +215,7 @@ class HamlRender implements IRender
 			$meta = [];
 		}
 		$path_php = false;
+		$engine = $this->php_engine;
 		if (file_exists($haml)){
 			if (!file_exists($php) || filemtime($php) != filemtime($haml)){
 				$this->log()->debug("render haml file `{$haml}`");
@@ -203,17 +226,17 @@ class HamlRender implements IRender
 				touch($haml);
 			}
 			$path_php = $path;
-			$path_folder = $this->getPhpCacheFolder();
+			$engine->setFolder($this->getPhpCacheFolder())->setSuffixPhp($this->suffix_php);
 		}else{
-			$file = $this->getFolder().DIRECTORY_SEPARATOR.$path.$this->suffix_php;
+			$file = $this->getFolder().DIRECTORY_SEPARATOR.$path.$this->ext_php;
 			if (file_exists($file)){
 				$path_php = $path;
-				$path_folder = $this->getFolder();
+				$engine->setFolder($this->getFolder())->setSuffixPhp($this->ext_php);
 			}
 		}
 		if ($path_php){
 			$this->renderStyle($view,$path);
-			$this->php_engine->setFolder($path_folder)->setMeta($meta)->render($view,$path_php,$params);
+			$this->php_engine->setMeta($meta)->render($view,$path_php,$params);
 		}else{
 			return false;
 		}

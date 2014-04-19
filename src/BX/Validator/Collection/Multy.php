@@ -212,7 +212,7 @@ class Multy extends BaseValidator
 	 * @param string $label
 	 * @return boolean
 	 */
-	private function validateValue($key,$value,$label,&$fields)
+	private function validateValue($key,$value,$label)
 	{
 		if (!$this->empty && empty($value)){
 			$this->addError($key,$this->getMessageEmpty(),['#LABEL#' => $label]);

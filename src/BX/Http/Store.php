@@ -21,14 +21,10 @@ class Store implements \IteratorAggregate, \ArrayAccess, \Countable
 	 */
 	public function get($key)
 	{
-		if (is_array($this->data)){
-			if ($this->has($key)){
-				return $this->data[$key];
-			} else{
-				return null;
-			}
-		} else{
-			return filter_input($this->data,$key);
+		if ($this->has($key)){
+			return $this->data[$key];
+		}else{
+			return null;
 		}
 	}
 	/**
@@ -38,11 +34,7 @@ class Store implements \IteratorAggregate, \ArrayAccess, \Countable
 	 */
 	public function has($key)
 	{
-		if (is_array($this->data)){
-			return array_key_exists($key,$this->data);
-		} else{
-			return filter_input($this->data,$key) !== null;
-		}
+		return array_key_exists($key,$this->data);
 	}
 	/**
 	 * Get all values
@@ -50,11 +42,7 @@ class Store implements \IteratorAggregate, \ArrayAccess, \Countable
 	 */
 	public function all()
 	{
-		if (is_array($this->data)){
-			return $this->data;
-		} else{
-			return (array)filter_input_array($this->data);
-		}
+		return $this->data;
 	}
 	/**
 	 * Get count
@@ -62,7 +50,7 @@ class Store implements \IteratorAggregate, \ArrayAccess, \Countable
 	 */
 	public function count()
 	{
-		return count($this->all());
+		return count($this->data);
 	}
 	/**
 	 * Get iterator
@@ -70,7 +58,7 @@ class Store implements \IteratorAggregate, \ArrayAccess, \Countable
 	 */
 	public function getIterator()
 	{
-		return new ArrayIterator($this->all());
+		return new ArrayIterator($this->data);
 	}
 	/**
 	 * Offset exists

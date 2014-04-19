@@ -1,10 +1,10 @@
 <?php namespace BX\Engine;
 use BX\Base\Registry;
 use BX\Engine\Render\IRender;
-use BX\Engine\Render\HamlEngine;
-use BX\Engine\Render\PhpEngine;
+use BX\Engine\Render\HamlRender;
+use BX\Engine\Render\PhpRender;
 
-class EngineManager
+class EngineManager implements IEngineManager
 {
 	/**
 	 * @var IRender
@@ -23,12 +23,14 @@ class EngineManager
 			}else{
 				$engine = 'php';
 			}
-			if ($engine instanceof IEngine){
+			if ($engine instanceof IRender){
 				$this->render = $engine;
 			}
 			switch ($engine){
-				case 'haml': $this->render = HamlEngine();
-				case 'php': $this->render = PhpEngine();
+				case 'haml': $this->render = new HamlRender();
+					break;
+				case 'php': $this->render = new PhpRender();
+					break;
 				default: throw new \InvalidArgumentException("Templating `$engine` not found");
 			}
 		}
@@ -44,5 +46,14 @@ class EngineManager
 	public function render($view,$path,array $params = [])
 	{
 		return $this->getRender()->render($view,$path,$params);
+	}
+	/**
+	 * Is page exists
+	 * @param string $path
+	 * @return type
+	 */
+	public function exists($path)
+	{
+		return $this->getRender()->exists($path);
 	}
 }

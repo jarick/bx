@@ -1,6 +1,6 @@
-<?php namespace BX\Engine\Render;
+<?php namespace BX\Engine;
 
-interface IRender
+interface IEngineManager
 {
 	public function render($view,$path,array $params = []);
 	public function exists($path);

@@ -2,7 +2,7 @@
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class ResponseManager implements \ArrayAccess
+class Response implements \ArrayAccess
 {
 	/**
 	 * @var array

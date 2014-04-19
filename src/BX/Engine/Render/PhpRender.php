@@ -17,7 +17,7 @@ class PhpRender implements IRender, \ArrayAccess
 	 */
 	public $folder = null;
 	/**
-	 * @var \BX\MVC\Manager\View
+	 * @var \BX\MVC\View
 	 */
 	public $view;
 	/**
@@ -29,6 +29,16 @@ class PhpRender implements IRender, \ArrayAccess
 	 */
 	public $suffix_yml = '.yml';
 	/**
+	 * Set suffix php
+	 * @param string $suffix_php
+	 * @return \BX\Engine\Render\PhpRender
+	 */
+	public function setSuffixPhp($suffix_php)
+	{
+		$this->suffix_php = $suffix_php;
+		return $this;
+	}
+	/**
 	 * Get real path for file
 	 * @param string $path
 	 */
@@ -36,7 +46,7 @@ class PhpRender implements IRender, \ArrayAccess
 	{
 		$path = realpath(str_replace('~',$this->request()->server()->get('DOCUMENT_ROOT'),$path));
 		if ($path === false){
-			throw new \RuntimeException("Path `$path` is not found");
+			$this->view->throwPageNotFound();
 		}
 		return $path;
 	}
@@ -71,6 +81,19 @@ class PhpRender implements IRender, \ArrayAccess
 		return $this;
 	}
 	/**
+	 * Is exists page
+	 * @param string $path
+	 * @return boolean
+	 */
+	public function exists($path)
+	{
+		$php = $this->getFolder().DIRECTORY_SEPARATOR.$path.$this->suffix_php;
+		if (file_exists($php)){
+			return true;
+		}
+		return false;
+	}
+	/**
 	 * Render file
 	 * @param type $view
 	 * @param type $path
@@ -83,6 +106,7 @@ class PhpRender implements IRender, \ArrayAccess
 		$this->fire('PhpEngineRender',[$view,$path,$params]);
 		$php = $this->getFolder().DIRECTORY_SEPARATOR.$path.$this->suffix_php;
 		if (!file_exists($php)){
+			var_dump($php);
 			return false;
 		}
 		$yml = $this->getFolder().DIRECTORY_SEPARATOR.$path.$this->suffix_yml;

@@ -248,11 +248,6 @@ trait EntityTrait
 		foreach($values as $key => $value){
 			$key = $this->string()->toUpper($key);
 			if (array_key_exists($key,$this->value)){
-				if (is_array($value)){
-					$value = array_map('trim',$value);
-				}else{
-					$value = trim($value);
-				}
 				$this->value[$key] = $value;
 				if ($old){
 					$this->old_value[$key] = $value;
