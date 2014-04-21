@@ -7,10 +7,12 @@ build_settings:
         - "test"
 
 setup:
+    composer:
+        action: "install"
         
 test:
-    php_code_sniffer:
-        standard: "PSR2"
+    #php_code_sniffer:
+    #    standard: "PSR2"
     php_unit:
         directory: "test/BX"
         args: "--bootstrap 'test/bootstrap.php' --configuration 'test/phpunit.xml'"

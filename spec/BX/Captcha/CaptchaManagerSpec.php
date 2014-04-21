@@ -8,7 +8,6 @@ class CaptchaManagerSpec extends ObjectBehavior
 {
 	use \BX\DB\DBTrait,
 	 \BX\Translate\TranslateTrait;
-	private $reg;
 	function let()
 	{
 		Schema::loadFromYamlFile();
