@@ -11,7 +11,7 @@ class MutexEntitySpec extends ObjectBehavior
 	public function it_test()
 	{
 		$this->generate('test');
-		$this->key->shouldBe('3632233996');
+		$this->key->shouldBeLike('3632233996');
 		$this->max_acquire->shouldBeLike(1);
 		$this->permission->shouldBeLike(0666);
 	}

@@ -9,9 +9,9 @@ abstract class Console
 	protected $writer = false;
 	/**
 	 * Set writer
-	 * @param IWriter2 $writer
+	 * @param IWriter $writer
 	 */
-	public function setWriter(IWriter2 $writer)
+	public function setWriter(IWriter $writer)
 	{
 		$this->writer = $writer;
 		return $this;

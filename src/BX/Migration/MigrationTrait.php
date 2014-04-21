@@ -1,6 +1,6 @@
 <?php namespace BX\Migration;
 use BX\Base\DI;
-use BX\Migration\Manager\MigrateManager;
+use BX\Migration\MigrateManager;
 
 trait MigrationTrait
 {

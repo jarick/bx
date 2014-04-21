@@ -117,7 +117,7 @@ class StringManager
 			'replacements'	 => [],
 			'transliterate'	 => true,
 		);
-		$options = array_merge($defaults,$options);
+		$options = array_replace($defaults,$options);
 		$str_1 = preg_replace(array_keys($options['replacements']),$options['replacements'],$str);
 		if ($options['transliterate']){
 			$str_1 = str_replace(array_keys($this->char_map),$this->char_map,$str_1);

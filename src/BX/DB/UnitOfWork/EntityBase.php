@@ -65,7 +65,7 @@ abstract class EntityBase
 	 */
 	protected function addSearchIndex($id)
 	{
-		$index = $this->table->getSearch();
+		$index = $this->entity->getSearch();
 		if ($index->count() > 0){
 			$id = get_class($this->table).'_'.$id;
 			$this->zendsearch()->add($id,$index);
@@ -80,7 +80,7 @@ abstract class EntityBase
 	 */
 	protected function deleteSearchIndex($id)
 	{
-		$index = $this->table->getSearch();
+		$index = $this->entity->getSearch();
 		if ($index->count() > 0){
 			$id = get_class($this->table).'_'.$id;
 			$this->zendsearch()->delete($id);

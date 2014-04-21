@@ -419,6 +419,10 @@ class SqlBuilder
 			$this->select(['*']);
 		}
 		$sql .= ' '.implode(',',$this->select_sql);
+		if ($this->entity->getDbTable() === null){
+			$error = 'Table name is not set class: `'.get_class($this->entity).'`';
+			throw new \RuntimeException($error);
+		}
 		$sql .= ' FROM '.$this->entity->getDbTable().' T';
 		if (!empty($this->relation)){
 			$relation_array = $this->getRelationArray($this->relation);

@@ -1,8 +1,9 @@
-<?php namespace BX\Migration\Manager;
+<?php namespace BX\Migration;
 use BX\DB\UnitOfWork\Repository;
 use BX\Migration\Entity\MigrationEntity;
 use BX\Migration\Migration;
 use BX\Migration\Table\MigrateTable;
+use \BX\Base\Registry;
 
 class MigrateManager
 {
@@ -84,7 +85,11 @@ class MigrateManager
 	 */
 	private function getTreeUp()
 	{
-		$class = new \ReflectionClass($this->package.'\\'.$this->service.'\\Migration');
+		$class_name = $this->package.'\\'.$this->service.'\\Migration';
+		if (!class_exists($class_name)){
+			throw new \RuntimeException("Class not found `$class_name`");
+		}
+		$class = new \ReflectionClass($class_name);
 		$func_array = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
 		foreach($func_array as $index => $function){
 			if (substr($function->name,0,2) !== 'up'){
@@ -155,7 +160,7 @@ class MigrateManager
 		$entity->guid = $this->hash;
 		$trans = new Repository();
 		$trans->add($this->table,$entity);
-		if (!$entity->commit(false)){
+		if (!$trans->commit(false)){
 			throw new \RuntimeException('Add migration error');
 		}
 	}

@@ -12,7 +12,9 @@ use BX\Validator\IEntity;
 class MigrationEntity implements IEntity
 {
 	use \BX\Date\DateTrait,
-	 \BX\Validator\EntityTrait;
+	 \BX\Validator\EntityTrait,
+	 \BX\Translate\TranslateTrait,
+	 \BX\Event\EventTrait;
 	const C_PACKAGE = 'PACKAGE';
 	const C_SERVICE = 'SERVICE';
 	const C_FUNCTION = 'FUNCTION';
@@ -27,11 +29,11 @@ class MigrationEntity implements IEntity
 	{
 		return [
 			[self::C_PACKAGE,self::C_SERVICE,self::C_FUNCTION],
-			$this->rule()->string()->setMax(100)->notEmpty()
+			$this->rule()->string()->setMax(100)->notEmpty(),
 			[self::C_GUID],
-			$this->rule()->string()->setMax(30)->onAdd()->notEmpty()
+			$this->rule()->string()->setMax(30)->onAdd()->notEmpty(),
 			[self::C_TIMESTAMP_X],
-			$this->rule()->setter()->setValue($this->date()->convertTimeStamp())
+			$this->rule()->setter()->setValue($this->date()->convertTimeStamp()),
 		];
 	}
 	/**
@@ -41,6 +43,7 @@ class MigrationEntity implements IEntity
 	public function labels()
 	{
 		return [
+			self::C_ID			 => $this->trans('migration.entity.migration.id'),
 			self::C_PACKAGE		 => $this->trans('migration.entity.migration.package'),
 			self::C_SERVICE		 => $this->trans('migration.entity.migration.service'),
 			self::C_FUNCTION	 => $this->trans('migration.entity.migration.function'),

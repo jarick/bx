@@ -1,6 +1,5 @@
 <?php namespace BX\Migration\Command;
 use BX\Console\Command\Console;
-use BX\Migration\MigrateManager;
 
 class Migrate extends Console
 {
@@ -37,9 +36,9 @@ class Migrate extends Console
 			default: throw new \InvalidArgumentException("Action `$action` is not found, allow action: `up,redo,down`.");
 		}
 		if (!$migrate->isFound()){
-			$this->getWriter()->error('Next migrate is not found.');
+			$this->writer->error('Next migrate is not found.');
 		}else{
-			$this->getWriter()->success('Success.');
+			$this->writer->success('Success.');
 		}
 	}
 	/**

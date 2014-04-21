@@ -1,0 +1,18 @@
+build_settings:
+    verbose: false
+    prefer_symlink: false
+    ignore: 
+        - "vendor"
+        - "spec"
+        - "test"
+
+setup:
+        
+test:
+    php_code_sniffer:
+        standard: "PSR2"
+    php_unit:
+        directory: "test/BX"
+        args: "--bootstrap 'test/bootstrap.php' --configuration 'test/phpunit.xml'"
+
+complete:

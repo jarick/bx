@@ -206,7 +206,7 @@ class Database implements IDatabase
 			}
 		}
 		$sql .= implode(',',$columns).' WHERE '.$where;
-		return $this->execute($sql,array_merge($vars,$where_params));
+		return $this->execute($sql,array_replace($vars,$where_params));
 	}
 	/**
 	 * Delete rows

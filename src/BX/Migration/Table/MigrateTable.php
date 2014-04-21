@@ -1,5 +1,6 @@
-<?php namespace BX\Migration\Store;
-use BX\DB\ITable;
+<?php namespace BX\Migration\Table;
+use \BX\DB\ITable,
+	\BX\Migration\Entity\MigrationEntity;
 
 class MigrateTable implements ITable
 {
@@ -11,7 +12,7 @@ class MigrateTable implements ITable
 	public function settings()
 	{
 		return [
-			self::DB_TABLE => 'tbl_migrate',
+			'db_table' => 'tbl_migrate',
 		];
 	}
 	/**
@@ -21,12 +22,12 @@ class MigrateTable implements ITable
 	protected function columns()
 	{
 		return [
-			self::C_ID			 => $this->column()->int('T.ID'),
-			self::C_PACKAGE		 => $this->column()->string('T.PACKAGE'),
-			self::C_SERVICE		 => $this->column()->string('T.SERVICE'),
-			self::C_FUNCTION	 => $this->column()->string('T.FUNCTION'),
-			self::C_GUID		 => $this->column()->string('T.GUID'),
-			self::C_TIMESTAMP_X	 => $this->column()->datetime('T.TIMESTAMP_X'),
+			MigrationEntity::C_ID			 => $this->column()->int('T.ID'),
+			MigrationEntity::C_PACKAGE		 => $this->column()->string('T.PACKAGE'),
+			MigrationEntity::C_SERVICE		 => $this->column()->string('T.SERVICE'),
+			MigrationEntity::C_FUNCTION		 => $this->column()->string('T.FUNCTION'),
+			MigrationEntity::C_GUID			 => $this->column()->string('T.GUID'),
+			MigrationEntity::C_TIMESTAMP_X	 => $this->column()->datetime('T.TIMESTAMP_X'),
 		];
 	}
 }

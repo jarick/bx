@@ -30,7 +30,7 @@ trait TableTrait
 	 */
 	protected function getSettings($key)
 	{
-		return (array_key_exists($key,$this->settings())) ? $this->settings()[$key] : false;
+		return (array_key_exists($key,$this->settings())) ? $this->settings()[$key] : null;
 	}
 	/**
 	 * Get DB table

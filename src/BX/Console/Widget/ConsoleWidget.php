@@ -42,10 +42,10 @@ class ConsoleWidget extends Widget
 	public function run()
 	{
 		$post = $this->request()->post()->get('FORM');
-		$validator = $this->validator($this->rules(),$this->labels());
 		if ($post !== null){
-			$post = array_map('trim',$post);
 			$this->view()->buffer()->flush();
+			$validator = $this->validator($this->rules(),$this->labels());
+			$post = array_map('trim',$post);
 			if ($validator->check($post)){
 				$this->controller()->exec($post['CODE']);
 			}else{
@@ -59,8 +59,7 @@ class ConsoleWidget extends Widget
 			$post = $this->getDefault();
 		}
 		$this->render('console/console',[
-			'validator'	 => $validator,
-			'post'		 => $post,
+			'post' => $post,
 		]);
 	}
 }

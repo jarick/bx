@@ -56,7 +56,7 @@ class DbAdaptor
 		}
 		if ($query->execute($vars)){
 			return $query->fetchAll(\PDO::FETCH_ASSOC);
-		} else{
+		}else{
 			return false;
 		}
 	}

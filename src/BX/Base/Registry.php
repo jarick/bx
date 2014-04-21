@@ -76,7 +76,7 @@ class Registry
 		foreach((array)func_get_args() as $name){
 			if (isset($temp[$name])){
 				$temp = $temp[$name];
-			} else{
+			}else{
 				return false;
 			}
 		}
@@ -92,11 +92,19 @@ class Registry
 		foreach((array)func_get_args() as $name){
 			if (isset($temp[$name])){
 				$temp = $temp[$name];
-			} else{
+			}else{
 				throw new \InvalidArgumentException("Key '".$name."' not found in store");
 			}
 		}
 		return $temp;
+	}
+	/**
+	 * Get all store
+	 * @return array
+	 */
+	public static function all()
+	{
+		return self::$store;
 	}
 	/**
 	 * Get charset

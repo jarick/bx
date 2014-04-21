@@ -1,5 +1,5 @@
 <?php namespace BX\Translate;
-use BX\Translate\Translate;
+use \BX\Translate\TranslateManager;
 use BX\Base\DI;
 use BX\Base\Registry;
 
@@ -7,7 +7,7 @@ trait TranslateTrait
 {
 	/**
 	 * Get translator
-	 * @return Translate
+	 * @return TranslateManager
 	 */
 	public function translator()
 	{

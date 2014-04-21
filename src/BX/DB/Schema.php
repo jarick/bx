@@ -51,7 +51,7 @@ class Schema
 	{
 		if ($file === null){
 			$yaml = Registry::get('schema');
-		} else{
+		}else{
 			if (!file_exists($file)){
 				throw new \RuntimeException("file `$file` is not found");
 			}
