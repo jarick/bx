@@ -16,5 +16,6 @@ test:
     php_unit:
         directory: "test/BX"
         args: "--bootstrap 'test/bootstrap.php' --configuration 'test/phpunit.xml'"
-
+    php_spec:
+        directory: ""
 complete:
