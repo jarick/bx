@@ -30,6 +30,7 @@ class Sqlite extends DbAdaptor implements IAdaptor
 			'TIMESTAMP'	 => 'TIMESTAMP',
 			'TEXT'		 => 'TEXT',
 			'BOOLEAN'	 => 'INT',
+			'REAL'		 => 'REAL',
 		];
 	}
 	public function getColumnType($column)

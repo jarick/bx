@@ -19,7 +19,7 @@ class CaptchaWidget extends Widget
 			$this->response()->headers['Content-type'] = 'image/jpeg';
 			$builder->output();
 		}catch (\Exception $e){
-			$this->log('captcha.widget.captcha')->err($e->getMessage(),['exception' => $e]);
+			$this->log('captcha.widget.captcha')->err($e);
 			echo $this->trans('captcha.widget.captcha.error_generate_captcha');
 		}
 		$this->view->abort();

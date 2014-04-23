@@ -74,6 +74,15 @@ class TableColumn
 		return new static($name,'STRING',1);
 	}
 	/**
+	 * Get numeric column
+	 * @param string $name
+	 * @return TableColumn
+	 */
+	public static function getNumeric($name)
+	{
+		return new static($name,'REAL');
+	}
+	/**
 	 * Get text column
 	 * @param string $name
 	 * @return TableColumn
@@ -151,7 +160,7 @@ class TableColumn
 		if (is_array($this->default)){
 			if ($this->default['safe']){
 				$result['def'] = $this->default['value'];
-			} else{
+			}else{
 				$result['~def'] = $this->default['value'];
 			}
 		}

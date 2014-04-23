@@ -55,7 +55,8 @@ class TableCaptchaStore implements ITable, \BX\Captcha\Store\ICaptchaStore
 			$repository->delete($this,$captcha);
 		}
 		if (!$repository->commit()){
-			throw new \RuntimeException('Error clear old captches');
+			$mess = print_r($repository->getErrorEntity()->getErrors()->all(),1);
+			throw new \RuntimeException('Error clear old captches. Error:'.$mess);
 		}
 		return true;
 	}
