@@ -100,10 +100,10 @@ abstract class EntityBase
 			if ($this->string()->startsWith($field,'~')){
 				$field = $this->string()->substr($field,1);
 			}
-			if (array_key_exists($field,$columns)){
-				$value = $columns[$field]->convertToDB($value);
+			if ($columns->has($field)){
+				$value = $columns->get($field)->convertToDB($value);
 			}else{
-				$this->log()->error("Column `$field` is not found");
+				$this->log('db.unitofwork.entitybase')->error("Column `$field` is not found");
 			}
 		}
 		unset($value);

@@ -1,8 +1,6 @@
 <?php namespace spec\BX\Captcha;
 use BX\DB\Schema;
 use PhpSpec\ObjectBehavior;
-use Whoops\Exception\ErrorException;
-use BX\Base\Registry;
 
 class CaptchaManagerSpec extends ObjectBehavior
 {
@@ -21,18 +19,16 @@ class CaptchaManagerSpec extends ObjectBehavior
 	function it_check_true()
 	{
 		$this->check('qwerty','qwerty')->shouldBe(true);
-		$count = $this->db()->query('SELECT * FROM tbl_captcha')->count();
-		if ($count > 0){
-			throw new ErrorException('Is not clear');
+		if ('qwerty' === $this->getWrappedObject()->getEntity()->code){
+			throw new \RuntimeException('Is not clear');
 		}
 	}
 	function it_check_false()
 	{
 		$this->check('qwerty','qwertu')->shouldBe(false);
 		$this->getEntity()->getErrors()->get('CODE')->shouldBe(['asdasd']);
-		$count = $this->db()->query('SELECT * FROM tbl_captcha')->count();
-		if ($count > 0){
-			throw new ErrorException('Is not clear');
+		if ('qwerty' === $this->getWrappedObject()->getEntity()->code){
+			throw new \RuntimeException('Is not clear');
 		}
 	}
 	function it_clear()
@@ -40,15 +36,14 @@ class CaptchaManagerSpec extends ObjectBehavior
 		$this->clear(10)->shouldBe(true);
 		$count = $this->db()->query('SELECT * FROM tbl_captcha')->count();
 		if ($count > 0){
-			throw new ErrorException('Is not clear');
+			throw new \RuntimeException('Is not clear');
 		}
 	}
-	function it_reaload()
+	function it_reload()
 	{
-		$this->reaload();
-		$count = $this->db()->query('SELECT * FROM tbl_captcha')->count();
-		if ($count > 0){
-			throw new ErrorException('Is not clear');
+		$this->reload();
+		if ('qwerty' === $this->getWrappedObject()->getEntity()->code){
+			throw new \RuntimeException('Is not clear');
 		}
 	}
 }

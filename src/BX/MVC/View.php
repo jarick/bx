@@ -59,7 +59,7 @@ class View implements IView, \ArrayAccess
 		$found = $this->engine()->render($this,$path,$params);
 		$return = $this->buffer()->end();
 		if (!$found){
-			throw new \RuntimeException("Template $path not found",404);
+			throw new PageNotFound();
 		}
 		$this->fire('afterRender',[$path,&$return]);
 		return $return;

@@ -51,7 +51,7 @@ class TimestampColumn extends BaseColumn
 		$timestamp = $this->date()->makeTimeStamp($value,$this->format);
 		if ($timestamp > 0){
 			return $timestamp + $this->date()->getOffset();
-		} else{
+		}else{
 			throw new \InvalidArgumentException('Bad format for timestamp');
 		}
 	}
@@ -66,7 +66,7 @@ class TimestampColumn extends BaseColumn
 		if ($value > 0){
 			$value = intval($value) - $this->date()->getOffset();
 			return $this->date()->convertTimeStamp($value,$this->format);
-		} else{
+		}else{
 			throw new \InvalidArgumentException('Bad format for timestamp');
 		}
 	}

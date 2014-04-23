@@ -29,12 +29,20 @@ class RuleHelper
 		return Custom::create($function);
 	}
 	/**
+	 * Get date validator
+	 * @return DateTime
+	 */
+	public function date()
+	{
+		return DateTime::create();
+	}
+	/**
 	 * Get datetime validator
 	 * @return DateTime
 	 */
 	public function datetime()
 	{
-		return DateTime::create();
+		return DateTime::create()->withTime();
 	}
 	/**
 	 * Get multy validator

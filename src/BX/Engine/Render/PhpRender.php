@@ -106,7 +106,6 @@ class PhpRender implements IRender, \ArrayAccess
 		$this->fire('PhpEngineRender',[$view,$path,$params]);
 		$php = $this->getFolder().DIRECTORY_SEPARATOR.$path.$this->suffix_php;
 		if (!file_exists($php)){
-			var_dump($php);
 			return false;
 		}
 		$yml = $this->getFolder().DIRECTORY_SEPARATOR.$path.$this->suffix_yml;

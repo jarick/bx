@@ -7,7 +7,7 @@ class Response implements \ArrayAccess
 	/**
 	 * @var array
 	 */
-	public $headers;
+	public $headers = [];
 	/**
 	 * @var integer
 	 */

@@ -15,6 +15,11 @@ class EntityAdd extends \BX\DB\UnitOfWork\EntityBase
 	 * @var Repository
 	 */
 	private $repo;
+	/**
+	 * Set repository
+	 * @param Repository $repo
+	 * @return \BX\DB\UnitOfWork\EntityAdd
+	 */
 	public function setRepository($repo)
 	{
 		$this->repo = $repo;
@@ -115,7 +120,8 @@ class EntityAdd extends \BX\DB\UnitOfWork\EntityBase
 			}
 			return $id;
 		}else{
-			$this->log('db.unitofwork.entity_add')->error('Error inset row',$context);
+			$error = print_r($this->db()->adaptor()->pdo()->errorInfo(),1);
+			$this->log('db.unitofwork.entity_add')->error('Error inset row. Error:'.$error);
 			$this->entity->addError(false,$this->trans('db.unitofwork.add_unknow_error'));
 			return false;
 		}

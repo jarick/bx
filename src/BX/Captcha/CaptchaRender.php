@@ -1,7 +1,7 @@
 <?php namespace BX\Captcha;
 use \Gregwar\Captcha\CaptchaBuilder;
 
-class CaptchaRender
+class CaptchaRender implements ICaptchaRender
 {
 	/**
 	 * @var ICaptchaRender
@@ -13,10 +13,19 @@ class CaptchaRender
 	public function __construct($code)
 	{
 		if (\BX\Base\DI::get('captcha_render') === null){
-			$this->builder = CaptchaBuilder::create($code)->build();
+			$this->builder = $this->create($code);
 		}else{
 			$this->builder = \BX\Base\DI::get('captcha_render')->create($code);
 		}
+	}
+	/**
+	 * Create render
+	 * @param string $code
+	 * @return ICaptchaRender
+	 */
+	public function create($code)
+	{
+		return CaptchaBuilder::create($code)->build();
 	}
 	/**
 	 * Render captcha

@@ -11,28 +11,39 @@ class CaptchaManager
 	 */
 	private $entity;
 	/**
+	 * @var ICaptchaStore
+	 */
+	private $store = null;
+	/**
 	 * Get store
 	 * @return ICaptchaStore
 	 */
-	private function store()
+	private function store($unique_id = null)
 	{
-		if (Registry::exists('captcha','store')){
-			$store = Registry::get('captcha','store');
-			switch ($store){
-				case 'db': return new TableCaptchaStore($this->entity->unique_id);
-				default : throw new \RuntimeException('Store `$store` is not found');
+		if ($this->store === null){
+			if ($unique_id === null){
+				$unique_id = $this->entity->unique_id;
 			}
-		}else{
-			return new TableCaptchaStore($this->entity->unique_id);
+			if (Registry::exists('captcha','store')){
+				$store = Registry::get('captcha','store');
+				switch ($store){
+					case 'db': $this->store = new TableCaptchaStore($unique_id);
+						break;
+					default : throw new \RuntimeException('Store `$store` is not found');
+				}
+			}else{
+				$this->store = new TableCaptchaStore($unique_id);
+			}
 		}
+		return $this->store;
 	}
 	/**
 	 * Constructor
-	 * @param type $unique_id
+	 * @param string $unique_id
 	 */
 	public function __construct($unique_id)
 	{
-		$this->entity = $this->store()->getByUniqueId($unique_id);
+		$this->entity = $this->store($unique_id)->getByUniqueId($unique_id);
 	}
 	/**
 	 * Reaload current captcha
@@ -55,7 +66,13 @@ class CaptchaManager
 	{
 		$unique_id = $this->entity->unique_id;
 		$return = $this->entity->check($sid,$code);
+		if (!$return){
+			$error = $this->entity->getErrors()->get('CODE');
+		}
 		$this->reload($unique_id);
+		if (!$return){
+			$this->entity->addError('CODE',$error[0]);
+		}
 		return $return;
 	}
 	/**

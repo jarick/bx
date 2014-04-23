@@ -40,7 +40,8 @@ class CaptchaEntity implements IEntity
 	}
 	public function check($sid,$code)
 	{
-		if ($this->sid !== $sid || $this->code !== $this->string()->toUpper($code)){
+		$check_code = $this->string()->toUpper($this->code) !== $this->string()->toUpper($code);
+		if ($this->sid !== $sid || $check_code){
 			$this->addError(self::C_CODE,$this->trans('captcha.entity.error_check'));
 			return false;
 		}

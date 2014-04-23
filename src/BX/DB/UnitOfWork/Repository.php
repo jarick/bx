@@ -3,6 +3,9 @@ use BX\Base\Collection;
 use BX\DB\ITable;
 use BX\Validator\IEntity;
 use BX\Validator\LazyValue;
+use \BX\DB\UnitOfWork\EntityAdd;
+use \BX\DB\UnitOfWork\EntityUpdate;
+use \BX\DB\UnitOfWork\EntityDelete;
 
 class Repository
 {
@@ -68,7 +71,7 @@ class Repository
 	 */
 	public function add(ITable $table,$entity = null)
 	{
-		$entity_add = new \BX\DB\UnitOfWork\EntityAdd($table,$entity);
+		$entity_add = new EntityAdd($table,$entity);
 		$entity_add->setRepository($this);
 		$this->adds->add($entity_add);
 		if ($entity !== null){
@@ -84,7 +87,7 @@ class Repository
 	 */
 	public function update(ITable $table,$entity = null)
 	{
-		$this->updates->add(new \BX\DB\UnitOfWork\EntityUpdate($table,$entity));
+		$this->updates->add(new EntityUpdate($table,$entity));
 	}
 	/**
 	 * Delete entity
@@ -93,7 +96,7 @@ class Repository
 	 */
 	public function delete(ITable $table,$entity = null)
 	{
-		$this->deletes->add(new \BX\DB\UnitOfWork\EntityDelete($table,$entity));
+		$this->deletes->add(new EntityDelete($table,$entity));
 	}
 	/**
 	 * Validate all operations

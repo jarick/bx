@@ -20,10 +20,7 @@ trait TableTrait
 	 * Get settings
 	 * @return array
 	 */
-	protected function settings()
-	{
-		return [];
-	}
+	abstract protected function settings();
 	/**
 	 * Get settings
 	 * @return array
