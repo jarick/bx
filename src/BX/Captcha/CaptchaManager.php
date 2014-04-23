@@ -20,7 +20,6 @@ class CaptchaManager
 			$store = Registry::get('captcha','store');
 			switch ($store){
 				case 'db': return new TableCaptchaStore($this->entity->unique_id);
-				#case 'memcache': return;
 				default : throw new \RuntimeException('Store `$store` is not found');
 			}
 		}else{
@@ -36,6 +35,17 @@ class CaptchaManager
 		$this->entity = $this->store()->getByUniqueId($unique_id);
 	}
 	/**
+	 * Reaload current captcha
+	 */
+	public function reload($unique_id = null)
+	{
+		if ($unique_id === null){
+			$unique_id = $this->entity->unique_id;
+		}
+		$this->store()->delete($this->entity);
+		$this->entity = $this->store()->create($unique_id);
+	}
+	/**
 	 * Check code
 	 * @param string $sid
 	 * @param string $code
@@ -43,7 +53,10 @@ class CaptchaManager
 	 */
 	public function check($sid,$code)
 	{
-		return $this->entity->check($sid,$code);
+		$unique_id = $this->entity->unique_id;
+		$return = $this->entity->check($sid,$code);
+		$this->reload($unique_id);
+		return $return;
 	}
 	/**
 	 * Get captcha entity

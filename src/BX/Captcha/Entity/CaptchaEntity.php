@@ -34,13 +34,13 @@ class CaptchaEntity implements IEntity
 			$this->rule()->string()->setMax(32)->setMin(6)->notEmpty(),
 			[self::C_TIMESTAMP_X],
 			$this->rule()->setter()->setValidators([
-				$this->rule()->datetime()->notEmpty()
+				$this->rule()->datetime()->withTime()->notEmpty()
 			])->setValue($this->date()->convertTimeStamp()),
 		];
 	}
 	public function check($sid,$code)
 	{
-		if ($this->sid !== $sid || $this->code !== $code){
+		if ($this->sid !== $sid || $this->code !== $this->string()->toUpper($code)){
 			$this->addError(self::C_CODE,$this->trans('captcha.entity.error_check'));
 			return false;
 		}

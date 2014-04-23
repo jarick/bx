@@ -5,12 +5,7 @@ test/BX/ZendSearch/search
 /cache/
 /todo/
 /db.db
-/phpunit.xml
-/phpunit
 /composer.lock
-/composer.phar
 /config/
 /haml/
 /search/
-/app/
-/bin/

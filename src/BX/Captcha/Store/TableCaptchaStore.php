@@ -7,7 +7,8 @@ class TableCaptchaStore implements ITable, \BX\Captcha\Store\ICaptchaStore
 {
 	use \BX\DB\TableTrait,
 	 \BX\Date\DateTrait,
-	 \BX\Logger\LoggerTrait;
+	 \BX\Logger\LoggerTrait,
+	 \BX\String\StringTrait;
 	protected function settings()
 	{
 		return [
@@ -24,6 +25,25 @@ class TableCaptchaStore implements ITable, \BX\Captcha\Store\ICaptchaStore
 			CaptchaEntity::C_UNIQUE_ID	 => $this->column()->string('T.UNIQUE_ID',32),
 		];
 	}
+	/**
+	 * Delete old captcha
+	 * @param \BX\Captcha\Entity\CaptchaEntity $entity
+	 * @throws \RuntimeException
+	 */
+	public function delete(CaptchaEntity $entity)
+	{
+		$repository = new Repository('captcha');
+		$repository->delete($this,$entity);
+		if (!$repository->commit()){
+			throw new \RuntimeException('Error delete captcha');
+		}
+	}
+	/**
+	 * Clear old captcha
+	 * @param integer $day
+	 * @return boolean
+	 * @throws \RuntimeException
+	 */
 	public function clear($day = 30)
 	{
 		$repository = new Repository('captcha');
@@ -39,6 +59,27 @@ class TableCaptchaStore implements ITable, \BX\Captcha\Store\ICaptchaStore
 		}
 		return true;
 	}
+	/**
+	 * Generate random string
+	 * @param type $length
+	 * @return string
+	 */
+	private function getRandString($length)
+	{
+		$chars = 'ABCDEFGHKLMNPQRSTUVWXYZ23456789';
+		$str = '';
+		$size = $this->string()->length($chars);
+		for($i = 0; $i < $length; $i++){
+			$str .= $chars[rand(0,$size - 1)];
+		}
+		return $str;
+	}
+	/**
+	 * Get current captcha
+	 * @param string $unique_id
+	 * @return \BX\Captcha\Entity\CaptchaEntity
+	 * @throws \RuntimeException
+	 */
 	public function getByUniqueId($unique_id)
 	{
 		$repository = new Repository('captcha');
@@ -49,12 +90,33 @@ class TableCaptchaStore implements ITable, \BX\Captcha\Store\ICaptchaStore
 		if ($captcha === false){
 			$captcha = new CaptchaEntity();
 			$captcha->unique_id = $unique_id;
-			$captcha->code = md5(uniqid());
+			$captcha->code = $this->getRandString(6);
 			$captcha->sid = md5(uniqid());
 			$repository->add($this,$captcha);
 		}
 		if (!$repository->commit()){
-			throw new \RuntimeException('Error add new captcha');
+			$mess = print_r($repository->getErrorEntity()->getErrors()->all(),1);
+			throw new \RuntimeException('Error add new captcha. Message: '.$mess);
+		}
+		return $captcha;
+	}
+	/**
+	 * Create captcha
+	 * @param string $unique_id
+	 * @return \BX\Captcha\Entity\CaptchaEntity
+	 * @throws \RuntimeException
+	 */
+	public function create($unique_id)
+	{
+		$repository = new Repository('captcha');
+		$captcha = new CaptchaEntity();
+		$captcha->unique_id = $unique_id;
+		$captcha->code = $this->getRandString(6);
+		$captcha->sid = md5(uniqid());
+		$repository->add($this,$captcha);
+		if (!$repository->commit()){
+			$mess = print_r($repository->getErrorEntity()->getErrors()->all(),1);
+			throw new \RuntimeException('Error add new captcha. Message: '.$mess);
 		}
 		return $captcha;
 	}

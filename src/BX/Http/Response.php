@@ -7,11 +7,11 @@ class Response implements \ArrayAccess
 	/**
 	 * @var array
 	 */
-	protected $headers;
+	public $headers;
 	/**
 	 * @var integer
 	 */
-	protected $code = 200;
+	public $code = 200;
 	/**
 	 * @var SymfonyResponse
 	 */
@@ -46,11 +46,11 @@ class Response implements \ArrayAccess
 	}
 	/**
 	 * Send response
-	 * @param type $sContent
+	 * @param type $content
 	 */
-	public function send($sContent)
+	public function send($content)
 	{
-		$this->setResponse(new SymfonyResponse($sContent,$this->code,$this->headers));
+		$this->setResponse(new SymfonyResponse($content,$this->code,$this->headers));
 	}
 	/**
 	 * Redirect

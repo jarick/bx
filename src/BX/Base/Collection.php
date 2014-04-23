@@ -47,12 +47,12 @@ class Collection implements \Iterator
 	}
 	/**
 	 * Has key
-	 * @param mixed $key
+	 * @param mixed $value
 	 * @return boolean
 	 */
-	public function has($key)
+	public function has($value)
 	{
-		return in_array($key,$this->array);
+		return in_array($value,$this->array);
 	}
 	/**
 	 * Delete item by key

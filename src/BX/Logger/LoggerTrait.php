@@ -14,6 +14,6 @@ trait LoggerTrait
 		if (DI::get('logger') === null){
 			DI::set('logger',new LoggerManager());
 		}
-		return DI::get('logger')->get($name = 'default');
+		return DI::get('logger')->get($name);
 	}
 }

@@ -187,6 +187,9 @@ class Setter implements IValidator
 			foreach($this->validators as $validator){
 				$return = $validator->validate($key,$value,$label,$fields);
 				if ($validator->hasErrors()){
+					if ($this->error === null){
+						$this->error = new MessageBag();
+					}
 					$this->error->merge($validator->getErrors());
 				}
 				if (!$return){

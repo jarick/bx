@@ -18,15 +18,34 @@ class CaptchaManagerSpec extends ObjectBehavior
 	{
 		$this->shouldHaveType('BX\Captcha\CaptchaManager');
 	}
-	function it_check()
+	function it_check_true()
 	{
 		$this->check('qwerty','qwerty')->shouldBe(true);
+		$count = $this->db()->query('SELECT * FROM tbl_captcha')->count();
+		if ($count > 0){
+			throw new ErrorException('Is not clear');
+		}
+	}
+	function it_check_false()
+	{
 		$this->check('qwerty','qwertu')->shouldBe(false);
 		$this->getEntity()->getErrors()->get('CODE')->shouldBe(['asdasd']);
+		$count = $this->db()->query('SELECT * FROM tbl_captcha')->count();
+		if ($count > 0){
+			throw new ErrorException('Is not clear');
+		}
 	}
 	function it_clear()
 	{
 		$this->clear(10)->shouldBe(true);
+		$count = $this->db()->query('SELECT * FROM tbl_captcha')->count();
+		if ($count > 0){
+			throw new ErrorException('Is not clear');
+		}
+	}
+	function it_reaload()
+	{
+		$this->reaload();
 		$count = $this->db()->query('SELECT * FROM tbl_captcha')->count();
 		if ($count > 0){
 			throw new ErrorException('Is not clear');

@@ -2,7 +2,9 @@
 
 class DateTime extends BaseValidator
 {
-	use \BX\Date\DateTrait;
+	use \BX\Date\DateTrait,
+	 \BX\String\StringTrait,
+	 \BX\Translate\TranslateTrait;
 	/**
 	 * Is empty
 	 * @var boolean
@@ -172,7 +174,7 @@ class DateTime extends BaseValidator
 	 */
 	public function withTime($time = true)
 	{
-		$this->format_type = ($time) ? 'full' : 'short';
+		$this->format_rules = $this->format_input = ($time) ? 'full' : 'short';
 		return $this;
 	}
 	/**
@@ -220,21 +222,25 @@ class DateTime extends BaseValidator
 			return false;
 		}
 		$timestamp = $this->date()->makeTimeStamp($value,$this->format_input);
-		$min_timestamp = $this->date()->makeTimeStamp($this->min,$this->format_rules);
-		if ($this->min !== null && $timestamp < $min_timestamp){
-			$this->addError($key,$this->getMessageMin(),[
-				'#LABEL#'	 => $label,
-				'#MIN#'		 => $this->min,
-			]);
-			return false;
+		if ($this->min !== null){
+			$min_timestamp = $this->date()->makeTimeStamp($this->min,$this->format_rules);
+			if ($timestamp < $min_timestamp){
+				$this->addError($key,$this->getMessageMin(),[
+					'#LABEL#'	 => $label,
+					'#MIN#'		 => $this->min,
+				]);
+				return false;
+			}
 		}
-		$max_timestamp = $this->date()->makeTimeStamp($this->max,$this->format_rules);
-		if ($this->max !== null && $timestamp > $max_timestamp){
-			$this->addError($key,$this->getMessageMax(),[
-				'#LABEL#'	 => $label,
-				'#MAX#'		 => $this->max,
-			]);
-			return false;
+		if ($this->max !== null){
+			$max_timestamp = $this->date()->makeTimeStamp($this->max,$this->format_rules);
+			if ($timestamp > $max_timestamp){
+				$this->addError($key,$this->getMessageMax(),[
+					'#LABEL#'	 => $label,
+					'#MAX#'		 => $this->max,
+				]);
+				return false;
+			}
 		}
 		return true;
 	}

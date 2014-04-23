@@ -69,8 +69,11 @@ class TranslateManager implements ITranslate
 	 * @param string $locale
 	 * @return self
 	 */
-	public function addArrayResource(array $resource,$locale = 'en')
+	public function addArrayResource(array $resource,$locale = null)
 	{
+		if ($locale === null){
+			$locale = Registry::get('lang');
+		}
 		$this->adaptor()->addResource('array',$resource,$locale);
 		return $this;
 	}

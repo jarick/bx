@@ -34,7 +34,7 @@ class DateTimeManager
 	{
 		if (Registry::exists('date','timezone')){
 			return Registry::get('date','timezone');
-		} else{
+		}else{
 			return date_default_timezone_get();
 		}
 	}
@@ -48,11 +48,11 @@ class DateTimeManager
 	{
 		if (Registry::exists('date',$type)){
 			return Registry::get('date',$type);
-		} elseif ($type === 'full'){
+		}elseif ($type === 'full'){
 			return 'd.m.Y H:i:s';
-		} elseif ($type === 'short'){
+		}elseif ($type === 'short'){
 			return 'd.m.Y';
-		} else{
+		}else{
 			throw new \InvalidArgumentException('Date type not found');
 		}
 	}
@@ -106,7 +106,7 @@ class DateTimeManager
 	{
 		if (Registry::exists('date','disable_timezone') && self::$disableTimeZone){
 			return 0;
-		} else{
+		}else{
 			return date('Z');
 		}
 	}

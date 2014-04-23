@@ -30,16 +30,4 @@ trait HttpTrait
 		}
 		return DI::get($key);
 	}
-	/**
-	 * Get flash manager
-	 * @return Flash
-	 */
-	public function flash()
-	{
-		$key = 'flash';
-		if (DI::get($key) === null){
-			DI::set($key,new FlashManager());
-		}
-		return DI::get($key);
-	}
 }

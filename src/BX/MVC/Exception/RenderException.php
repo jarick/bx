@@ -15,7 +15,7 @@ class RenderException
 		}
 		$controller->view()->buffer()->flush();
 		$path = $controller->getSiteFolder().DIRECTORY_SEPARATOR;
-		$path .= $controller->getSiteName().DIRECTORY_SEPARATOR.'error'.DS.'500';
+		$path .= $controller->getSiteName().DIRECTORY_SEPARATOR.'error'.DIRECTORY_SEPARATOR.'500';
 		if ($controller->view()->exists($path)){
 			$params = [
 				'hanlder'	 => $this,

@@ -62,14 +62,6 @@ class SiteController
 		return DI::get($manager);
 	}
 	/**
-	 * Get instance
-	 * @return \BX\MVC\SiteController
-	 */
-	public static function getInstance()
-	{
-		return new static();
-	}
-	/**
 	 * Get Site folder
 	 * @return string
 	 */
@@ -222,13 +214,15 @@ class SiteController
 				$page = $path;
 			}
 		}
-		$path = $this->getSiteFolder().DS.$this->getSiteName().DS.$page;
+		$path = $this->getSiteFolder().DIRECTORY_SEPARATOR.$this->getSiteName().
+			DIRECTORY_SEPARATOR.$page;
 		$params['page'] = $this->view()->render($path,$params);
 		if ($this->getLayout() === false){
 			$this->findLayout($site->layout_rule,$page);
 		}
 		if ($this->getLayout()){
-			$path = $this->layout_folder.DS.$this->getLayout().DS.$this->main_template_file;
+			$path = $this->layout_folder.DIRECTORY_SEPARATOR.$this->getLayout().
+				DIRECTORY_SEPARATOR.$this->main_template_file;
 			return $this->view()->render($path,$params);
 		}else{
 			return $params['page'];
@@ -272,5 +266,14 @@ class SiteController
 			$this->log()->error($e->getMessage());
 			return $this->getRenderException()->render($e,$this);
 		}
+	}
+	/**
+	 * Run render site
+	 * @return \BX\MVC\SiteController
+	 */
+	public static function run()
+	{
+		$instanse = new static();
+		return $instanse->render();
 	}
 }

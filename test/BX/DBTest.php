@@ -1,4 +1,5 @@
 <?php namespace BX;
+use \BX\Base\DI;
 
 class DBTest extends \PHPUnit_Extensions_Database_TestCase
 {

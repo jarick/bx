@@ -28,11 +28,16 @@ trait TranslateTrait
 	 */
 	public function trans($message,array $params = [],$lang = null,$package = null,$service = null)
 	{
+		$class_array = explode('\\',get_called_class());
 		if ($package === null){
-			$package = explode('\\',get_called_class())[0];
+			$package = $class_array[0];
 		}
 		if ($service === null){
-			$service = explode('\\',get_called_class())[1];
+			if (!isset($class_array[1])){
+				return $message;
+			}else{
+				$service = $class_array[1];
+			}
 		}
 		if ($lang === null){
 			$lang = (Registry::exists('lang')) ? Registry::get('lang') : 'en';
