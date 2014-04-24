@@ -69,7 +69,7 @@ class Sqlite extends DbAdaptor implements IAdaptor
 	}
 	public function resetAI($table)
 	{
-		$this->pdo()->exec("delete from sqlite_sequence where name='$table'");
+		$this->pdo()->exec("update sqlite_sequence set seq=1 where name='$table'");
 	}
 	public function lock($tables)
 	{
