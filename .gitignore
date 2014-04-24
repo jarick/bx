@@ -5,6 +5,7 @@ test/BX/ZendSearch/search
 /cache/
 /todo/
 /db.db
+/errror.log
 /composer.lock
 /config/
 /haml/
