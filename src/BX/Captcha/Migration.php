@@ -14,9 +14,8 @@ class Migration
 		if ($up){
 			$this->db()->createTable(self::CAPTCHA_TABLE,[
 				TableColumn::getPK(CaptchaEntity::C_ID),
-				TableColumn::getString(CaptchaEntity::C_SID,50),
+				TableColumn::getString(CaptchaEntity::C_GUID,50),
 				TableColumn::getString(CaptchaEntity::C_CODE,50),
-				TableColumn::getString(CaptchaEntity::C_UNIQUE_ID,50),
 				TableColumn::getTimestamp(CaptchaEntity::C_TIMESTAMP_X),
 			]);
 		}else{

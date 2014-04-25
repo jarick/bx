@@ -7,22 +7,10 @@ use \BX\Base\Registry;
 class CounterManager
 {
 	/**
-	 * @var string
-	 */
-	private $entity;
-	/**
 	 *
 	 * @var ICounterStore
 	 */
 	private $store = null;
-	/**
-	 * Constructor
-	 * @param string $entity
-	 */
-	public function __construct($entity)
-	{
-		$this->entity = $entity;
-	}
 	/**
 	 * Get store
 	 * @return ICaptchaStore
@@ -33,12 +21,12 @@ class CounterManager
 			if (Registry::exists('counter','store')){
 				$store = Registry::get('counter','store');
 				switch ($store){
-					case 'db': $this->store = new TableCounterStore($this->entity);
+					case 'db': $this->store = new TableCounterStore();
 						break;
 					default : throw new \RuntimeException('Store `$store` is not found');
 				}
 			}else{
-				$this->store = new TableCounterStore($this->entity);
+				$this->store = new TableCounterStore();
 			}
 		}
 		return $this->store;
@@ -48,18 +36,29 @@ class CounterManager
 	 * @param string $entity_id
 	 * @return integer
 	 */
-	public function inc($entity_id)
+	public function inc($entity,$entity_id)
 	{
-		return $this->store()->inc($this->entity,$entity_id);
+		return $this->store()->inc($entity,$entity_id);
+	}
+	/**
+	 * Get entity
+	 * @param string $entity_id
+	 * @return integer
+	 */
+	public function get($entity,$entity_id)
+	{
+		$counter = $this->store()->get($entity,$entity_id);
+		return ($counter === false) ? 0 : intval($counter->counter);
 	}
 	/**
 	 * Clear counter
+	 * @param string $entity
 	 * @param string $entity_id
 	 * @return true
 	 */
-	public function clear($entity_id)
+	public function clear($entity,$entity_id)
 	{
-		return $this->store()->clear($this->entity,$entity_id);
+		return $this->store()->clear($entity,$entity_id);
 	}
 	/**
 	 * Clear old counter
@@ -69,14 +68,5 @@ class CounterManager
 	public function clearOld($day = 30)
 	{
 		return $this->store()->clearOld($day);
-	}
-	/**
-	 * Get entity
-	 * @param string $entity_id
-	 * @return \BX\Captcha\Entity\CaptchaEntity
-	 */
-	public function get($entity_id)
-	{
-		return $this->store()->get($this->entity,$entity_id);
 	}
 }

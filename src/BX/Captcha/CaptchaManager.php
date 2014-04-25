@@ -7,10 +7,6 @@ use BX\Captcha\Store\TableCaptchaStore;
 class CaptchaManager
 {
 	/**
-	 * @var CaptchaEntity
-	 */
-	private $entity;
-	/**
 	 * @var ICaptchaStore
 	 */
 	private $store = null;
@@ -18,81 +14,67 @@ class CaptchaManager
 	 * Get store
 	 * @return ICaptchaStore
 	 */
-	private function store($unique_id = null)
+	private function store()
 	{
 		if ($this->store === null){
-			if ($unique_id === null){
-				$unique_id = $this->entity->unique_id;
-			}
 			if (Registry::exists('captcha','store')){
 				$store = Registry::get('captcha','store');
 				switch ($store){
-					case 'db': $this->store = new TableCaptchaStore($unique_id);
+					case 'db': $this->store = new TableCaptchaStore();
 						break;
 					default : throw new \RuntimeException('Store `$store` is not found');
 				}
 			}else{
-				$this->store = new TableCaptchaStore($unique_id);
+				$this->store = new TableCaptchaStore();
 			}
 		}
 		return $this->store;
 	}
 	/**
-	 * Constructor
-	 * @param string $unique_id
+	 * Create
 	 */
-	public function __construct($unique_id)
+	public function create()
 	{
-		$this->entity = $this->store($unique_id)->getByUniqueId($unique_id);
-	}
-	/**
-	 * Reaload current captcha
-	 */
-	public function reload($unique_id = null)
-	{
-		if ($unique_id === null){
-			$unique_id = $this->entity->unique_id;
-		}
-		$this->store()->delete($this->entity);
-		$this->entity = $this->store()->create($unique_id);
+		return $this->store()->create();
 	}
 	/**
 	 * Check code
-	 * @param string $sid
+	 * @param string $guid
 	 * @param string $code
-	 * @return boolean
+	 * @return false|CaptchaEntity
 	 */
-	public function check($sid,$code)
+	public function get($guid,$code)
 	{
-		$unique_id = $this->entity->unique_id;
-		$return = $this->entity->check($sid,$code);
-		if (!$return){
-			$error = $this->entity->getErrors()->get('CODE');
-		}
-		$this->reload($unique_id);
-		if (!$return){
-			$this->entity->addError('CODE',$error[0]);
-		}
-		return $return;
+		return $this->store()->get($guid,$code);
 	}
 	/**
-	 * Get captcha entity
+	 * Reaload current captcha
+	 * @param integer $id
 	 * @return CaptchaEntity
 	 */
-	public function getEntity()
+	public function reload($id)
 	{
-		return $this->entity;
+		return $this->store()->reload($id);
+	}
+	/**
+	 * Clear captcha
+	 * @param integer $id
+	 * @return true
+	 */
+	public function clear($id)
+	{
+		return $this->store()->clear($id);
 	}
 	/**
 	 * Clear old captches
 	 * @param type $day
-	 * @return type
+	 * @return true
 	 */
-	public function clear($day = null)
+	public function clearOld($day = null)
 	{
 		if ($day === null){
 			$day = Registry::get('captcha','day');
 		}
-		return $this->store()->clear($day);
+		return $this->store()->clearOld($day);
 	}
 }

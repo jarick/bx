@@ -2,7 +2,7 @@
 use \BX\Validator\IEntity;
 
 /**
- * @property string $sid
+ * @property string $guid
  * @property string $code
  * @property string $unique_id
  * @property integer $timestamp_x
@@ -13,38 +13,56 @@ class CaptchaEntity implements IEntity
 	 \BX\Date\DateTrait,
 	 \BX\Translate\TranslateTrait;
 	const C_ID = 'ID';
-	const C_SID = 'SID';
+	const C_GUID = 'GUID';
 	const C_CODE = 'CODE';
-	const C_UNIQUE_ID = 'UNIQUE_ID';
 	const C_TIMESTAMP_X = 'TIMESTAMP_X';
 	protected function labels()
 	{
 		return [
 			self::C_ID			 => $this->trans('captcha.entity.id'),
-			self::C_SID			 => $this->trans('captcha.entity.sid'),
+			self::C_GUID		 => $this->trans('captcha.entity.guid'),
 			self::C_CODE		 => $this->trans('captcha.entity.code'),
-			self::C_UNIQUE_ID	 => $this->trans('captcha.entity.unique_id'),
 			self::C_TIMESTAMP_X	 => $this->trans('captcha.entity.timestamp_x'),
 		];
 	}
 	protected function rules()
 	{
 		return[
-			[self::C_SID,self::C_CODE,self::C_UNIQUE_ID],
-			$this->rule()->string()->setMax(32)->setMin(6)->notEmpty(),
 			[self::C_TIMESTAMP_X],
 			$this->rule()->setter()->setValidators([
 				$this->rule()->datetime()->withTime()->notEmpty()
 			])->setValue($this->date()->convertTimeStamp()),
+			[self::C_GUID],
+			$this->rule()->setter()->setValue(uniqid())->setValidators([
+				$this->rule()->string()->setMax(32)->setMin(6)->notEmpty(),
+			])->onAdd(),
+			[self::C_CODE],
+			$this->rule()->setter()->setValue($this->getRandomHash())->setValidators([
+				$this->rule()->string()->setMax(32)->setMin(6)->notEmpty(),
+			]),
 		];
 	}
-	public function check($sid,$code)
+	/**
+	 * Generate random string
+	 * @param type $length
+	 * @return string
+	 */
+	private function getRandString($length)
 	{
-		$check_code = $this->string()->toUpper($this->code) !== $this->string()->toUpper($code);
-		if ($this->sid !== $sid || $check_code){
-			$this->addError(self::C_CODE,$this->trans('captcha.entity.error_check'));
-			return false;
+		$chars = 'ABCDEFGHKLMNPQRSTUVWXYZ23456789';
+		$str = '';
+		$size = $this->string()->length($chars);
+		for($i = 0; $i < $length; $i++){
+			$str .= $chars[rand(0,$size - 1)];
 		}
-		return true;
+		return $str;
+	}
+	/**
+	 * Return random hash
+	 * @return string
+	 */
+	private function getRandomHash()
+	{
+		return md5($this->getRandString(8));
 	}
 }
