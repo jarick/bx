@@ -7,6 +7,10 @@ class TableCounterStore implements ITable, ICounterStore
 {
 	use \BX\DB\TableTrait,
 	 \BX\Date\DateTrait;
+	/**
+	 * Settings
+	 * @return array
+	 */
 	protected function settings()
 	{
 		return [
