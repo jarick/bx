@@ -3,6 +3,21 @@ use BX\Base\Registry;
 
 class StringManager
 {
+	/**
+	 * Generate random string
+	 * @param type $length
+	 * @return string
+	 */
+	public function getRandString($length)
+	{
+		$chars = 'ABCDEFGHKLMNPQRSTUVWXYZ23456789';
+		$str = '';
+		$size = $this->length($chars);
+		for($i = 0; $i < $length; $i++){
+			$str .= $chars[rand(0,$size - 1)];
+		}
+		return $str;
+	}
 	public function toUpper($string)
 	{
 		return mb_strtoupper($string,Registry::getCharset());
@@ -135,7 +150,8 @@ class StringManager
 			$words[3] = $words[2];
 		}
 		list($s1,$s2,$s3) = $words;
-		$m = $n % 10;$j = $n % 100;
+		$m = $n % 10;
+		$j = $n % 100;
 		if ($m == 0 || $m >= 5 || ($j >= 10 && $j <= 20)){
 			return $s3;
 		}

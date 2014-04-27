@@ -1,16 +1,20 @@
 <?php namespace BX\FileSystem;
+use BX\Base\Registry;
+use BX\Test;
 
-class FileSystemManagerTest extends \BX\Test
+class FileSystemManagerTest extends Test
 {
 	private $manager;
+	private $reg;
 	public function setUp()
 	{
-		\BX\Base\Registry::init([
+		$this->reg = Registry::all();
+		Registry::init([
 			'permission' => [
 				'folder' => 0777,
 				'file'	 => 0755,
 			]
-			],\BX\Base\Registry::FORMAT_ARRAY);
+			],Registry::FORMAT_ARRAY);
 		$this->manager = new FileSystemManager();
 	}
 	public function testCheckPathDir()
@@ -40,5 +44,6 @@ class FileSystemManagerTest extends \BX\Test
 		if (is_dir($file)){
 			$this->manager->removePathDir(__DIR__.'/data');
 		}
+		Registry::init($this->reg,Registry::FORMAT_ARRAY);
 	}
 }

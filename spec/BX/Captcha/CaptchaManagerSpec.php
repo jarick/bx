@@ -16,14 +16,15 @@ class CaptchaManagerSpec extends ObjectBehavior
 	}
 	function it_get()
 	{
-		$this->get('qwerty','qwerty')->shouldHaveType(\BX\Captcha\Entity\CaptchaEntity::getClass());
-		$this->reload(1)->shouldHaveType(\BX\Captcha\Entity\CaptchaEntity::getClass());
+		$this->check('qwerty','qwerty')->shouldBe(true);
+		$this->reload('qwerty');
+		$this->check('qwerty','qwerty')->shouldBe(false);
 		$sql = 'SELECT * FROM tbl_captcha';
 		$captcha = $this->db()->query($sql)->fetch();
 		if ($captcha['CODE'] === 'qwerty'){
 			throw new \RuntimeException('Reload fall');
 		}
-		$this->create()->shouldHaveType(\BX\Captcha\Entity\CaptchaEntity::getClass());
+		$this->getGuid();
 		$count = $this->db()->query($sql)->count();
 		if ($count !== 2){
 			throw new \RuntimeException('Create fall');
@@ -31,7 +32,7 @@ class CaptchaManagerSpec extends ObjectBehavior
 	}
 	function it_clear()
 	{
-		$this->clear(1)->shouldBe(true);
+		$this->clear('qwerty')->shouldBe(true);
 		$sql = 'SELECT * FROM tbl_captcha';
 		$count = $this->db()->query($sql)->count();
 		if ($count !== 0){

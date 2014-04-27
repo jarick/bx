@@ -31,11 +31,27 @@ class CaptchaManager
 		return $this->store;
 	}
 	/**
-	 * Create
+	 * Get guid
+	 * @return string
 	 */
-	public function create()
+	public function getGuid()
 	{
-		return $this->store()->create();
+		$captcha = $this->store()->create();
+		return $captcha->guid;
+	}
+	/**
+	 * Get code by guid
+	 * @param string $guid
+	 * @return string|null
+	 */
+	public function getCode($guid)
+	{
+		$captches = $this->store()->getByGuid($guid);
+		if ($captches->count() > 0){
+			return $captches->current()->code;
+		}else{
+			return null;
+		}
 	}
 	/**
 	 * Check code
@@ -43,9 +59,9 @@ class CaptchaManager
 	 * @param string $code
 	 * @return false|CaptchaEntity
 	 */
-	public function get($guid,$code)
+	public function check($guid,$code)
 	{
-		return $this->store()->get($guid,$code);
+		return $this->store()->check($guid,$code);
 	}
 	/**
 	 * Reaload current captcha
@@ -54,7 +70,8 @@ class CaptchaManager
 	 */
 	public function reload($id)
 	{
-		return $this->store()->reload($id);
+		$captches = $this->store()->reload($id);
+		return $captches->current()->code;
 	}
 	/**
 	 * Clear captcha
@@ -67,13 +84,17 @@ class CaptchaManager
 	}
 	/**
 	 * Clear old captches
-	 * @param type $day
+	 * @param null|integer $day
 	 * @return true
 	 */
 	public function clearOld($day = null)
 	{
 		if ($day === null){
-			$day = Registry::get('captcha','day');
+			if (Registry::exists('captcha','day')){
+				$day = Registry::get('captcha','day');
+			}else{
+				$day = 30;
+			}
 		}
 		return $this->store()->clearOld($day);
 	}

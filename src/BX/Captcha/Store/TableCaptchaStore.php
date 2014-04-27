@@ -6,9 +6,7 @@ use BX\DB\UnitOfWork\Repository;
 class TableCaptchaStore implements ITable, \BX\Captcha\Store\ICaptchaStore
 {
 	use \BX\DB\TableTrait,
-	 \BX\Date\DateTrait,
-	 \BX\Logger\LoggerTrait,
-	 \BX\String\StringTrait;
+	 \BX\Date\DateTrait;
 	/**
 	 * Settings
 	 * @return array
@@ -38,48 +36,52 @@ class TableCaptchaStore implements ITable, \BX\Captcha\Store\ICaptchaStore
 	 * @param string $code
 	 * @return type
 	 */
-	public function get($guid,$code)
+	public function check($guid,$code)
 	{
 		$filter = [
-			CaptchaEntity::C_GUID	 => $guid,
-			CaptchaEntity::C_CODE	 => $code,
+			'='.CaptchaEntity::C_GUID	 => $guid,
+			'='.CaptchaEntity::C_CODE	 => $code,
 		];
-		return self::finder(CaptchaEntity::getClass())->filter($filter)->get();
+		return self::finder(CaptchaEntity::getClass())->filter($filter)->count() > 0;
 	}
 	/**
 	 * Reload captcha
-	 * @param integer $id
-	 */
-	public function reload($id)
-	{
-		$repo = new Repository('captcha');
-		$captcha = self::finder(CaptchaEntity::getClass())
-			->filter([CaptchaEntity::C_ID => $id])
-			->get();
-		if ($captcha === false){
-			throw new \RuntimeException('Captcha not found');
-		}
-		$repo->update($this,$captcha);
-		if (!$repo->commit()){
-			throw new \RuntimeException('Error delete captcha');
-		}
-		return $captcha;
-	}
-	/**
-	 * Delete captcha
-	 * @param integer $id
+	 * @param string $guid
+	 * @return CaptchaEntity[]
 	 * @throws \RuntimeException
 	 */
-	public function clear($id)
+	public function reload($guid)
 	{
 		$repo = new Repository('captcha');
-		$captcha = self::finder(CaptchaEntity::getClass())
-			->filter([CaptchaEntity::C_ID => $id])
-			->get();
-		if ($captcha === false){
+		$captches = $this->getByGuid($guid);
+		if ($captches->count() === 0){
 			throw new \RuntimeException('Captcha not found');
 		}
-		$repo->delete($this,$captcha);
+		foreach($captches as $captcha){
+			$repo->update($this,$captcha);
+		}
+		if (!$repo->commit()){
+			throw new \RuntimeException('Error reload captcha');
+		}
+		$captches->rewind();
+		return $captches;
+	}
+	/**
+	 * Delete captcha by guid
+	 * @param string $guid
+	 * @return true
+	 * @throws \RuntimeException
+	 */
+	public function clear($guid)
+	{
+		$repo = new Repository('captcha');
+		$captches = $this->getByGuid($guid);
+		if ($captches->count() === 0){
+			throw new \RuntimeException('Captcha not found');
+		}
+		foreach($captches as $captcha){
+			$repo->delete($this,$captcha);
+		}
 		if (!$repo->commit()){
 			throw new \RuntimeException('Error delete captcha');
 		}
@@ -106,6 +108,19 @@ class TableCaptchaStore implements ITable, \BX\Captcha\Store\ICaptchaStore
 			throw new \RuntimeException('Error clear old captches. Error:'.$mess);
 		}
 		return true;
+	}
+	/**
+	 * Get captches by guid
+	 *
+	 * @param ctring $guid
+	 * @return CaptchaEntity[]
+	 */
+	public function getByGuid($guid)
+	{
+		$filter = [
+			'='.CaptchaEntity::C_GUID => $guid,
+		];
+		return self::finder(CaptchaEntity::getClass())->filter($filter)->all();
 	}
 	/**
 	 * Create captcha

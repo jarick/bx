@@ -18,7 +18,7 @@ class EventManager implements IEvent
 				if (is_string($dispatcher)){
 					$dispatcher = new $dispatcher();
 				}
-			} else{
+			}else{
 				$dispatcher = new Dispatcher();
 			}
 			DI::set('event_dispatcher',$dispatcher);
@@ -28,7 +28,7 @@ class EventManager implements IEvent
 	/**
 	 * Listner
 	 * @param string $name
-	 * @param string $func
+	 * @param mixed $func
 	 * @param integer $sort
 	 * @return mixed
 	 */

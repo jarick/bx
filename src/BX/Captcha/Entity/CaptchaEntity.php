@@ -16,6 +16,10 @@ class CaptchaEntity implements IEntity
 	const C_GUID = 'GUID';
 	const C_CODE = 'CODE';
 	const C_TIMESTAMP_X = 'TIMESTAMP_X';
+	/**
+	 * Labels
+	 * @return array
+	 */
 	protected function labels()
 	{
 		return [
@@ -25,6 +29,10 @@ class CaptchaEntity implements IEntity
 			self::C_TIMESTAMP_X	 => $this->trans('captcha.entity.timestamp_x'),
 		];
 	}
+	/**
+	 * Rules
+	 * @return array
+	 */
 	protected function rules()
 	{
 		return[
@@ -43,26 +51,11 @@ class CaptchaEntity implements IEntity
 		];
 	}
 	/**
-	 * Generate random string
-	 * @param type $length
-	 * @return string
-	 */
-	private function getRandString($length)
-	{
-		$chars = 'ABCDEFGHKLMNPQRSTUVWXYZ23456789';
-		$str = '';
-		$size = $this->string()->length($chars);
-		for($i = 0; $i < $length; $i++){
-			$str .= $chars[rand(0,$size - 1)];
-		}
-		return $str;
-	}
-	/**
 	 * Return random hash
 	 * @return string
 	 */
 	private function getRandomHash()
 	{
-		return md5($this->getRandString(8));
+		return md5($this->string()->getRandString(8));
 	}
 }

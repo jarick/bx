@@ -2,7 +2,7 @@
 	"name": "jarick/bx",
 	"description": "BX PHP Framework - Development Package",
 	"keywords": ["BX", "framework"],
-	"homepage": "http://www.jarick.ru/",
+	"homepage": "http://jarick.ru/",
 	"type": "bx-extension",
 	"license": "MIT",
     "require": {
@@ -20,12 +20,12 @@
 		"leafo/lessphp": "0.4.*",
 		"ircmaxell/password-compat": "1.0.*",
 		"phpunit/dbunit": "1.3.*",
-		"mockery/mockery": "0.9.*",
 		"phpspec/phpspec": "2.0.*",
 		"filp/whoops": "1.*",
 		"gregwar/captcha": "dev-master"
     },
     "autoload": {
+		"files": ["src/framework.php"],
         "psr-4": {
             "": "src"
         }

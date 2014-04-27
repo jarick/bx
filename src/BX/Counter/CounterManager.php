@@ -6,6 +6,7 @@ use \BX\Base\Registry;
 
 class CounterManager
 {
+	const DEFAULT_DAY_SAVE = 30;
 	/**
 	 *
 	 * @var ICounterStore
@@ -65,8 +66,15 @@ class CounterManager
 	 * @param integer $day
 	 * @return true
 	 */
-	public function clearOld($day = 30)
+	public function clearOld($day = null)
 	{
+		if ($day === null){
+			if (Registry::exists('counter','day')){
+				$day = Registry::get('counter','day');
+			}else{
+				$day = self::DEFAULT_DAY_SAVE;
+			}
+		}
 		return $this->store()->clearOld($day);
 	}
 }

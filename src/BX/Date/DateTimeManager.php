@@ -15,7 +15,7 @@ class DateTimeManager
 	public function activeTimeZone()
 	{
 		self::$disableTimeZone = false;
-		return $this;
+		return true;
 	}
 	/**
 	 * Disable timezone
@@ -24,7 +24,7 @@ class DateTimeManager
 	public function disableTimeZone()
 	{
 		self::$disableTimeZone = true;
-		return $this;
+		return true;
 	}
 	/**
 	 * Get timezone

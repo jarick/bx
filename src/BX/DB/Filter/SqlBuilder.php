@@ -458,7 +458,11 @@ class SqlBuilder
 			$sql .= ' DISTINCT';
 		}
 		$sql .= ' COUNT(*) as CNT';
-		$sql .= ' FROM '.$this->table;
+		if ($this->entity->getDbTable() === null){
+			$error = 'Table name is not set class: `'.get_class($this->entity).'`';
+			throw new \RuntimeException($error);
+		}
+		$sql .= ' FROM '.$this->entity->getDbTable().' T';
 		if (!empty($this->relation)){
 			$relation_array = $this->getRelationArray($this->relation);
 			if (!empty($relation_array)){
@@ -471,8 +475,8 @@ class SqlBuilder
 		if (!empty($this->group_sql)){
 			$sql .= ' GROUP BY '.implode(',',$this->group_sql);
 		}
-		$result = $this->query($sql)->count();
-		return $result[0]['CNT'];
+		$result = $this->query($sql);
+		return $result->fetch()['CNT'];
 	}
 	/**
 	 * Set tags cache

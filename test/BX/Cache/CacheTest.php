@@ -8,17 +8,21 @@ class CacheTest extends \BX\Test
 	private $ns = 'test';
 	private $value = 'value';
 	private $tags = ['tag1','tag2','tag3'];
-	public static function setUpBeforeClass()
+	private $reg;
+	public function setUp()
 	{
-		Registry::init([
+		$this->reg = Registry::all();
+		$config = [
 			'cache' => [
 				'type' => 'array',
 			]
-			],Registry::FORMAT_ARRAY);
-	}
-	public function setUp()
-	{
+		];
+		Registry::init($config,Registry::FORMAT_ARRAY);
 		$this->cache()->flush();
+	}
+	public function tearDown()
+	{
+		Registry::init($this->reg,Registry::FORMAT_ARRAY);
 	}
 	public function testSetTags()
 	{
