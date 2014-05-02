@@ -116,7 +116,7 @@ class Request implements IRequest
 	}
 	/**
 	 * Get server dictionary
-	 * @return Store
+	 * @return CookieStore
 	 */
 	public function cookie()
 	{

@@ -304,4 +304,18 @@ class Repository
 			self::$lock = true;
 		}
 	}
+	/**
+	 * Append addition locks table
+	 *
+	 * Tables will lock on commit
+	 * @param string|array $tables
+	 */
+	public function appendLockTables($tables)
+	{
+		foreach((array)$tables as $table){
+			if (!in_array($table,$this->tables)){
+				$this->tables[] = $table;
+			}
+		}
+	}
 }

@@ -3,9 +3,16 @@ use BX\Base\DI;
 use BX\Captcha\CaptchaManager;
 use BX\Counter\CounterManager;
 use BX\Date\DateTimeManager;
+use BX\DB\Filter\SqlBuilder;
 use BX\Event\EventManager;
 use BX\FileSystem\FileSystemManager;
+use BX\Logger\LoggerManager;
 use BX\String\StringManager;
+use BX\User\AuthManager;
+use BX\User\RememberPasswordManager;
+use BX\User\UserGroupManager;
+use BX\User\UserGroupMemberManager;
+use BX\User\UserManager;
 
 /**
  * Контейнер для ошибок
@@ -745,6 +752,7 @@ class Captcha
 	 * <p>
 	 * Возвращает <b>FALSE</b> в случае ошибки. Саму ошибку можно получить с помощью
 	 * функции <b>Error::get</b>
+	 * </p>
 	 */
 	public static function clearOld($day = 30)
 	{
@@ -756,5 +764,774 @@ class Captcha
 			$return = false;
 		}
 		return $return;
+	}
+}
+
+/**
+ * Авторизация пользователя
+ *
+ * Класс для работы с авторизацией
+ * @author jarick <zolotarev.jar@gmail.com>
+ * @version 0.1
+ */
+class Auth
+{
+	/**
+	 * @var string
+	 */
+	private static $manager = 'auth';
+	/**
+	 * Get manager
+	 *
+	 * @return AuthManager
+	 */
+	private static function getManager()
+	{
+		if (DI::get(self::$manager) === null){
+			DI::set(self::$manager,new AuthManager());
+		}
+		return DI::get(self::$manager);
+	}
+	/**
+	 * Проверяет есть ли авторизация у пользователя
+	 *
+	 * Сначала функция пытается найти авторизацию в сессии.
+	 * Если в сессии ничего нет, то авторизация ищется авторизация по переданным параметрам в БД.
+	 * @param string $guid Если параметр не задан, то значение параметра будет взято из cookie
+	 * @param string $token Если параметр не задан, то значение параметра будет взято из cookie
+	 * @return boolean|null <p>Возвращает <b>TRUE</b> в случае если авторизация найдена.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае если авторизация найдена.
+	 * </p><p>
+	 * Возвращает <b>NULL</b> в случае возникновения ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function login($guid = null,$token = null)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->login($guid,$token);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+	/**
+	 * Возвращает авторизоционный токен
+	 *
+	 * Сначала функция пытается найти авторизацию в сессии.
+	 * Если в сессии ничего нет, то авторизация ищется авторизация по переданным параметрам в БД.
+	 * @param string $guid Если параметр не задан, то значение параметра будет взято из cookie
+	 * @return string|null <p>Возвращает строку в случае, если авторизация найдена.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае возникновения ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function getToken($guid = null)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->getToken($guid);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+	/**
+	 * Добавление авторизации
+	 *
+	 * @param integer $user_id ID пользователя.
+	 * @param string $user_guid GUID пользователя.
+	 * @param string $token Если параметр не задан, то значение параметра будет взято из cookie
+	 * @param boolean $http Сохранять ли авторизационный ключ в куках пользователя.
+	 * По-умолчанию ключ сохраняется.
+	 * @return string|null <p>Возвращает строку с индификатором авторизации
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае возникновения ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function add($user_id,$user_guid,$token = null,$http = true)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->add($user_id,$user_guid,$token,$http);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+	/**
+	 * Удаление авторизации.
+	 *
+	 * @param string $guid Если параметр не задан, то значение параметра будет взято из cookie
+	 * @param string $token Если параметр не задан, то значение параметра будет взято из cookie
+	 * @return boolean <p>Возвращает <b>TRUE</b> в случае успеха.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function logout($guid = null,$token = null)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->logout($guid,$token);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+	/**
+	 * Удаляет старые авторизации
+	 *
+	 * @param integer $day Через сколько дней считать авторизацию устаревшей
+	 * @return boolean <p>Возвращает <b>TRUE</b> в случае успеха.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function clearOld($day = 30)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->clearOld($day);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+	/**
+	 * Возвращает ID текущего пользователя
+	 *
+	 * @param string $guid Если параметр не задан, то значение параметра будет взято из cookie
+	 * @param string $token Если параметр не задан, то значение параметра будет взято из cookie
+	 * @return integer <p>Возвращает число в случае успеха.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function getId($guid = null,$token = null)
+	{
+		Error::reset();
+		try{
+			$session = self::getManager()->getSession($guid,$token);
+			if ($session === null){
+				return false;
+			}else{
+				return $session['ID'];
+			}
+		}catch (Exception $ex){
+			Error::set($ex);
+			return false;
+		}
+	}
+	/**
+	 * Возвращает GUID текущего пользователя
+	 *
+	 * @param string $guid Если параметр не задан, то значение параметра будет взято из cookie
+	 * @param string $token Если параметр не задан, то значение параметра будет взято из cookie
+	 * @return string <p>Возвращает строку в случае успеха.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function getGuid($guid = null,$token = null)
+	{
+		Error::reset();
+		try{
+			$session = self::getManager()->getSession($guid,$token);
+			if ($session === null){
+				return false;
+			}else{
+				return $session['GUID'];
+			}
+		}catch (Exception $ex){
+			Error::set($ex);
+			return false;
+		}
+	}
+}
+
+/**
+ * Восстановление пароля
+ *
+ * Получение токена:
+ * <code>
+ *  $token = RememberPassword::getToken($user->id,$user->guid);
+ * </code>
+ * Пользователю для подтверждения смены пароля передается его GUID и сгенировааный токен.
+ * Проверка токена:
+ * <code>
+ * 	return RememberPassword::check($guid,$token);
+ * </code>
+ */
+class RememberPassword
+{
+	/**
+	 * @var string
+	 */
+	private static $manager = 'remember';
+	/**
+	 * Get manager
+	 *
+	 * @return RememberPasswordManager
+	 */
+	private static function getManager()
+	{
+		if (DI::get(self::$manager) === null){
+			DI::set(self::$manager,new RememberPasswordManager());
+		}
+		return DI::get(self::$manager);
+	}
+	/**
+	 * Получение токена
+	 *
+	 * @param integer $user_id ID пользователя
+	 * @param string $user_guid GUID пользователя
+	 * @param string $token Токен, по-умолчанию токен можно не передавать,
+	 *  тогда функция сама сгенирирует случайный токен.
+	 * @return boolean <p>Возвращает <b>TRUE</b> в случае успеха.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function getToken($user_id,$user_guid,$token = null)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->getToken($user_id,$user_guid,$token);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+	/**
+	 * Проверка токена
+	 *
+	 * @param string $guid GUID пользователя
+	 * @param string $token Токен
+	 * @return null|false|integer <p>Возвращает ID пользователя в случае если токен был найден.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае если токен не был найден
+	 * </p>
+	 * <p>
+	 * Возвращает <b>NULL</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function check($guid,$token)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->check($guid,$token);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = null;
+		}
+		return $return;
+	}
+	/**
+	 * Удаление запроса смены пароля для пользователя
+	 *
+	 * @param integer $user_id ID пользователя
+	 * @return boolean <p>Возвращает <b>TRUE</b> в случае успеха.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function clear($user_id)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->clear($user_id);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+	/**
+	 * Удаление старых запросов смены пароля
+	 *
+	 * @param integer $day Через сколько дней считать запрос просроченным
+	 * @return boolean <p>Возвращает <b>TRUE</b> в случае успеха.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function clearOld($day = 3)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->clearOld($day);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+}
+
+/**
+ * Подтверждение регистрации
+ *
+ * Получение токена:
+ * <code>
+ *  $token = ConfirmRegistration::getToken($user->id,$user->guid);
+ * </code>
+ * Пользователю для подтверждения регистрации передается его GUID и сгенировааный токен.
+ * Проверка токена:
+ * <code>
+ * 	return ConfirmRegistration::check($guid,$token);
+ * </code>
+ */
+class ConfirmRegistration
+{
+	/**
+	 * @var string
+	 */
+	private static $manager = 'confirm';
+	/**
+	 * Get manager
+	 *
+	 * @return RememberPasswordManager
+	 */
+	private static function getManager()
+	{
+		if (DI::get(self::$manager) === null){
+			DI::set(self::$manager,new RememberPasswordManager());
+		}
+		return DI::get(self::$manager);
+	}
+	/**
+	 * Получение токена
+	 *
+	 * @param integer $user_id ID пользователя
+	 * @param string $user_guid GUID пользователя
+	 * @param string $token Токен, по-умолчанию токен можно не передавать,
+	 *  тогда функция сама сгенирирует случайный токен.
+	 * @return boolean <p>Возвращает <b>TRUE</b> в случае успеха.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function getToken($user_id,$user_guid,$token = null)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->getToken($user_id,$user_guid,$token);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+	/**
+	 * Проверка токена
+	 *
+	 * @param string $guid GUID пользователя
+	 * @param string $token Токен
+	 * @return null|false|integer <p>Возвращает ID пользователя в случае если токен был найден.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае если токен не был найден
+	 * </p>
+	 * <p>
+	 * Возвращает <b>NULL</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function check($guid,$token)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->check($guid,$token);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = null;
+		}
+		return $return;
+	}
+	/**
+	 * Удаление запроса подтверждения регистрации для пользователя
+	 *
+	 * @param integer $user_id ID пользователя
+	 * @return boolean <p>Возвращает <b>TRUE</b> в случае успеха.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function clear($user_id)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->clear($user_id);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+	/**
+	 * Удаление старых запросов подтверждения регистрации
+	 *
+	 * @param integer $day Через сколько дней считать запрос просроченным
+	 * @return boolean <p>Возвращает <b>TRUE</b> в случае успеха.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function clearOld($day = 3)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->clearOld($day);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+}
+
+/**
+ * Пользователи
+ *
+ * Класс для работы с пользователями. Поля полльзователя:
+ * <ol>
+ * <li>ID <b>INTEGER</b> ID пользователя, автоматически назначается БД</li>
+ * <li>GUID <b>STRING</b> GUID пользователя,генирируется автоматически</li>
+ * <li>LOGIN <b>STRING</b> логин, обязательное поле должен быть уникальным</li>
+ * <li>PASSWORD <b>STRING</b> генирируется автоматически, хранит хеш пароля</li>
+ * <li>EMAIL <b>STRING</b> e-mail, обязательное поле должен быть уникальным</li>
+ * <li>CREATE_DATE <b>STRING</b> дата создания, генирируется автоматически</li>
+ * <li>TIMESTAMP_X <b>STRING</b> дата изменения, генирируется автоматически</li>
+ * <li>REGISTERED <b>BOOLEAN</b> зарегистрирован ли пользователь</li>
+ * <li>ACTIVE <b>BOOLEAN</b> активность пользователя</li>
+ * <li>CODE <b>STRING</b> символьный код полльзователя, генерируется автоматически путем транслитерации логина</li>
+ * <li>DISPLAY_NAME <b>STRING</b> Имя пользователя на сайте, не обязательное</li>
+ * </ol>
+ */
+class User
+{
+	/**
+	 * @var string
+	 */
+	private static $manager = 'user';
+	/**
+	 * Get manager
+	 *
+	 * @return UserManager
+	 */
+	private static function getManager()
+	{
+		if (DI::get(self::$manager) === null){
+			DI::set(self::$manager,new UserManager());
+		}
+		return DI::get(self::$manager);
+	}
+	/**
+	 * Добавление пользователя.
+	 *
+	 * @param array $user Массиы значения полей
+	 * @return boolean <p>Возвращает <b>TRUE</b> в случае успеха.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function add(array $user)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->add($user);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+	/**
+	 * Изменение пользователя.
+	 *
+	 * @param integer $id ID пользователя
+	 * @param array $user Массиы значения полей
+	 * @return boolean <p>Возвращает <b>TRUE</b> в случае успеха.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function update($id,array $user)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->update($id,$user);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+	/**
+	 * Удаление пользователя.
+	 *
+	 * @param integer $id ID пользователя
+	 * @return boolean <p>Возвращает <b>TRUE</b> в случае успеха.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function delete($id)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->delete($id);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+	/**
+	 * Фильтр по пользователям
+	 *
+	 * @return SqlBuilder
+	 */
+	public static function finder()
+	{
+		return self::getManager()->getFinder();
+	}
+}
+
+/**
+ * Класс для работы с группами пользователей
+ *
+ * Доступные поля:
+ * <ol>
+ * <li>ID <b>INTEGER</b> ID группы, автоматически генирируется БД</li>
+ * <li>GUID <b>STRING</b> GUID группы, генирируется автоматически</li>
+ * <li>ACTIVE <b>STRING</b> Активность группы, по-умолчанию группа активна</li>
+ * <li>TIMESTAMP_X <b>STRING</b> Дата и время последнего изменения, генирируется автоматически</li>
+ * <li>NAME <b>STRING</b> Название группы, обязательное поле</li>
+ * <li>DESCRIPTION <b>STRING</b> Описание группы</li>
+ * <li>SORT <b>INTEGER</b> Индекс сортировки</li>
+ * </ol>
+ */
+class UserGroup
+{
+	/**
+	 * @var string
+	 */
+	private static $manager = 'user_group';
+	/**
+	 * Get manager
+	 *
+	 * @return UserGroupManager
+	 */
+	private static function getManager()
+	{
+		if (DI::get(self::$manager) === null){
+			DI::set(self::$manager,new UserGroupManager());
+		}
+		return DI::get(self::$manager);
+	}
+	/**
+	 * Добавление группы пользователей
+	 *
+	 * @param array $group Массив значение полей
+	 * @return boolean <p>Возвращает <b>TRUE</b> в случае успеха.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function add(array $group)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->add($group);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+	/**
+	 * Изменение группы пользователей
+	 *
+	 * @param integer $id ID группы
+	 * @param array $group Массив значение полей
+	 * @return boolean <p>Возвращает <b>TRUE</b> в случае успеха.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function update($id,array $group)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->update($id,$group);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+	/**
+	 * Удаление группы пользователей
+	 *
+	 * @param integer $id ID группы
+	 * @return boolean <p>Возвращает <b>TRUE</b> в случае успеха.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function delete($id)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->delete($id);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+	/**
+	 * Фильтр по группам пользователей
+	 *
+	 * @return SqlBuilder
+	 */
+	public static function finder()
+	{
+		return $this->finder();
+	}
+}
+
+/**
+ * Класс для работы с привязками пользоватей к группам
+ *
+ * Доступные поля:
+ * <ol>
+ * <li>ID <b>INTEGER</b> ID привязки, автоматически генирируется БД</li>
+ * <li>USER_ID <b>INTEGER</b> ID пользователя,обязательное поле</li>
+ * <li>GROUP_ID <b>INTEGER</b> ID группы пользователей</li>
+ * <li>TIMESTAMP_X <b>STRING</b> Дата и время последнего изменения, генирируется автоматически</li>
+ * </ol>
+ */
+class UserGroupMember
+{
+	/**
+	 * @var string
+	 */
+	private static $manager = 'user_group_member';
+	/**
+	 * Get manager
+	 *
+	 * @return UserGroupMemberManager
+	 */
+	private static function getManager()
+	{
+		if (DI::get(self::$manager) === null){
+			DI::set(self::$manager,new UserGroupMemberManager());
+		}
+		return DI::get(self::$manager);
+	}
+	/**
+	 * Добавление пользователя в группу
+	 *
+	 * @param integer $user_id ID пользователя
+	 * @param integer $group_id ID группы
+	 * @return boolean <p>Возвращает <b>TRUE</b> в случае успеха.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function add($user_id,$group_id)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->add($user_id,$group_id);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+	/**
+	 * Удаление пользователя из группы
+	 *
+	 * @param integer $user_id ID пользователя
+	 * @param integer $group_id ID группы
+	 * @return boolean <p>Возвращает <b>TRUE</b> в случае успеха.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function delete($user_id,$group_id)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->delete($user_id,$group_id);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+	/**
+	 * Фильтр по привязки пользователей к группе
+	 *
+	 * @return SqlBuilder
+	 */
+	public static function finder()
+	{
+		return self::getManager()->finder();
 	}
 }

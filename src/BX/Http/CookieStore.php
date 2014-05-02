@@ -8,7 +8,7 @@ class CookieStore extends Store
 	 * @param string $value
 	 * @param integer $expire
 	 */
-	public function set($name,$value,$expire)
+	public function set($name,$value,$expire = 0)
 	{
 		setcookie($name,$value,$expire,"/");
 		return $this;

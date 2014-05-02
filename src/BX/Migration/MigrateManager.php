@@ -7,6 +7,7 @@ use \BX\Base\Registry;
 
 class MigrateManager
 {
+	use \BX\String\StringTrait;
 	/**
 	 * @var string
 	 */

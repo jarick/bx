@@ -237,14 +237,20 @@ trait EntityTrait
 	 */
 	public function setData(array $values,$old = false)
 	{
-		foreach($this->value as &$value){
-			$value = null;
+		foreach($this->value as $key => &$value){
+			if (isset($this->old_value[$key])){
+				$value = $this->old_value[$key];
+			}else{
+				$value = null;
+			}
 		}
+		unset($value);
 		if ($old){
 			foreach($this->old_value as &$value){
 				$value = null;
 			}
 		}
+		unset($value);
 		foreach($values as $key => $value){
 			$key = $this->string()->toUpper($key);
 			if (array_key_exists($key,$this->value)){

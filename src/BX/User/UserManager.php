@@ -1,30 +1,69 @@
 <?php namespace BX\User;
+use BX\Base\Registry;
+use BX\DB\Filter\SqlBuilder;
+use BX\User\Store\TableUserStore;
 
 class UserManager
 {
 	use \BX\String\StringTrait;
-	private $user_store = null;
+	private $store = null;
 	/**
-	 * @return Store\TableUserStore
+	 * @return TableUserStore
 	 */
-	private function getUserStore()
+	private function store()
 	{
-		// TODO: write logic here
+		if ($this->store === null){
+			if (Registry::exists('user','store')){
+				$store = Registry::get('user','store');
+				switch ($store){
+					case 'db': $this->store = new TableUserStore();
+						break;
+					default : throw new \RuntimeException('Store `$store` is not found');
+				}
+			}else{
+				$this->store = new TableUserStore();
+			}
+		}
+		return $this->store;
 	}
-	public function save(Entity\UserEntity $user)
+	/**
+	 * Add user
+	 *
+	 * @param array $user
+	 * @return boolean
+	 */
+	public function add(array $user)
 	{
-		return $this->getUserStore()->save($user);
+		return $this->store()->add($user);
 	}
-	public function filter()
+	/**
+	 * Update user
+	 *
+	 * @param integer $id
+	 * @param array $user
+	 * @return boolean
+	 */
+	public function update($id,array $user)
 	{
-		return $this->getUserStore()->filter();
+		return $this->store()->update($id,$user);
 	}
-	public function delete($user_id)
+	/**
+	 * Get filter
+	 *
+	 * @return SqlBuilder
+	 */
+	public function finder()
 	{
-		return $this->getUserStore()->delete($user_id);
+		return $this->store()->getFinder();
 	}
-	public function getGroups()
+	/**
+	 * Delete user
+	 *
+	 * @param integer $id
+	 * @return boolean
+	 */
+	public function delete($id)
 	{
-
+		return $this->store()->delete($id);
 	}
 }

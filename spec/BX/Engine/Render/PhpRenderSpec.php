@@ -5,12 +5,14 @@ use PhpSpec\ObjectBehavior;
 
 class PhpRenderSpec extends ObjectBehavior
 {
+	private $reg;
 	function it_is_initializable()
 	{
 		$this->shouldHaveType('BX\Engine\Render\PhpRender');
 	}
 	function let()
 	{
+		$this->reg = Registry::all();
 		$store = [
 			'templating' => [
 				'engine' => 'php',
@@ -18,6 +20,10 @@ class PhpRenderSpec extends ObjectBehavior
 			],
 		];
 		Registry::init($store,Registry::FORMAT_ARRAY);
+	}
+	function letgo()
+	{
+		Registry::init($this->reg,Registry::FORMAT_ARRAY);
 	}
 	function it_render()
 	{

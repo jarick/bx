@@ -3,14 +3,14 @@
 class Store implements \IteratorAggregate, \ArrayAccess, \Countable
 {
 	/**
-	 * @var array|integer
+	 * @var array
 	 */
-	private $data;
+	private $data = [];
 	/**
 	 * Constructor
 	 * @param array|integer $data
 	 */
-	public function __construct($data)
+	public function __construct($data = [])
 	{
 		$this->data = $data;
 	}
