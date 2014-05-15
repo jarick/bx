@@ -24,7 +24,7 @@
 		"filp/whoops": "1.*",
 		"gregwar/captcha": "dev-master",
 		"imagine/imagine": "0.5.*",
-		"pimple/pimple": "2.1.*"
+		"pimple/pimple": "2.0.*"
     },
     "autoload": {
 		"files": ["src/framework.php"],
