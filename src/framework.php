@@ -47,7 +47,7 @@ class Error
 	private static function getManager()
 	{
 		if (DICService::get(self::$manager) === null){
-			$manager = DICService::getContainer()->share(function(){
+			$manager = DICService::getContainer()->factory(function(){
 				return new BX\Error\ErrorManager();
 			});
 			DICService::set(self::$manager,$manager);
