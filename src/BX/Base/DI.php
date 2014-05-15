@@ -1,5 +1,8 @@
 <?php namespace BX\Base;
 
+/**
+ * @deprecated
+ */
 class DI
 {
 	/**

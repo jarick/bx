@@ -13,6 +13,8 @@ use BX\User\RememberPasswordManager;
 use BX\User\UserGroupManager;
 use BX\User\UserGroupMemberManager;
 use BX\User\UserManager;
+use BX\Config\DICService;
+use BX\Config\ConfigManager;
 
 /**
  * Контейнер для ошибок
@@ -34,16 +36,31 @@ use BX\User\UserManager;
 class Error
 {
 	/**
-	 * @var Exception
+	 * @var string
 	 */
-	private static $ex = null;
+	private static $manager = 'error';
+	/**
+	 * Return error manager
+	 *
+	 * @return BX\Error\ErrorManager
+	 */
+	private static function getManager()
+	{
+		if (DICService::get(self::$manager) === null){
+			$manager = DICService::getContainer()->share(function(){
+				return new BX\Error\ErrorManager();
+			});
+			DICService::set(self::$manager,$manager);
+		}
+		return DICService::get(self::$manager);
+	}
 	/**
 	 * Сохраняет и логирует определенную пользователем ошибоку.
 	 *
 	 * @param Exception $entity <p>
 	 * Класс сущности к которой привязан счетчик.
 	 * </p>
-	 * @param string $entity_id <p>
+	 * @param Exception $ex <p>
 	 * Ошибка
 	 * </p>
 	 * @param string $component <p>
@@ -52,28 +69,14 @@ class Error
 	 */
 	public static function set(Exception $ex,$component = 'default')
 	{
-		self::$ex = $ex;
-		if (DI::get('logger') === null){
-			DI::set('logger',new LoggerManager());
-		}
-		$trace = $ex->getTrace();
-		$result = 'Exception: "';
-		$result .= $ex->getMessage();
-		$result .= '" @ ';
-		if ($trace[0]['class'] !== ''){
-			$result .= $trace[0]['class'];
-			$result .= '->';
-		}
-		$result .= $trace[0]['function'];
-		$result .= '();'.PHP_EOL;
-		DI::get('logger')->get($component)->error($result);
+		return self::getManager()->set($ex,$component);
 	}
 	/**
 	 * Reset exception
 	 */
 	public static function reset()
 	{
-		self::$ex = null;
+		return self::getManager()->reset();
 	}
 	/**
 	 * Return exception
@@ -81,7 +84,106 @@ class Error
 	 */
 	public static function get()
 	{
-		return self::$ex;
+		return self::getManager()->get();
+	}
+}
+
+/**
+ * Класс для логирования ошибок
+ * см. @link https://github.com/Seldaek/monolog
+ *
+ * Пример кода:
+ * <code>
+ * $user = User::finder()->filter(['ID' => 1])->get();
+ * if($user === false){
+ * 	Logger::get('user')->err('User not found');
+ * }
+ * </code>
+ * @author jarick <zolotarev.jar@gmail.com>
+ * @version 0.1
+ */
+class Monolog
+{
+	/**
+	 * @var string
+	 */
+	private static $manager = 'logger';
+	/**
+	 * Return error manager
+	 *
+	 * @return BX\Logger\ILoggerManager
+	 */
+	private static function getManager()
+	{
+		if (DICService::get(self::$manager) === null){
+			$manager = DICService::getContainer()->factory(function(){
+				return new LoggerManager();
+			});
+			DICService::set(self::$manager,$manager);
+		}
+		return DICService::get(self::$manager);
+	}
+	/**
+	 * Возвращает логер, который наследуется от интерфейса стандарта psr-3
+	 * @link https://github.com/Seldaek/monolog
+	 *
+	 * @param string $component Имя текущего компонента
+	 * @return \Monolog\Logger
+	 */
+	public static function get($component = 'default')
+	{
+		return self::getManager()->get($component);
+	}
+}
+
+class Config
+{
+	/**
+	 * @var string
+	 */
+	private static $manager = 'config';
+	/**
+	 * Return error manager
+	 *
+	 * @return \BX\Config\IConfigManager
+	 */
+	private static function getManager()
+	{
+		if (DICService::get(self::$manager) === null){
+			$manager = DICService::getContainer()->factory(function(){
+				return new ConfigManager();
+			});
+			DICService::set(self::$manager,$manager);
+		}
+		return DICService::get(self::$manager);
+	}
+	/**
+	 * Инициализацтя конфигурации
+	 *
+	 * @param mixed $store
+	 * @param string $format
+	 * @return boolean
+	 */
+	public static function init($store,$format)
+	{
+		return self::getManager()->init($store,$format);
+	}
+	/**
+	 * Поиск ключа
+	 *
+	 * @return boolean
+	 */
+	public static function exists()
+	{
+		return self::getManager()->exists(func_get_args());
+	}
+	public static function get()
+	{
+		return self::getManager()->get(func_get_args());
+	}
+	public static function all()
+	{
+		return self::getManager()->all();
 	}
 }
 
@@ -106,10 +208,13 @@ class Counter
 	 */
 	private static function getManager()
 	{
-		if (DI::get(self::$manager) === null){
-			DI::set(self::$manager,new CounterManager());
+		if (DICService::get(self::$manager) === null){
+			$manager = DICService::getContainer()->factory(function(){
+				return new CounterManager();
+			});
+			DICService::set(self::$manager,$manager);
 		}
-		return DI::get(self::$manager);
+		return DICService::get(self::$manager);
 	}
 	/**
 	 * Увеличивает счетчик на один.
@@ -243,10 +348,13 @@ class Str
 	 */
 	private static function getManager()
 	{
-		if (DI::get(self::$manager) === null){
-			DI::set(self::$manager,new StringManager());
+		if (DICService::get(self::$manager) === null){
+			$manager = DICService::getContainer()->factory(function(){
+				return new StringManager();
+			});
+			DICService::set(self::$manager,$manager);
 		}
-		return DI::get(self::$manager);
+		return DICService::get(self::$manager);
 	}
 	/**
 	 * Получение случайной строки
@@ -259,7 +367,14 @@ class Str
 	 */
 	public static function getRandString($length)
 	{
-		return self::getManager()->getRandString($length);
+		Error::reset();
+		try{
+			$return = self::getManager()->getRandString($length);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
 	}
 	/**
 	 * Преобразование строки в верхний регистр
@@ -322,14 +437,58 @@ class Str
 	{
 		return self::getManager()->ucwords($string);
 	}
-	/*
-	  string Str::countSubstr($haystack,$needle)
-	  int Str::strpos($haystack,$needle,$offset = 0)
-	  string Str::substr($str,$start,$length = null)
-	  string Str::startsWith($haystack,$needle)
-	  string Str::endsWith($haystack,$needle)
-	 *
+	/**
+	 * Подсчитывает, сколько раз подстрока <b>needle</b> встречается в строке <b>haystack</b>.
+	 * @link http://www.php.net/manual/ru/function.mb-substr-count.php
+	 * @param string $haystack
+	 * @param string $needle
 	 */
+	public static function countSubstr($haystack,$needle)
+	{
+		return self::getManager()->countSubstr($haystack,$needle);
+	}
+	/**
+	 * Поиск позиции первого вхождения одной строки в другую
+	 * @link http://www.php.net/manual/ru/function.mb-strpos.php
+	 * @param string $haystack Строка в которой производится поиск.
+	 * @param string $needle Строка, поиск которой производится в строке haystack.
+	 * @param integer $offset Смещение начала поиска. Если не задан, используется 0.
+	 */
+	public static function strpos($haystack,$needle,$offset = 0)
+	{
+		return self::getManager()->strpos($haystack,$needle,$offset);
+	}
+	/**
+	 * Возвращает часть строки
+	 * @link http://www.php.net/manual/ru/function.mb-substr.php
+	 * @param string $str Исходная строка для получения подстроки.
+	 * @param integer $start Позиция символа <b>str</b>, с которой выделяется подстрока.
+	 * @param integer $length Максимальное количество символов возвращаемой подстроки.
+	 */
+	public static function substr($str,$start,$length = null)
+	{
+		return self::getManager()->substr($str,$start,$length);
+	}
+	/**
+	 * Возвращает начинается ли строка <b>haystack</b> строкой <b>needle</b>
+	 *
+	 * @param string $haystack Базовая строка.
+	 * @param string $needle Сравниваемая строка.
+	 */
+	public static function startsWith($haystack,$needle)
+	{
+		return self::getManager()->startsWith($haystack,$needle);
+	}
+	/**
+	 * Возвращает заканчивается ли строка <b>haystack</b> строкой <b>needle</b>
+	 *
+	 * @param string $haystack Базовая строка.
+	 * @param string $needle Сравниваемая строка.
+	 */
+	public static function endsWith($haystack,$needle)
+	{
+		return self::getManager()->endsWith($haystack,$needle);
+	}
 }
 
 /**
@@ -353,10 +512,13 @@ class FileSystem
 	 */
 	private static function getManager()
 	{
-		if (DI::get(self::$manager) === null){
-			DI::set(self::$manager,new FileSystemManager());
+		if (DICService::get(self::$manager) === null){
+			$manager = DICService::getContainer()->factory(function(){
+				return new FileSystemManager();
+			});
+			DICService::set(self::$manager,$manager);
 		}
-		return DI::get(self::$manager);
+		return DICService::get(self::$manager);
 	}
 	/**
 	 * Рекурсивное удаление папки
@@ -427,10 +589,13 @@ class Date
 	 */
 	private static function getManager()
 	{
-		if (DI::get(self::$manager) === null){
-			DI::set(self::$manager,new DateTimeManager());
+		if (DICService::get(self::$manager) === null){
+			$manager = DICService::getContainer()->factory(function(){
+				return new DateTimeManager();
+			});
+			DICService::set(self::$manager,$manager);
 		}
-		return DI::get(self::$manager);
+		return DICService::get(self::$manager);
 	}
 	/**
 	 * Включение работы с времеными зонами
@@ -540,14 +705,17 @@ class Event
 	/**
 	 * Get manager
 	 *
-	 * @return EventManager
+	 * @return IEventManager
 	 */
 	private static function getManager()
 	{
-		if (DI::get(self::$manager) === null){
-			DI::set(self::$manager,new EventManager());
+		if (DICService::get(self::$manager) === null){
+			$manager = DICService::getContainer()->factory(function(){
+				return new EventManager();
+			});
+			DICService::set(self::$manager,$manager);
 		}
-		return DI::get(self::$manager);
+		return DICService::get(self::$manager);
 	}
 	/**
 	 * Вызвать обработчик события
@@ -623,10 +791,13 @@ class Captcha
 	 */
 	private static function getManager()
 	{
-		if (DI::get(self::$manager) === null){
-			DI::set(self::$manager,new CaptchaManager());
+		if (DICService::get(self::$manager) === null){
+			$manager = DICService::getContainer()->factory(function(){
+				return new CaptchaManager();
+			});
+			DICService::set(self::$manager,$manager);
 		}
-		return DI::get(self::$manager);
+		return DICService::get(self::$manager);
 	}
 	/**
 	 * Получение уникального индификатора для капчи
@@ -787,10 +958,13 @@ class Auth
 	 */
 	private static function getManager()
 	{
-		if (DI::get(self::$manager) === null){
-			DI::set(self::$manager,new AuthManager());
+		if (DICService::get(self::$manager) === null){
+			$manager = DICService::getContainer()->factory(function(){
+				return new AuthManager();
+			});
+			DICService::set(self::$manager,$manager);
 		}
-		return DI::get(self::$manager);
+		return DICService::get(self::$manager);
 	}
 	/**
 	 * Проверяет есть ли авторизация у пользователя
@@ -996,10 +1170,13 @@ class RememberPassword
 	 */
 	private static function getManager()
 	{
-		if (DI::get(self::$manager) === null){
-			DI::set(self::$manager,new RememberPasswordManager());
+		if (DICService::get(self::$manager) === null){
+			$manager = DICService::getContainer()->factory(function(){
+				return new RememberPasswordManager();
+			});
+			DICService::set(self::$manager,$manager);
 		}
-		return DI::get(self::$manager);
+		return DICService::get(self::$manager);
 	}
 	/**
 	 * Получение токена
@@ -1124,10 +1301,13 @@ class ConfirmRegistration
 	 */
 	private static function getManager()
 	{
-		if (DI::get(self::$manager) === null){
-			DI::set(self::$manager,new RememberPasswordManager());
+		if (DICService::get(self::$manager) === null){
+			$manager = DICService::getContainer()->factory(function(){
+				return new RememberPasswordManager();
+			});
+			DICService::set(self::$manager,$manager);
 		}
-		return DI::get(self::$manager);
+		return DICService::get(self::$manager);
 	}
 	/**
 	 * Получение токена
@@ -1533,5 +1713,109 @@ class UserGroupMember
 	public static function finder()
 	{
 		return self::getManager()->finder();
+	}
+}
+
+class News
+{
+	public static function add(array $news)
+	{
+
+	}
+	public static function update($id,array $news)
+	{
+
+	}
+	public static function delete($id)
+	{
+
+	}
+	public static function finder()
+	{
+
+	}
+}
+
+class NewsCategory
+{
+	public static function add(array $news)
+	{
+
+	}
+	public static function update($id,array $news)
+	{
+
+	}
+	public static function delete($id)
+	{
+
+	}
+	public static function finder()
+	{
+
+	}
+}
+
+class NewsCategoryLink
+{
+	public static function add($news_id,$category_id)
+	{
+
+	}
+	public static function delete($news_id,$category_id)
+	{
+
+	}
+}
+
+class MailType
+{
+	public static function add(array $news)
+	{
+
+	}
+	public static function update($id,array $news)
+	{
+
+	}
+	public static function delete($id)
+	{
+
+	}
+	public static function finder()
+	{
+
+	}
+}
+
+class MailMessage
+{
+	public static function add(array $news)
+	{
+
+	}
+	public static function update($id,array $news)
+	{
+
+	}
+	public static function delete($id)
+	{
+
+	}
+	public static function finder()
+	{
+
+	}
+}
+
+class Mail
+{
+	public static function send($type,$params,$immediate = true)
+	{
+
+	}
+	public static function checkEvents()
+	{
+
 	}
 }

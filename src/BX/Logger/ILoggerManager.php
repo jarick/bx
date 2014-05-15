@@ -3,8 +3,10 @@
 interface ILoggerManager
 {
 	/**
+	 * Return logger manager
+	 *
 	 * @param string $name
-	 * @return Logger
+	 * @return \Monolog\Logger
 	 */
 	public function get($name = 'default');
 }

@@ -15,8 +15,8 @@ class TableUserStore implements ITable
 	{
 		return [
 			'db_table'	 => 'tbl_user',
-			'cache_tag'	 => 'user',
-			'event'		 => 'user',
+			'cache_tag'	 => 'User',
+			'event'		 => 'User',
 		];
 	}
 	/**
@@ -53,7 +53,7 @@ class TableUserStore implements ITable
 	 * Add user
 	 *
 	 * @param array $user
-	 * @return boolean
+	 * @return integer
 	 * @throws \RuntimeException
 	 */
 	public function add(array $user)
@@ -66,7 +66,7 @@ class TableUserStore implements ITable
 			$mess = print_r($repo->getErrorEntity()->getErrors()->all(),1);
 			throw new \RuntimeException("Error add user. Error: {$mess}.");
 		}
-		return true;
+		return $entity->id;
 	}
 	/**
 	 * Update user

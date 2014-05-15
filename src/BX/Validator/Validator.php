@@ -23,6 +23,7 @@ class Validator
 	protected $new = true;
 	/**
 	 * Constructor
+	 * 
 	 * @param array $labels
 	 * @param array $rules
 	 * @param boolean $new
@@ -35,6 +36,7 @@ class Validator
 	}
 	/**
 	 * Set labels
+	 *
 	 * @param array $labels
 	 * @return \BX\Validator\Manager\Validator
 	 */
@@ -45,6 +47,7 @@ class Validator
 	}
 	/**
 	 * Get labels
+	 *
 	 * @return array
 	 * @throws \LogicException
 	 */
@@ -57,6 +60,7 @@ class Validator
 	}
 	/**
 	 * Set rules
+	 *
 	 * @param type $rules
 	 * @return \BX\Validator\Manager\Validator
 	 */
@@ -67,6 +71,7 @@ class Validator
 	}
 	/**
 	 * Get rules
+	 *
 	 * @return type
 	 * @throws \LogicException
 	 */
@@ -79,6 +84,7 @@ class Validator
 	}
 	/**
 	 * Set is new
+	 *
 	 * @param boolean $new
 	 * @return \BX\Validator\Manager\Validator
 	 */
@@ -97,6 +103,7 @@ class Validator
 	}
 	/**
 	 * Check fields
+	 *
 	 * @param array $fields
 	 * @return boolean
 	 */
@@ -106,6 +113,7 @@ class Validator
 	}
 	/**
 	 * Clear fields
+	 *
 	 * @param array $fields
 	 * @return \BX\Validator\Manager\Validator
 	 */
@@ -141,6 +149,7 @@ class Validator
 	}
 	/**
 	 * Has errors
+	 *
 	 * @return array
 	 */
 	public function hasErrors()
@@ -152,6 +161,7 @@ class Validator
 	}
 	/**
 	 * Get errors
+	 *
 	 * @return MessageBag
 	 */
 	public function getErrors()
@@ -163,6 +173,7 @@ class Validator
 	}
 	/**
 	 * Add error
+	 *
 	 * @param string $key
 	 * @param string $message
 	 * @param array $params
@@ -176,6 +187,7 @@ class Validator
 	}
 	/**
 	 * Validate fields
+	 *
 	 * @param array $fields
 	 * @return boolean
 	 */

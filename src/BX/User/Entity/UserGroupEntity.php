@@ -29,13 +29,13 @@ class UserGroupEntity implements \BX\Validator\IEntity
 	protected function labels()
 	{
 		return [
-			self::C_ID			 => $this->trans('user.entity.access.id'),
-			self::C_GUID		 => $this->trans('user.entity.access.guid'),
-			self::C_ACTIVE		 => $this->trans('user.entity.access.active'),
-			self::C_TIMESTAMP_X	 => $this->trans('user.entity.access.timestamp_x'),
-			self::C_NAME		 => $this->trans('user.entity.access.name'),
-			self::C_DESCRIPTION	 => $this->trans('user.entity.access.description'),
-			self::C_SORT		 => $this->trans('user.entity.access.sort'),
+			self::C_ID			 => $this->trans('user.entity.group.id'),
+			self::C_GUID		 => $this->trans('user.entity.group.guid'),
+			self::C_ACTIVE		 => $this->trans('user.entity.group.active'),
+			self::C_TIMESTAMP_X	 => $this->trans('user.entity.group.timestamp_x'),
+			self::C_NAME		 => $this->trans('user.entity.group.name'),
+			self::C_DESCRIPTION	 => $this->trans('user.entity.group.description'),
+			self::C_SORT		 => $this->trans('user.entity.group.sort'),
 		];
 	}
 	/**
@@ -46,10 +46,6 @@ class UserGroupEntity implements \BX\Validator\IEntity
 	protected function rules()
 	{
 		return [
-			[self::C_GUID],
-			$this->rule()->setter()->setValidators([
-				$this->rule()->string()->notEmpty()->setMax(100),
-			])->setValue(uniqid('user_group'))->onAdd(),
 			[self::C_ACTIVE],
 			$this->rule()->boolean()->setDefault('Y'),
 			[self::C_TIMESTAMP_X],

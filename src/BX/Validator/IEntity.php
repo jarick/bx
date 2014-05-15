@@ -13,7 +13,6 @@ interface IEntity
 	public function getOldData();
 	public function getData();
 	public function setData(array $values,$old = false);
-	public function prepareFiles($files);
 	public function checkFields(&$data = null,$new = true);
 	public function hasErrors();
 	/**

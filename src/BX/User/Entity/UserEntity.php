@@ -64,7 +64,7 @@ class UserEntity implements \BX\Validator\IEntity
 			[self::C_GUID],
 			$this->rule()->setter()->setValue(uniqid('user'))->setValidators([
 				$this->rule()->string()->notEmpty()->setMax(50),
-			]),
+			])->onAdd(),
 			[self::C_PASSWORD],
 			$this->rule()->custom([$this,'filterPassword'])->notEmpty(),
 			[self::C_CODE],
@@ -101,7 +101,6 @@ class UserEntity implements \BX\Validator\IEntity
 	 * Filter password
 	 *
 	 * @param string $value
-	 * @return null|string
 	 */
 	public function filterPassword(&$value)
 	{
@@ -118,7 +117,7 @@ class UserEntity implements \BX\Validator\IEntity
 	/**
 	 * Filter code
 	 *
-	 * @return null
+	 * @return string
 	 */
 	public function filterCode()
 	{

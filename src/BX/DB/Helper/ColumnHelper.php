@@ -1,5 +1,6 @@
 <?php namespace BX\DB\Helper;
 use BX\DB\Column\BooleanColumn;
+use BX\DB\Column\FileColumn;
 use BX\DB\Column\NumberColumn;
 use BX\DB\Column\StringColumn;
 use BX\DB\Column\TimestampColumn;
@@ -8,6 +9,7 @@ class ColumnHelper
 {
 	/**
 	 * Get string column
+	 *
 	 * @param string $column
 	 * @return StringColumn
 	 */
@@ -17,6 +19,7 @@ class ColumnHelper
 	}
 	/**
 	 * Get boolean column
+	 *
 	 * @param string $column
 	 * @return BooleanColumn
 	 */
@@ -26,6 +29,7 @@ class ColumnHelper
 	}
 	/**
 	 * Get interger column
+	 *
 	 * @param string $column
 	 * @return NumberColumn
 	 */
@@ -35,6 +39,7 @@ class ColumnHelper
 	}
 	/**
 	 * Get number column
+	 *
 	 * @param string $column
 	 * @return NumberColumn
 	 */
@@ -44,6 +49,7 @@ class ColumnHelper
 	}
 	/**
 	 * Get date column
+	 *
 	 * @param string $column
 	 * @return TimestampColumn
 	 */
@@ -53,11 +59,24 @@ class ColumnHelper
 	}
 	/**
 	 * Get datetime column
+	 *
 	 * @param string $column
 	 * @return TimestampColumn
 	 */
 	public function datetime($column)
 	{
 		return TimestampColumn::create($column,'full');
+	}
+	/**
+	 * Return file column
+	 *
+	 * @param string $column
+	 * @param string|\BX\Validator\Upload\Checker\IUploadFileChecker $format
+	 * @param string $dir
+	 * @return \BX\Validator\Upload\ExistsFile
+	 */
+	public function file($column,$format = 'image',$dir = '')
+	{
+		return FileColumn::create($column,$format,$dir);
 	}
 }

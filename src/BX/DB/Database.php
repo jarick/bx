@@ -240,7 +240,6 @@ class Database implements IDatabase
 		return $this->adaptor()->getlastId();
 	}
 	/**
-	 * @todo throw exception
 	 * Query sql
 	 * @param string $sql
 	 * @param array $vars

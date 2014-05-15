@@ -476,7 +476,7 @@ class SqlBuilder
 			$sql .= ' GROUP BY '.implode(',',$this->group_sql);
 		}
 		$result = $this->query($sql);
-		return $result->fetch()['CNT'];
+		return intval($result->fetch()['CNT']);
 	}
 	/**
 	 * Set tags cache

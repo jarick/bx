@@ -263,38 +263,6 @@ trait EntityTrait
 		return $this;
 	}
 	/**
-	 * Prepare files array
-	 * @param array $files
-	 * @return array
-	 */
-	public function prepareFiles($files)
-	{
-		$arrayForFill = [];
-		foreach($files as $firstNameKey => $arFileDescriptions){
-			foreach(array_keys($arFileDescriptions) as $fileDescriptionParam){
-				$this->restructuringFilesArray($arrayForFill,$firstNameKey,$files[$firstNameKey][$fileDescriptionParam],$fileDescriptionParam);
-			}
-		}
-		return $arrayForFill;
-	}
-	/**
-	 * restructuring files array
-	 * @param array $arrayForFill
-	 * @param string $currentKey
-	 * @param string $currentMixedValue
-	 * @param array $fileDescriptionParam
-	 */
-	private function restructuringFilesArray(&$arrayForFill,$currentKey,$currentMixedValue,$fileDescriptionParam)
-	{
-		if (is_array($currentMixedValue)){
-			foreach($currentMixedValue as $nameKey => $mixedValue){
-				$this->restructuringFilesArray($arrayForFill[$currentKey],$nameKey,$mixedValue,$fileDescriptionParam);
-			}
-		}else{
-			$arrayForFill[$currentKey][$fileDescriptionParam] = $currentMixedValue;
-		}
-	}
-	/**
 	 * Load validator
 	 * @return Validator
 	 */

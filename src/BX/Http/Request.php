@@ -87,13 +87,47 @@ class Request implements IRequest
 		return $this->post;
 	}
 	/**
+	 * Prepare files array
+	 * 
+	 * @param array $files
+	 * @return array
+	 */
+	public function prepareFiles($files)
+	{
+		$arrayForFill = [];
+		foreach($files as $firstNameKey => $arFileDescriptions){
+			foreach(array_keys($arFileDescriptions) as $fileDescriptionParam){
+				$this->restructuringFilesArray($arrayForFill,$firstNameKey,$files[$firstNameKey][$fileDescriptionParam],$fileDescriptionParam);
+			}
+		}
+		return $arrayForFill;
+	}
+	/**
+	 * Restructuring files array
+	 *
+	 * @param array $arrayForFill
+	 * @param string $currentKey
+	 * @param string $currentMixedValue
+	 * @param array $fileDescriptionParam
+	 */
+	private function restructuringFilesArray(&$arrayForFill,$currentKey,$currentMixedValue,$fileDescriptionParam)
+	{
+		if (is_array($currentMixedValue)){
+			foreach($currentMixedValue as $nameKey => $mixedValue){
+				$this->restructuringFilesArray($arrayForFill[$currentKey],$nameKey,$mixedValue,$fileDescriptionParam);
+			}
+		}else{
+			$arrayForFill[$currentKey][$fileDescriptionParam] = $currentMixedValue;
+		}
+	}
+	/**
 	 * Get files dictionary
 	 * @return Store
 	 */
 	public function files()
 	{
 		if ($this->files === null){
-			$this->files = $_FILES;
+			$this->files = $this->prepareFiles($_FILES);
 		}
 		if (is_array($this->files)){
 			$this->files = new Store($this->files);

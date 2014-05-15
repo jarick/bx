@@ -1,18 +1,20 @@
 <?php namespace BX\Validator\Helper;
-use BX\Validator\IValidator;
 use BX\Validator\Collection\Boolean;
 use BX\Validator\Collection\Custom;
 use BX\Validator\Collection\DateTime;
+use BX\Validator\Collection\File;
 use BX\Validator\Collection\Multy;
 use BX\Validator\Collection\Number;
 use BX\Validator\Collection\Safe;
 use BX\Validator\Collection\Setter;
 use BX\Validator\Collection\String;
+use BX\Validator\IValidator;
 
 class RuleHelper
 {
 	/**
 	 * Get boolean validator
+	 *
 	 * @return Boolean
 	 */
 	public function boolean()
@@ -21,6 +23,7 @@ class RuleHelper
 	}
 	/**
 	 * Get custom validator
+	 *
 	 * @param string $function
 	 * @return Custom
 	 */
@@ -30,6 +33,7 @@ class RuleHelper
 	}
 	/**
 	 * Get date validator
+	 *
 	 * @return DateTime
 	 */
 	public function date()
@@ -38,6 +42,7 @@ class RuleHelper
 	}
 	/**
 	 * Get datetime validator
+	 *
 	 * @return DateTime
 	 */
 	public function datetime()
@@ -46,6 +51,7 @@ class RuleHelper
 	}
 	/**
 	 * Get multy validator
+	 *
 	 * @param IValidator $validator
 	 * @return Multy
 	 */
@@ -55,6 +61,7 @@ class RuleHelper
 	}
 	/**
 	 * Get number validator
+	 *
 	 * @return Number
 	 */
 	public function number()
@@ -63,6 +70,7 @@ class RuleHelper
 	}
 	/**
 	 * Get safe validator
+	 *
 	 * @return Safe
 	 */
 	public function safe()
@@ -71,6 +79,7 @@ class RuleHelper
 	}
 	/**
 	 * Get setter
+	 *
 	 * @return Setter
 	 */
 	public function setter()
@@ -79,10 +88,20 @@ class RuleHelper
 	}
 	/**
 	 * Get string validator
+	 *
 	 * @return String
 	 */
 	public function string()
 	{
 		return String::create();
+	}
+	/**
+	 * Get file validator
+	 *
+	 * @return File
+	 */
+	public function file()
+	{
+		return File::create();
 	}
 }

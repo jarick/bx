@@ -1,10 +1,9 @@
 <?php namespace BX\Event;
-use BX\Event\IEvent;
 use Illuminate\Events\Dispatcher;
 use BX\Base\Registry;
 use BX\Base\DI;
 
-class EventManager implements IEvent
+class EventManager implements IEventManager
 {
 	/**
 	 * Get dispatcher

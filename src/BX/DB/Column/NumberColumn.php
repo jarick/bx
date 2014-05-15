@@ -8,6 +8,7 @@ class NumberColumn extends BaseColumn
 	public $integer;
 	/**
 	 * Get filter filter rule name
+	 * 
 	 * @return string
 	 */
 	public function getFilterRule()
@@ -39,7 +40,7 @@ class NumberColumn extends BaseColumn
 		}
 		if ($this->integer){
 			return intval($value);
-		} else{
+		}else{
 			return floatval($value);
 		}
 	}
@@ -56,7 +57,7 @@ class NumberColumn extends BaseColumn
 		}
 		if ($this->integer){
 			return intval($value);
-		} else{
+		}else{
 			return floatval($value);
 		}
 	}

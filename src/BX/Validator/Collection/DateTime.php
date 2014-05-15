@@ -6,52 +6,44 @@ class DateTime extends BaseValidator
 	 \BX\String\StringTrait,
 	 \BX\Translate\TranslateTrait;
 	/**
-	 * Is empty
 	 * @var boolean
 	 */
 	protected $empty = true;
 	/**
-	 * Format input
 	 * @var string
 	 */
 	protected $format_input = 'short';
 	/**
-	 * Format rules
 	 * @var string
 	 */
 	protected $format_rules = 'short';
 	/**
-	 * Min value for input date
 	 * @var string
 	 */
 	protected $min = null;
 	/**
-	 * Max value for input date
 	 * @var string
 	 */
 	protected $max = null;
 	/**
-	 * Message invalid
 	 * @var string
 	 */
 	protected $message_invalid = false;
 	/**
-	 * Message empty
 	 * @var string
 	 */
 	protected $message_empty = false;
 	/**
-	 * Message min
 	 * @var string
 	 */
 	protected $message_min = false;
 	/**
-	 * Message max
 	 * @var string
 	 */
 	protected $message_max = false;
 	/**
 	 * Set message invalid
+	 *
 	 * @param string $message
 	 * @return \BX\Validator\Collection\DateTime
 	 */
@@ -62,7 +54,8 @@ class DateTime extends BaseValidator
 	}
 	/**
 	 * Get message invalid
-	 * @return type
+	 *
+	 * @return string
 	 */
 	public function getMessageInvalid()
 	{
@@ -74,6 +67,7 @@ class DateTime extends BaseValidator
 	}
 	/**
 	 * Set message empty
+	 *
 	 * @param string $message
 	 * @return \BX\Validator\Collection\DateTime
 	 */
@@ -84,6 +78,7 @@ class DateTime extends BaseValidator
 	}
 	/**
 	 * Get message empty
+	 *
 	 * @return string
 	 */
 	public function getMessageEmpty()
@@ -96,6 +91,7 @@ class DateTime extends BaseValidator
 	}
 	/**
 	 * Set message min
+	 *
 	 * @param string $message
 	 * @return \BX\Validator\Collection\DateTime
 	 */
@@ -106,6 +102,7 @@ class DateTime extends BaseValidator
 	}
 	/**
 	 * Get message min
+	 *
 	 * @return string
 	 */
 	public function getMessageMin()
@@ -118,6 +115,7 @@ class DateTime extends BaseValidator
 	}
 	/**
 	 * Set message max
+	 *
 	 * @param string $message
 	 * @return \BX\Validator\Collection\DateTime
 	 */
@@ -128,6 +126,7 @@ class DateTime extends BaseValidator
 	}
 	/**
 	 * Get message max
+	 *
 	 * @return string
 	 */
 	public function getMessageMax()
@@ -140,6 +139,7 @@ class DateTime extends BaseValidator
 	}
 	/**
 	 * Set not empty
+	 *
 	 * @return \BX\Validator\Collection\DateTime
 	 */
 	public function notEmpty()
@@ -149,6 +149,7 @@ class DateTime extends BaseValidator
 	}
 	/**
 	 * Set min value
+	 *
 	 * @param integer $min
 	 * @return \BX\Validator\Collection\DateTime
 	 */
@@ -159,6 +160,7 @@ class DateTime extends BaseValidator
 	}
 	/**
 	 * Set max value
+	 *
 	 * @param integer $max
 	 * @return \BX\Validator\Collection\DateTime
 	 */
@@ -169,6 +171,7 @@ class DateTime extends BaseValidator
 	}
 	/**
 	 * Is validate time
+	 *
 	 * @param boolean $time
 	 * @return \BX\Validator\Collection\DateTime
 	 */
@@ -179,7 +182,8 @@ class DateTime extends BaseValidator
 	}
 	/**
 	 * Set format of value
-	 * @param type $format
+	 *
+	 * @param string $format
 	 */
 	public function setFormat($format)
 	{
@@ -187,7 +191,8 @@ class DateTime extends BaseValidator
 	}
 	/**
 	 * Set format for rule date
-	 * @param type $format
+	 *
+	 * @param string $format
 	 */
 	public function setFormatRules($format)
 	{
@@ -195,6 +200,7 @@ class DateTime extends BaseValidator
 	}
 	/**
 	 * Validate
+	 *
 	 * @param string $key
 	 * @param string $value
 	 * @param string $label

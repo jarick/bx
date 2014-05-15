@@ -1,10 +1,7 @@
-<?php namespace BX\Base;
+<?php namespace BX\Config;
 use Symfony\Component\Yaml\Yaml;
 
-/**
- * @depricated
- */
-class Registry
+class ConfigManager implements IConfigManager
 {
 	const FORMAT_YAML_FILE = 'yaml_file';
 	const FORMAT_YAML = 'yaml';
@@ -12,29 +9,11 @@ class Registry
 	/**
 	 * @var string
 	 */
-	protected static $format;
+	protected $format;
 	/**
 	 * @var array
 	 */
-	protected static $store = [];
-	/**
-	 * Constructor
-	 *
-	 * @throws \RuntimeException
-	 */
-	protected function __construct()
-	{
-		throw new \RuntimeException('Registry is helper');
-	}
-	/**
-	 * Clone
-	 *
-	 * @throws \RuntimeException
-	 */
-	protected function __clone()
-	{
-		throw new \RuntimeException('Registry is helper');
-	}
+	protected $store = array();
 	/**
 	 * Load file
 	 *
@@ -42,7 +21,7 @@ class Registry
 	 * @return string
 	 * @throws \RuntimeException
 	 */
-	private static function load($path)
+	private function load($path)
 	{
 		if (!file_exists($path)){
 			throw new \RuntimeException("file `$path` is not found");
@@ -56,34 +35,36 @@ class Registry
 	 * @param string $format
 	 * @throws \InvalidArgumentException
 	 */
-	public static function init($store,$format = null)
+	public function init($store,$format = null)
 	{
 		if ($format === null){
 			$format = self::FORMAT_YAML_FILE;
 		}
 		switch ($format){
 			case self::FORMAT_YAML_FILE:
-				self::$store = Yaml::parse(self::load($store));
+				$this->store = Yaml::parse($this->load($store));
 				break;
 			case self::FORMAT_YAML:
-				self::$store = Yaml::parse($store);
+				$this->store = Yaml::parse($store);
 				break;
 			case self::FORMAT_ARRAY:
-				self::$store = $store;
+				$this->store = $store;
 				break;
 			default:
 				throw new \InvalidArgumentException("Format `$format` is not exists");
 		}
+		return true;
 	}
 	/**
 	 * Exists key in store
 	 *
+	 * @param array $key
 	 * @return boolean
 	 */
-	public static function exists()
+	public function exists(array $key)
 	{
-		$temp = self::$store;
-		foreach((array)func_get_args() as $name){
+		$temp = $this->store;
+		foreach($key as $name){
 			if (isset($temp[$name])){
 				$temp = $temp[$name];
 			}else{
@@ -95,12 +76,13 @@ class Registry
 	/**
 	 * @param string $name
 	 *
+	 * @param array $key
 	 * @return mixed
 	 */
-	public static function get()
+	public function get(array $key)
 	{
-		$temp = self::$store;
-		foreach((array)func_get_args() as $name){
+		$temp = $this->store;
+		foreach($key as $name){
 			if (isset($temp[$name])){
 				$temp = $temp[$name];
 			}else{
@@ -114,32 +96,8 @@ class Registry
 	 *
 	 * @return array
 	 */
-	public static function all()
+	public function all()
 	{
-		return self::$store;
-	}
-	/**
-	 * Get charset
-	 *
-	 * @return string
-	 */
-	public static function getCharset()
-	{
-		if (self::exists('charset')){
-			return self::get('charset');
-		}
-		return 'UTF-8';
-	}
-	/**
-	 * Is dev mode
-	 *
-	 * @return boolean
-	 */
-	public static function isDevMode()
-	{
-		if (self::exists('mode')){
-			return self::get('mode') === 'dev';
-		}
-		return false;
+		return $this->store;
 	}
 }
