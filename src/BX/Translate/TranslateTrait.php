@@ -1,24 +1,29 @@
 <?php namespace BX\Translate;
 use \BX\Translate\TranslateManager;
-use BX\Base\DI;
-use BX\Base\Registry;
+use BX\Config\DICService;
+use BX\Config\Config;
 
 trait TranslateTrait
 {
 	/**
 	 * Get translator
+	 *
 	 * @return TranslateManager
 	 */
-	public function translator()
+	protected function translator()
 	{
-		$manager = 'translate';
-		if (DI::get($manager) === null){
-			DI::set($manager,new TranslateManager());
+		$name = 'translate';
+		if (DICService::get($name) === null){
+			$manager = function(){
+				return new TranslateManager();
+			};
+			DICService::set($name,$manager);
 		}
-		return DI::get($manager);
+		return DICService::get($name);
 	}
 	/**
 	 * Translate message
+	 *
 	 * @params string $message
 	 * @params array $params
 	 * @params string $lang
@@ -26,7 +31,7 @@ trait TranslateTrait
 	 * @params string $service
 	 * @return string
 	 */
-	public function trans($message,array $params = [],$lang = null,$package = null,$service = null)
+	protected function trans($message,array $params = [],$lang = null,$package = null,$service = null)
 	{
 		$class_array = explode('\\',get_called_class());
 		if ($package === null){
@@ -40,7 +45,11 @@ trait TranslateTrait
 			}
 		}
 		if ($lang === null){
-			$lang = (Registry::exists('lang')) ? Registry::get('lang') : 'en';
+			if (Config::exists('lang')){
+				$lang = Config::get('lang');
+			}else{
+				$lang = 'en';
+			}
 		}
 		return $this->translator()->trans($message,$params,$lang,$package,$service);
 	}

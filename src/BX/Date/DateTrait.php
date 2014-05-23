@@ -1,17 +1,25 @@
 <?php namespace BX\Date;
-use BX\Base\DI;
-use BX\Date\DateTimeManager;
+use BX\Config\DICService;
 
 trait DateTrait
 {
 	/**
+	 * @var string
+	 */
+	private static $manager = 'date';
+	/**
+	 * Get manager
+	 *
 	 * @return DateTimeManager
-	 * */
-	public function date()
+	 */
+	protected function date()
 	{
-		if (DI::get('date') === null){
-			DI::set('date',new DateTimeManager());
+		if (DICService::get(self::$manager) === null){
+			$manager = function(){
+				return new DateTimeManager();
+			};
+			DICService::set(self::$manager,$manager);
 		}
-		return DI::get('date');
+		return DICService::get(self::$manager);
 	}
 }

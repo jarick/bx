@@ -143,9 +143,9 @@ Framework полностью построен на стандартнах [psr](
 	function it_clearCache(CacheManager $cache)
 	{
 		$cache->clearByTags('test')->shouldBeCalled()->willReturn(null);
-		DI::set('cache',$cache->getWrappedObject());
+		DICService::update('cache',$cache->getWrappedObject());
 		$this->clearCache();
-		DI::set('cache',null);
+		DICService::update('cache',null);
 	}
 ```
 В данном примере мы переопределили стандартный менеджер на свой Mock класс, чтобы проверить корректную работу функции **clearCache**. Затем мы очистили контейнер, чтобы framework дальше работал с менеджером кеша по умолчанию.
@@ -209,6 +209,6 @@ ORM фреймворка написан с помощью паттерна UnitO
 ```php
 	<?php
 	require dirname(__DIR__).'/vendor/autoload.php';
-	BX\Base\Registry::init(dirname(__DIR__).'/config/main.yml');
+	BX\Config\Config::init('yaml_file',dirname(__DIR__).'/config/main.yml');
 	BX\MVC\SiteController::run()->end();
 ```

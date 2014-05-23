@@ -1,5 +1,5 @@
 <?php namespace BX\MVC;
-use BX\Base\DI;
+use BX\Config\DICService;
 use BX\MVC\Buffer;
 use BX\MVC\Exception\Abort;
 use BX\MVC\Exception\Exception;
@@ -15,15 +15,19 @@ class View implements IView, \ArrayAccess
 	 */
 	public $meta = [];
 	/**
-	 * Get buffer
+	 * Return buffer
+	 *
 	 * @return Buffer
 	 */
 	public function buffer()
 	{
-		if (DI::get('buffer') === null){
-			DI::set('buffer',new Buffer());
+		if (DICService::get('buffer') === null){
+			$manager = function(){
+				return new Buffer();
+			};
+			DICService::set('buffer',$manager);
 		}
-		return DI::get('buffer');
+		return DICService::get('buffer');
 	}
 	/**
 	 * Load meta data from registry
@@ -31,13 +35,14 @@ class View implements IView, \ArrayAccess
 	 */
 	public function loadMeta()
 	{
-		if (call_user_func_array(array('BX\Base\Registry','exists'),func_get_args())){
-			$this->meta = call_user_func_array(array('BX\Base\Registry','get'),func_get_args());
+		if (call_user_func_array(array('BX\Config\Config','exists'),func_get_args())){
+			$this->meta = call_user_func_array(array('BX\Config\Config','get'),func_get_args());
 		}
 		return $this;
 	}
 	/**
 	 * Is exists page
+	 *
 	 * @param string $path
 	 * @return boolean
 	 */
@@ -47,6 +52,7 @@ class View implements IView, \ArrayAccess
 	}
 	/**
 	 * Render page
+	 *
 	 * @param string $path
 	 * @param array $params
 	 * @return string
@@ -66,6 +72,7 @@ class View implements IView, \ArrayAccess
 	}
 	/**
 	 * Abort page not found
+	 *
 	 * @throws PageNotFound
 	 */
 	public function throwPageNotFound()
@@ -74,6 +81,7 @@ class View implements IView, \ArrayAccess
 	}
 	/**
 	 * Abort request
+	 *
 	 * @throws Abort
 	 */
 	public function abort()
@@ -83,6 +91,7 @@ class View implements IView, \ArrayAccess
 	}
 	/**
 	 * Redirect
+	 *
 	 * @param string $url
 	 * @param integer $status
 	 * @throws Abort
@@ -95,6 +104,7 @@ class View implements IView, \ArrayAccess
 	}
 	/**
 	 * Send request
+	 *
 	 * @param string $content
 	 * @param integer $status
 	 * @param array $headers
@@ -115,6 +125,7 @@ class View implements IView, \ArrayAccess
 	}
 	/**
 	 * Is set meta value
+	 *
 	 * @param string $offset
 	 * @return boolean
 	 */
@@ -123,7 +134,8 @@ class View implements IView, \ArrayAccess
 		return isset($this->meta[$offset]);
 	}
 	/**
-	 * Get meta value by key
+	 * Return meta value by key
+	 *
 	 * @param string $offset
 	 * @return string|null
 	 */
@@ -133,6 +145,7 @@ class View implements IView, \ArrayAccess
 	}
 	/**
 	 * Set meta
+	 *
 	 * @param string $offset
 	 * @param string $value
 	 */
@@ -142,6 +155,7 @@ class View implements IView, \ArrayAccess
 	}
 	/**
 	 * Un set meta
+	 *
 	 * @param string $offset
 	 */
 	public function offsetUnset($offset)

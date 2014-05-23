@@ -1,8 +1,8 @@
 <?php namespace BX\String;
-use BX\Base\Registry;
 
 class StringManager
 {
+	use \BX\Config\ConfigTrait;
 	/**
 	 * Generate random string
 	 * @param type $length
@@ -20,43 +20,43 @@ class StringManager
 	}
 	public function toUpper($string)
 	{
-		return mb_strtoupper($string,Registry::getCharset());
+		return mb_strtoupper($string,$this->config()->getCharset());
 	}
 	public function toLower($string)
 	{
-		return mb_strtolower($string,Registry::getCharset());
+		return mb_strtolower($string,$this->config()->getCharset());
 	}
 	public function escape($string,$flags = ENT_COMPAT)
 	{
-		return htmlspecialchars($string,$flags,Registry::getCharset());
+		return htmlspecialchars($string,$flags,$this->config()->getCharset());
 	}
 	public function length($string)
 	{
-		return mb_strlen($string,Registry::getCharset());
+		return mb_strlen($string,$this->config()->getCharset());
 	}
 	public function ucwords($string)
 	{
-		return mb_convert_case($string,MB_CASE_TITLE,Registry::getCharset());
+		return mb_convert_case($string,MB_CASE_TITLE,$this->config()->getCharset());
 	}
 	public function countSubstr($haystack,$needle)
 	{
-		return mb_substr_count($haystack,$needle,Registry::getCharset());
+		return mb_substr_count($haystack,$needle,$this->config()->getCharset());
 	}
 	public function strpos($haystack,$needle,$offset = 0)
 	{
-		return mb_strpos($haystack,$needle,$offset,Registry::getCharset());
+		return mb_strpos($haystack,$needle,$offset,$this->config()->getCharset());
 	}
 	public function substr($str,$start,$length = null)
 	{
-		return mb_substr($str,$start,$length,Registry::getCharset());
+		return mb_substr($str,$start,$length,$this->config()->getCharset());
 	}
 	public function startsWith($haystack,$needle)
 	{
-		return $needle === '' || mb_strpos($haystack,$needle,0,Registry::getCharset()) === 0;
+		return $needle === '' || mb_strpos($haystack,$needle,0,$this->config()->getCharset()) === 0;
 	}
 	public function endsWith($haystack,$needle)
 	{
-		return $needle === '' || mb_substr($haystack,-$this->length($needle),null,Registry::getCharset()) === $needle;
+		return $needle === '' || mb_substr($haystack,-$this->length($needle),null,$this->config()->getCharset()) === $needle;
 	}
 	private $char_map = [
 		'À'	 => 'A','Á'	 => 'A','Â'	 => 'A','Ã'	 => 'A','Ä'	 => 'A','Å'	 => 'A','Æ'	 => 'AE','Ç'	 => 'C',
@@ -124,7 +124,7 @@ class StringManager
 	 */
 	public function getSlug($str,array $options = [])
 	{
-		$str = mb_convert_encoding((string)$str,Registry::getCharset(),mb_list_encodings());
+		$str = mb_convert_encoding((string)$str,$this->config()->getCharset(),mb_list_encodings());
 		$defaults = array(
 			'delimiter'		 => '-',
 			'limit'			 => null,

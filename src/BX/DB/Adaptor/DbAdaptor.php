@@ -1,27 +1,32 @@
 <?php namespace BX\DB\Adaptor;
-use BX\Base\Registry;
-use BX\Base\DI;
+use BX\Config\Config;
+use BX\Config\DICService;
 
 class DbAdaptor
 {
+	use \BX\Config\ConfigTrait;
 	/**
-	 * Get pdo
+	 * Return pdo object
+	 *
 	 * @return \PDO
 	 */
 	public function pdo()
 	{
-		if (DI::get('pdo') === null){
-			$dsn = (Registry::exists('pdo','dsn')) ? Registry::get('pdo','dsn') : 'sqlite:memory';
-			$username = (Registry::exists('pdo','username')) ? Registry::get('pdo','username') : '';
-			$passwd = (Registry::exists('pdo','passwd')) ? Registry::get('pdo','passwd') : '';
-			$options = (Registry::exists('pdo','options')) ? Registry::get('pdo','options') : [];
-			$pdo = new \PDO($dsn,$username,$passwd,$options);
-			DI::set('pdo',$pdo);
+		if (DICService::get('pdo') === null){
+			$ptr = function(){
+				$dsn = ($this->config()->exists('pdo','dsn')) ? $this->config()->get('pdo','dsn') : 'sqlite:memory';
+				$username = ($this->config()->exists('pdo','username')) ? $this->config()->get('pdo','username') : '';
+				$passwd = ($this->config()->exists('pdo','passwd')) ? $this->config()->get('pdo','passwd') : '';
+				$options = ($this->config()->exists('pdo','options')) ? $this->config()->get('pdo','options') : [];
+				return new \PDO($dsn,$username,$passwd,$options);
+			};
+			DICService::set('pdo',$ptr);
 		}
-		return DI::get('pdo');
+		return DICService::get('pdo');
 	}
 	/**
 	 * Execute sql
+	 *
 	 * @param string $sql
 	 * @param array $vars
 	 * @return boolean
@@ -35,7 +40,8 @@ class DbAdaptor
 		return $query->execute($vars);
 	}
 	/**
-	 * Get last insert id
+	 * Return last insert id
+	 *
 	 * @return integer
 	 */
 	public function getLastId()
@@ -44,6 +50,7 @@ class DbAdaptor
 	}
 	/**
 	 * Query sql
+	 *
 	 * @param string $sql
 	 * @param array $vars
 	 * @return array

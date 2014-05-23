@@ -1,13 +1,13 @@
 <?php namespace BX\Engine\Render;
 use BX\Engine\Render\IRender;
-use BX\Base\Registry;
 use Symfony\Component\Yaml\Yaml;
 
 class PhpRender implements IRender, \ArrayAccess
 {
 	use \BX\Event\EventTrait,
 	 \BX\Http\HttpTrait,
-	 \BX\Logger\LoggerTrait;
+	 \BX\Logger\LoggerTrait,
+	 \BX\Config\ConfigTrait;
 	/**
 	 * @var string
 	 */
@@ -67,7 +67,7 @@ class PhpRender implements IRender, \ArrayAccess
 	public function getFolder()
 	{
 		if ($this->folder === null){
-			$this->folder = $this->getRealPath(Registry::get('templating','php'));
+			$this->folder = $this->getRealPath($this->config()->get('templating','php'));
 		}
 		return $this->folder;
 	}

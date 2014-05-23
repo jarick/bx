@@ -1,5 +1,5 @@
 <?php namespace BX\Validator;
-use BX\Base\DI;
+use BX\Config\DICService;
 use BX\Validator\Helper\RuleHelper;
 use BX\Validator\Collection\Validator;
 use Illuminate\Support\MessageBag;
@@ -64,12 +64,14 @@ trait EntityTrait
 
 	}
 	/**
-	 * Get labels
-	 * @return array()
+	 * Return labels
+	 *
+	 * @return array
 	 */
 	abstract protected function labels();
 	/**
-	 * Get labels
+	 * Return labels
+	 *
 	 * @return array
 	 */
 	public function getLabels()
@@ -77,7 +79,8 @@ trait EntityTrait
 		return $this->labels();
 	}
 	/**
-	 * Get label
+	 * Return label
+	 *
 	 * @param string $key
 	 * @return string
 	 * @throws \InvalidArgumentException
@@ -88,12 +91,17 @@ trait EntityTrait
 		if (array_key_exists($key,$this->labels)){
 			return $this->labels[$key];
 		}else{
-			$message = strtr("`#KEY#` is not field #MODEL#",['#KEY#' => $key,'#MODEL#' => get_class($this)]);
+			$params = [
+				'#KEY#'		 => $key,
+				'#MODEL#'	 => get_class($this)
+			];
+			$message = strtr("`#KEY#` is not field #MODEL#",$params);
 			throw new \InvalidArgumentException($message);
 		}
 	}
 	/**
 	 * Print label
+	 *
 	 * @param type $key
 	 */
 	public function printLabel($key)
@@ -101,23 +109,30 @@ trait EntityTrait
 		echo $this->string()->escape($this->getLabel($key));
 	}
 	/**
-	 * Get rule helper
+	 * Return rule helper
+	 *
 	 * @return RuleHelper
 	 */
 	protected function rule()
 	{
-		if (DI::get('column_rule') === null){
-			DI::set('column_rule',new RuleHelper());
+		$key = 'column_rule';
+		if (DICService::get($key) === null){
+			$manager = function(){
+				return new RuleHelper();
+			};
+			DICService::set($key,$manager);
 		}
-		return DI::get('column_rule');
+		return DICService::get($key);
 	}
 	/**
-	 * Get rules
+	 * Return rules
+	 *
 	 * @return array
 	 */
 	abstract protected function rules();
 	/**
-	 * Get rules
+	 * Return rules
+	 *
 	 * @return array
 	 */
 	public function getRules()
@@ -125,7 +140,8 @@ trait EntityTrait
 		return $this->rules();
 	}
 	/**
-	 * Get value
+	 * Return value
+	 *
 	 * @param string $key
 	 * @return string
 	 */
@@ -135,6 +151,7 @@ trait EntityTrait
 	}
 	/**
 	 * Set value
+	 *
 	 * @param string $key
 	 * @param string $value
 	 * @return self
@@ -146,6 +163,7 @@ trait EntityTrait
 	}
 	/**
 	 * Is exists field
+	 *
 	 * @param type $key
 	 */
 	public function __isset($key)
@@ -154,6 +172,7 @@ trait EntityTrait
 	}
 	/**
 	 * Is exists field
+	 *
 	 * @param type $key
 	 */
 	public function exists($key)
@@ -162,6 +181,7 @@ trait EntityTrait
 	}
 	/**
 	 * Print value
+	 *
 	 * @param type $key
 	 */
 	public function printValue($key)
@@ -169,7 +189,8 @@ trait EntityTrait
 		echo $this->string()->escape($this->getValue($key));
 	}
 	/**
-	 * Get value
+	 * Return value
+	 *
 	 * @param string $key
 	 * @return string
 	 * @throws \InvalidArgumentException
@@ -180,12 +201,17 @@ trait EntityTrait
 		if (array_key_exists($key,$this->value)){
 			return $this->value[$key];
 		}else{
-			$message = strtr("`#KEY#` is not field #MODEL#",['#KEY#' => $key,'#MODEL#' => get_class($this)]);
+			$params = [
+				'#KEY#'		 => $key,
+				'#MODEL#'	 => get_class($this)
+			];
+			$message = strtr("`#KEY#` is not field #MODEL#",$params);
 			throw new \InvalidArgumentException($message);
 		}
 	}
 	/**
 	 * Set value
+	 *
 	 * @param string $key
 	 * @param string $value
 	 * @throws \InvalidArgumentException
@@ -196,13 +222,17 @@ trait EntityTrait
 		if (array_key_exists($key,$this->value)){
 			$this->value[$key] = $value;
 		}else{
-			$fields = ['#KEY#' => $key,'#MODEL#' => get_class($this)];
+			$fields = [
+				'#KEY#'		 => $key,
+				'#MODEL#'	 => get_class($this)
+			];
 			throw new \InvalidArgumentException(strtr("`#KEY#` is not field #MODEL#",$fields));
 		}
 		return $this;
 	}
 	/**
-	 * Get old data
+	 * Return old data
+	 *
 	 * @return array|null
 	 */
 	public function getOldData()
@@ -216,7 +246,8 @@ trait EntityTrait
 		return $result;
 	}
 	/**
-	 * Get data
+	 * Return data
+	 *
 	 * @return array|null
 	 */
 	public function getData()
@@ -231,6 +262,7 @@ trait EntityTrait
 	}
 	/**
 	 * Set data
+	 *
 	 * @param array $values
 	 * @param boolean $old
 	 * @return self
@@ -264,6 +296,7 @@ trait EntityTrait
 	}
 	/**
 	 * Load validator
+	 *
 	 * @return Validator
 	 */
 	protected function getValidator()
@@ -275,6 +308,7 @@ trait EntityTrait
 	}
 	/**
 	 * Check value
+	 *
 	 * @param array|null $data
 	 * @param boolean $new
 	 * @return type
@@ -289,6 +323,7 @@ trait EntityTrait
 	}
 	/**
 	 * Is has error
+	 *
 	 * @return boolean
 	 */
 	public function hasErrors()
@@ -297,6 +332,7 @@ trait EntityTrait
 	}
 	/**
 	 * Get errors
+	 *
 	 * @return MessageBag
 	 */
 	public function getErrors()
@@ -322,18 +358,24 @@ trait EntityTrait
 		$this->complete()->init();
 	}
 	/**
-	 * Get search helper
+	 * Return search helper
+	 *
 	 * @return SearchHelper
 	 */
 	protected function index()
 	{
-		if (DI::get('search_helper') === null){
-			DI::set('search_helper',new SearchHelper($this));
+		$key = 'search_helper';
+		if (DICService::get($key) === null){
+			$manager = function(){
+				return new SearchHelper($this);
+			};
+			DICService::set($key,$manager);
 		}
-		return DI::get('search_helper');
+		return DICService::get($key);
 	}
 	/**
-	 * Get search fileds
+	 * Return search fileds
+	 *
 	 * @return array
 	 */
 	protected function search()
@@ -341,7 +383,8 @@ trait EntityTrait
 		return [];
 	}
 	/**
-	 * Get search fileds
+	 * Return search fileds
+	 *
 	 * @return SearchCollection
 	 */
 	public function getSearch()
@@ -352,7 +395,9 @@ trait EntityTrait
 		return $collection;
 	}
 	/**
-	 * Get class name
+	 * Return class name
+	 *
+	 * @return string
 	 */
 	public static function getClass()
 	{

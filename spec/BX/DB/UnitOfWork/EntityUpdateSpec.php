@@ -1,7 +1,7 @@
 <?php namespace spec\BX\DB\UnitOfWork;
-use BX\Base\DI;
+use BX\Config\DICService;
 use BX\Cache\CacheManager;
-use BX\DB\Database;
+use BX\DB\DatabaseManager;
 use BX\DB\Test\TestTable;
 use BX\Event\EventManager;
 use BX\ZendSearch\ZendSearchManager;
@@ -33,7 +33,7 @@ class EntityUpdateSpec extends ObjectBehavior
 		$return = ['ID' => '1','TEST' => 'TEST2'];
 		$this->db()->query('SELECT * FROM tbl_test')->fetch()->shouldBe($return);
 	}
-	function it_rollback(Database $db)
+	function it_rollback(DatabaseManager $db)
 	{
 		$this->id = 1;
 		$this->old_fields = ['TEST' => 'TEST'];
@@ -49,13 +49,19 @@ class EntityUpdateSpec extends ObjectBehavior
 		$event->fire('OnBeforeTestUpdate',Argument::any(),true)->shouldBeCalled()->willReturn(true);
 		$event->fire('OnAfterTestUpdate',Argument::any(),true)->shouldBeCalled()->willReturn(true);
 		$cache->clearByTags('test')->shouldBeCalled()->willReturn(null);
-		DI::set('cache',$cache->getWrappedObject());
-		DI::set('zend_search',$zendsearch->getWrappedObject());
-		DI::set('event',$event->getWrappedObject());
+		DICService::update('cache',function()use($cache){
+			return $cache->getWrappedObject();
+		});
+		DICService::update('zend_search',function()use($zendsearch){
+			return $zendsearch->getWrappedObject();
+		});
+		DICService::update('event',function()use($event){
+			return $event->getWrappedObject();
+		});
 		$this->validate();
 		$this->onAfterCommit();
-		DI::set('event',null);
-		DI::set('zend_search',null);
-		DI::set('cache',null);
+		DICService::delete('event');
+		DICService::delete('zend_search');
+		DICService::delete('cache');
 	}
 }

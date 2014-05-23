@@ -1,10 +1,10 @@
 <?php namespace spec\BX\Engine\Render;
-use BX\Base\Registry;
 use PhpSpec\Exception\Example\FailureException;
 use PhpSpec\ObjectBehavior;
 
 class PhpRenderSpec extends ObjectBehavior
 {
+	use \BX\Config\ConfigTrait;
 	private $reg;
 	function it_is_initializable()
 	{
@@ -12,18 +12,18 @@ class PhpRenderSpec extends ObjectBehavior
 	}
 	function let()
 	{
-		$this->reg = Registry::all();
+		$this->reg = $this->config()->all();
 		$store = [
 			'templating' => [
 				'engine' => 'php',
 				'php'	 => __DIR__.'/data',
 			],
 		];
-		Registry::init($store,Registry::FORMAT_ARRAY);
+		$this->config()->init('array',$store);
 	}
 	function letgo()
 	{
-		Registry::init($this->reg,Registry::FORMAT_ARRAY);
+		$this->config()->init('array',$this->reg);
 	}
 	function it_render()
 	{

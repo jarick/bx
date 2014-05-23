@@ -1,5 +1,4 @@
 <?php namespace BX\User;
-use BX\Base\Registry;
 use BX\User\Entity\AccessEntity;
 use BX\User\Store\IAccessStore;
 use BX\User\Store\TableAuthStore;
@@ -7,7 +6,8 @@ use BX\User\Store\TableAuthStore;
 class AuthManager
 {
 	use \BX\String\StringTrait,
-	 \BX\Http\HttpTrait;
+	 \BX\Http\HttpTrait,
+	 \BX\Config\ConfigTrait;
 	const KEY = 'BX_AUTH';
 	const COOKIE_GUID = 'BX_USER_GUID';
 	const COOKIE_TOKEN = 'BX_USER_TOKEN';
@@ -27,8 +27,8 @@ class AuthManager
 	private function store()
 	{
 		if ($this->store === null){
-			if (Registry::exists('user','auth','store')){
-				$store = Registry::get('user','auth','store');
+			if ($this->config()->exists('user','auth','store')){
+				$store = $this->config()->get('user','auth','store');
 				switch ($store){
 					case 'db': $this->store = new TableAuthStore();
 						break;

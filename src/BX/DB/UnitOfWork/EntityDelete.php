@@ -11,7 +11,8 @@ class EntityDelete extends EntityBase
 	 */
 	public $old_fields;
 	/**
-	 * On before delete
+	 * On before delete event
+	 *
 	 * @return boolean
 	 */
 	protected function onBeforeDelete()
@@ -30,7 +31,8 @@ class EntityDelete extends EntityBase
 		return true;
 	}
 	/**
-	 * On after delete
+	 * On after delete event
+	 *
 	 * @return boolean
 	 */
 	protected function onAfterDelete()
@@ -43,6 +45,7 @@ class EntityDelete extends EntityBase
 	}
 	/**
 	 * Commit
+	 *
 	 * @return boolean
 	 */
 	public function commit()
@@ -75,7 +78,7 @@ class EntityDelete extends EntityBase
 		return $id;
 	}
 	/**
-	 * On after commit
+	 * After commit event
 	 */
 	public function onAfterCommit()
 	{
@@ -101,6 +104,7 @@ class EntityDelete extends EntityBase
 	}
 	/**
 	 * Validate entity
+	 *
 	 * @return boolean
 	 * @throws \InvalidArgumentException
 	 */

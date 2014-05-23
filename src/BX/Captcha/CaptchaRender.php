@@ -1,4 +1,5 @@
 <?php namespace BX\Captcha;
+use BX\Config\DICService;
 use \Gregwar\Captcha\CaptchaBuilder;
 
 class CaptchaRender implements ICaptchaRender
@@ -12,10 +13,10 @@ class CaptchaRender implements ICaptchaRender
 	 */
 	public function __construct($code)
 	{
-		if (\BX\Base\DI::get('captcha_render') === null){
+		if (DICService::get('captcha_render') === null){
 			$this->builder = $this->create($code);
 		}else{
-			$this->builder = \BX\Base\DI::get('captcha_render')->create($code);
+			$this->builder = DICService::get('captcha_render')->create($code);
 		}
 	}
 	/**

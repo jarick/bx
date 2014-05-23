@@ -1,13 +1,13 @@
 <?php namespace BX\DB;
-use BX\Base\DI;
-use BX\Base\Registry;
+use BX\Config\DICService;
+use BX\Config\Config;
 use BX\DB\Adaptor\IAdaptor;
 use BX\DB\Adaptor\Mysql;
 use BX\DB\Adaptor\Sqlite;
 use BX\DB\Helper\TableColumn;
 use InvalidArgumentException;
 
-class Database implements IDatabase
+class DatabaseManager implements IDatabaseManager
 {
 	use \BX\String\StringTrait,
 	 \BX\Logger\LoggerTrait;
@@ -25,29 +25,27 @@ class Database implements IDatabase
 	 */
 	public function adaptor()
 	{
-		if (DI::get('adaptor') === null){
-			if (!Registry::exists('db')){
-				$adaptor = new Sqlite();
-			}elseif (is_string($adaptor_str = Registry::get('db'))){
-				switch ($adaptor_str){
-					case 'sqlite': $adaptor = new Sqlite();
-						break;
-					case 'mysql': $adaptor = new Mysql();
-						break;
-					default:
-						if (class_exists($adaptor_str)){
-							$adaptor = new $adaptor_str();
-						}else{
-							throw new InvalidArgumentException("DB adaptor `$adaptor_str` is not exists");
-						}
-						break;
+		if (DICService::get('db_adaptor') === null){
+			$manager = function(){
+				if (!Config::exists('db')){
+					return new Sqlite();
+				}else{
+					$adaptor_str = Config::get('db');
+					switch ($adaptor_str){
+						case 'sqlite': return new Sqlite();
+						case 'mysql': return new Mysql();
+						default:
+							if (class_exists($adaptor_str)){
+								return new $adaptor_str();
+							}else{
+								throw new InvalidArgumentException("DB adaptor `$adaptor_str` is not exists");
+							}
+					}
 				}
-			}else{
-				$adaptor = $adaptor_str;
-			}
-			DI::set('adaptor',$adaptor);
+			};
+			DICService::set('db_adaptor',$manager);
 		}
-		return DI::get('adaptor');
+		return DICService::get('db_adaptor');
 	}
 	/**
 	 * Init table vars for edit
@@ -100,7 +98,7 @@ class Database implements IDatabase
 	 */
 	public function createTable($table,$fields)
 	{
-		$schema = [ 'PK' => [],'FK' => [],'UQ' => [],'COLUMNS' => [],'TABLE' => ''];
+		$schema = ['PK' => [],'FK' => [],'UQ' => [],'COLUMNS' => [],'TABLE' => ''];
 		$schema['TABLE'] = $this->esc($table);
 		foreach($fields as $field){
 			if ($field instanceof TableColumn){

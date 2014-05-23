@@ -1,10 +1,10 @@
 <?php namespace BX\User;
-use BX\Base\Registry;
 use BX\User\Store\TableUserGroupStore;
 
 class UserGroupManager
 {
-	use \BX\String\StringTrait;
+	use \BX\String\StringTrait,
+	 \BX\Config\ConfigTrait;
 	private $store = null;
 	/**
 	 * @return TableUserGroupStore
@@ -12,8 +12,8 @@ class UserGroupManager
 	private function store()
 	{
 		if ($this->store === null){
-			if (Registry::exists('user','group','store')){
-				$store = Registry::get('user','group','store');
+			if ($this->config()->exists('user','group','store')){
+				$store = $this->config()->get('user','group','store');
 				switch ($store){
 					case 'db': $this->store = new TableUserGroupStore();
 						break;

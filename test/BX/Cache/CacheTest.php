@@ -1,9 +1,9 @@
 <?php namespace BX\Cache;
-use BX\Base\Registry;
 
 class CacheTest extends \BX\Test
 {
-	use \BX\Cache\CacheTrait;
+	use \BX\Cache\CacheTrait,
+	 \BX\Config\ConfigTrait;
 	private $unique_id = 'test';
 	private $ns = 'test';
 	private $value = 'value';
@@ -11,18 +11,18 @@ class CacheTest extends \BX\Test
 	private $reg;
 	public function setUp()
 	{
-		$this->reg = Registry::all();
+		$this->reg = $this->config()->all();
 		$config = [
 			'cache' => [
 				'type' => 'array',
 			]
 		];
-		Registry::init($config,Registry::FORMAT_ARRAY);
+		$this->config()->init('array',$config);
 		$this->cache()->flush();
 	}
 	public function tearDown()
 	{
-		Registry::init($this->reg,Registry::FORMAT_ARRAY);
+		$this->config()->init('array',$this->reg);
 	}
 	public function testSetTags()
 	{

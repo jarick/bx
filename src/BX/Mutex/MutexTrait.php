@@ -1,4 +1,5 @@
 <?php namespace BX\Mutex;
+use BX\Config\DICService;
 
 trait MutexTrait
 {
@@ -8,9 +9,13 @@ trait MutexTrait
 	 */
 	public function mutex()
 	{
-		if (\BX\Base\DI::get('mutex') === null){
-			\BX\Base\DI::set('mutex',new MutexManager());
+		$name = 'mutex';
+		if (DICService::get($name) === null){
+			$manager = function(){
+				return new MutexManager();
+			};
+			DICService::set($name,$manager);
 		}
-		return \BX\Base\DI::get('mutex');
+		return DICService::get($name);
 	}
 }

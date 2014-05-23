@@ -1,5 +1,5 @@
 <?php namespace BX\DB;
-use BX\Base\Registry;
+use BX\Config\Config;
 use Symfony\Component\Yaml\Yaml;
 
 class Schema
@@ -7,6 +7,7 @@ class Schema
 	use DBTrait;
 	/**
 	 * Load schema from array
+	 * 
 	 * @param array $schema
 	 * @return boolean
 	 */
@@ -29,6 +30,7 @@ class Schema
 	}
 	/**
 	 * Load schema from array
+	 *
 	 * @param array $schema
 	 * @return boolean
 	 * @throws \RuntimeException
@@ -43,6 +45,7 @@ class Schema
 	}
 	/**
 	 * Load from yaml file
+	 *
 	 * @param string $file
 	 * @return boolean
 	 * @throws \RuntimeException
@@ -50,7 +53,7 @@ class Schema
 	public static function loadFromYamlFile($file = null)
 	{
 		if ($file === null){
-			$yaml = Registry::get('schema');
+			$yaml = Config::get('schema');
 		}else{
 			if (!file_exists($file)){
 				throw new \RuntimeException("file `$file` is not found");

@@ -1,19 +1,22 @@
 <?php namespace BX\Cache;
-use BX\Cache\CacheManager;
-use BX\Base\DI;
+use BX\Config\DICService;
 
 trait CacheTrait
 {
 	/**
-	 * get cache manager
-	 * @return CacheManager
+	 * Return error manager
+	 *
+	 * @return ICacheManger
 	 */
 	protected function cache()
 	{
-		$key = 'cache';
-		if (DI::get($key) === null){
-			DI::set($key,new CacheManager());
+		$name = 'cache';
+		if (DICService::get($name) === null){
+			$manager = function(){
+				return new CacheManager();
+			};
+			DICService::set($name,$manager);
 		}
-		return DI::get($key);
+		return DICService::get($name);
 	}
 }

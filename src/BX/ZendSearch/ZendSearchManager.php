@@ -1,7 +1,6 @@
 <?php namespace BX\ZendSearch;
 use ZendSearch\Lucene\Analysis\Analyzer\Common\Utf8\CaseInsensitive;
 use ZendSearch\Lucene\Analysis\TokenFilter\StopWords;
-use BX\Base\Registry;
 use BX\ZendSearch\Filter\Morphy;
 use ZendSearch\Lucene\Document;
 use ZendSearch\Lucene\Document\Field;
@@ -12,7 +11,8 @@ use ZendSearch\Lucene\Search\QueryParser;
 class ZendSearchManager
 {
 	use \BX\FileSystem\FileSystemTrait,
-	 \BX\Http\HttpTrait;
+	 \BX\Http\HttpTrait,
+	 \BX\Config\ConfigTrait;
 	protected $limit = 100;
 	protected $spec_symbol = ['\\','+','-','&&','||','!','(',')','{','}','[',']','^','"','~','*','?',':'];
 	private static $index;
@@ -48,9 +48,9 @@ class ZendSearchManager
 	{
 		if (!isset(self::$index)){
 			$analyzer = new CaseInsensitive();
-			if (Registry::exists('zend_search','stop_words')){
+			if ($this->config()->exists('zend_search','stop_words')){
 				$stop_word_filter = new StopWords();
-				$words = $this->getRealPath(Registry::get('zend_search','stop_words'));
+				$words = $this->getRealPath($this->config()->get('zend_search','stop_words'));
 				if ($words !== false){
 					$stop_word_filter->loadFromFile($words);
 				}else{
@@ -58,18 +58,18 @@ class ZendSearchManager
 				}
 				$analyzer->addFilter($stop_word_filter);
 			}
-			if (Registry::exists('zend_search','morphy_dicts')){
-				$morphy_dicts = $this->getRealPath(Registry::get('zend_search','morphy_dicts'));
+			if ($this->config()->exists('zend_search','morphy_dicts')){
+				$morphy_dicts = $this->getRealPath($this->config()->get('zend_search','morphy_dicts'));
 				if ($morphy_dicts !== false){
-					$analyzer->addFilter(new Morphy($morphy_dicts,Registry::getCharset()));
+					$analyzer->addFilter(new Morphy($morphy_dicts,$this->config()->getCharset()));
 				}else{
 					throw new \InvalidArgumentException('Path not found');
 				}
 			}
 			Analyzer::setDefault($analyzer);
 			Lucene::setResultSetLimit($this->limit);
-			QueryParser::setDefaultEncoding(Registry::getCharset());
-			$index = Registry::get('zend_search','index');
+			QueryParser::setDefaultEncoding($this->config()->getCharset());
+			$index = $this->config() - get('zend_search','index');
 			$path = $this->getRealPath($index);
 			self::$index = ($path) ? Lucene::open($path) : Lucene::create($index);
 		}
@@ -82,7 +82,7 @@ class ZendSearchManager
 	 */
 	public function delete($id)
 	{
-		if (Registry::exists('zend_search','index')){
+		if ($this->config()->exists('zend_search','index')){
 			$document = current($this->findByQuery("id: $id"));
 			if (is_object($document)){
 				$this->index()->delete($document->id);
@@ -99,7 +99,7 @@ class ZendSearchManager
 	 */
 	public function add($id,SearchCollection $index)
 	{
-		if (Registry::exists('zend_search','index')){
+		if ($this->config()->exists('zend_search','index')){
 			$document = new Document();
 			$document->addField(Field::keyword('id',$id));
 			foreach($index as $field){
@@ -135,8 +135,8 @@ class ZendSearchManager
 	 */
 	public function flush()
 	{
-		if (Registry::exists('zend_search','index')){
-			$folder = Registry::get('zend_search','index');
+		if ($this->config()->exists('zend_search','index')){
+			$folder = $this->config()->get('zend_search','index');
 			if (is_dir(($folder))){
 				$this->filesystem()->removePathDir($folder);
 			}

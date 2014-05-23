@@ -1,6 +1,6 @@
 <?php namespace BX\Console;
 use \BX\Console\ConsoleController;
-use BX\Base\DI;
+use BX\Config\DICService;
 
 trait ConsoleTrait
 {
@@ -10,10 +10,13 @@ trait ConsoleTrait
 	 */
 	protected function console()
 	{
-		$key = 'console';
-		if (DI::get($key) === null){
-			DI::set($key,new ConsoleController());
+		$name = 'console';
+		if (DICService::get($name) === null){
+			$manager = function(){
+				return new ConsoleController();
+			};
+			DICService::set($name,$manager);
 		}
-		return DI::get($key);
+		return DICService::get($name);
 	}
 }

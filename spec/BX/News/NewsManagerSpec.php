@@ -2,7 +2,7 @@
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-class NewsManagerSpec extends ObjectBehavior
+class NewsManagerS_pec extends ObjectBehavior
 {
 	use \BX\Http\HttpTrait;
 	private $filename;

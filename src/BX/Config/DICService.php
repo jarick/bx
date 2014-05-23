@@ -36,12 +36,35 @@ class DICService
 	 * Set manager
 	 *
 	 * @param string $key
-	 * @param Closure $value
+	 * @param \Closure $value
 	 */
-	public static function set($key,Closure $value)
+	public static function set($key,\Closure $value)
 	{
 		$container = self::getContainer();
 		$container[$key] = $value;
 		self::$container = $container;
+	}
+	/**
+	 * Unset value by key
+	 *
+	 * @param string $key
+	 * @return boolean
+	 */
+	public static function delete($key)
+	{
+		$container = self::getContainer();
+		unset($container[$key]);
+		return true;
+	}
+	/**
+	 * Update manager
+	 *
+	 * @param string $key
+	 * @param \Closure $value
+	 */
+	public static function update($key,\Closure $value)
+	{
+		self::delete($key);
+		self::set($key,$value);
 	}
 }

@@ -27,7 +27,6 @@
 		"pimple/pimple": "2.0.*"
     },
     "autoload": {
-		"files": ["src/framework.php"],
         "psr-4": {
             "": "src"
         }

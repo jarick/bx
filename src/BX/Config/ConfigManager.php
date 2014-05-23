@@ -6,6 +6,7 @@ class ConfigManager implements IConfigManager
 	const FORMAT_YAML_FILE = 'yaml_file';
 	const FORMAT_YAML = 'yaml';
 	const FORMAT_ARRAY = 'array';
+	const FORMAT_ARRAY_FILE = 'array_file';
 	/**
 	 * @var string
 	 */
@@ -13,7 +14,7 @@ class ConfigManager implements IConfigManager
 	/**
 	 * @var array
 	 */
-	protected $store = array();
+	protected $store = [];
 	/**
 	 * Load file
 	 *
@@ -31,15 +32,12 @@ class ConfigManager implements IConfigManager
 	/**
 	 * Init store
 	 *
-	 * @param mixed $store
 	 * @param string $format
+	 * @param mixed $store
 	 * @throws \InvalidArgumentException
 	 */
-	public function init($store,$format = null)
+	public function init($format,$store)
 	{
-		if ($format === null){
-			$format = self::FORMAT_YAML_FILE;
-		}
 		switch ($format){
 			case self::FORMAT_YAML_FILE:
 				$this->store = Yaml::parse($this->load($store));
@@ -50,6 +48,9 @@ class ConfigManager implements IConfigManager
 			case self::FORMAT_ARRAY:
 				$this->store = $store;
 				break;
+			case self::FORMAT_ARRAY_FILE:
+				$this->store = include($store);
+				break;
 			default:
 				throw new \InvalidArgumentException("Format `$format` is not exists");
 		}
@@ -58,14 +59,21 @@ class ConfigManager implements IConfigManager
 	/**
 	 * Exists key in store
 	 *
-	 * @param array $key
 	 * @return boolean
 	 */
-	public function exists(array $key)
+	public function exists()
 	{
 		$temp = $this->store;
-		foreach($key as $name){
-			if (isset($temp[$name])){
+		$args = func_get_args();
+		if (is_array($args[0])){
+			$args = $args[0];
+		}
+		foreach($args as $name){
+			if (!is_string($name)){
+				var_dump(func_get_args());
+				die();
+			}
+			if (array_key_exists($name,$temp)){
 				$temp = $temp[$name];
 			}else{
 				return false;
@@ -74,15 +82,18 @@ class ConfigManager implements IConfigManager
 		return true;
 	}
 	/**
-	 * @param string $name
+	 * Return value by key
 	 *
-	 * @param array $key
-	 * @return mixed
+	 * @return string
 	 */
-	public function get(array $key)
+	public function get()
 	{
 		$temp = $this->store;
-		foreach($key as $name){
+		$args = func_get_args();
+		if (is_array($args[0])){
+			$args = $args[0];
+		}
+		foreach($args as $name){
 			if (isset($temp[$name])){
 				$temp = $temp[$name];
 			}else{
@@ -99,5 +110,29 @@ class ConfigManager implements IConfigManager
 	public function all()
 	{
 		return $this->store;
+	}
+	/**
+	 * Get charset
+	 *
+	 * @return string
+	 */
+	public function getCharset()
+	{
+		if ($this->exists('charset')){
+			return $this->get('charset');
+		}
+		return 'UTF-8';
+	}
+	/**
+	 * Is dev mode
+	 *
+	 * @return boolean
+	 */
+	public function isDevMode()
+	{
+		if ($this->exists('mode')){
+			return $this->get('mode') === 'dev';
+		}
+		return false;
 	}
 }

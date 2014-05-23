@@ -1,7 +1,6 @@
 <?php namespace BX\MVC;
 use BX\Base\Collection;
-use BX\Base\DI;
-use BX\Base\Registry;
+use BX\Config\DICService;
 use BX\Http\Response;
 use BX\MVC\Entity\SiteEntity;
 use BX\MVC\Exception\RenderException;
@@ -12,7 +11,8 @@ class SiteController
 	use \BX\String\StringTrait,
 	 \BX\Event\EventTrait,
 	 \BX\Http\HttpTrait,
-	 \BX\Logger\LoggerTrait;
+	 \BX\Logger\LoggerTrait,
+	 \BX\Config\ConfigTrait;
 	/**
 	 * @var string
 	 */
@@ -38,31 +38,40 @@ class SiteController
 	 */
 	private $site;
 	/**
-	 * Get view
+	 * Return view
+	 *
 	 * @return View
 	 */
 	public function view()
 	{
-		$manager = 'view';
-		if (DI::get($manager) === null){
-			DI::set($manager,new View());
+		$key = 'view';
+		if (DICService::get($key) === null){
+			$manager = function(){
+				return new View();
+			};
+			DICService::set($key,$manager);
 		}
-		return DI::get($manager);
+		return DICService::get($key);
 	}
 	/**
-	 * Get render exception
+	 * Return render exception
+	 *
 	 * @return RenderException
 	 */
 	private function getRenderException()
 	{
-		$manager = 'render_exception';
-		if (DI::get($manager) === null){
-			DI::set($manager,new RenderException());
+		$key = 'render_exception';
+		if (DICService::get($key) === null){
+			$manager = function(){
+				return new RenderException();
+			};
+			DICService::set($key,$manager);
 		}
-		return DI::get($manager);
+		return DICService::get($key);
 	}
 	/**
-	 * Get Site folder
+	 * Return site folder
+	 *
 	 * @return string
 	 */
 	public function getSiteFolder()
@@ -70,7 +79,8 @@ class SiteController
 		return $this->site_folder;
 	}
 	/**
-	 * Get site name
+	 * Return site name
+	 *
 	 * @return string
 	 */
 	public function getSiteName()
@@ -79,6 +89,7 @@ class SiteController
 	}
 	/**
 	 * Set site name
+	 *
 	 * @param string $site
 	 * @return string
 	 */
@@ -90,7 +101,8 @@ class SiteController
 		return $this->site_name = $site;
 	}
 	/**
-	 * Get layout name
+	 * Return layout name
+	 *
 	 * @return string
 	 */
 	public function getLayout()
@@ -99,6 +111,7 @@ class SiteController
 	}
 	/**
 	 * Set layout
+	 *
 	 * @param string $layout
 	 */
 	public function setLayout($layout)
@@ -112,8 +125,8 @@ class SiteController
 	public function __construct()
 	{
 		$this->site = new Collection(SiteEntity::getClass());
-		if (Registry::exists('sites')){
-			foreach(Registry::get('sites') as $site){
+		if ($this->config()->exists('sites')){
+			foreach($this->config()->get('sites') as $site){
 				$entity = new SiteEntity();
 				$entity->setData($site);
 				$this->addSite($entity);
@@ -121,7 +134,8 @@ class SiteController
 		}
 	}
 	/**
-	 * Get path info
+	 * Return path info
+	 *
 	 * @return string
 	 */
 	private function getPathInfo()
@@ -129,7 +143,8 @@ class SiteController
 		return $this->request()->getPathInfoWithInex();
 	}
 	/**
-	 * Get host
+	 * Return host
+	 *
 	 * @return string
 	 */
 	private function getHost()
@@ -137,7 +152,8 @@ class SiteController
 		return $this->request()->getHost();
 	}
 	/**
-	 * Get site collection
+	 * Return site collection
+	 *
 	 * @return Collection
 	 */
 	public function sites()
@@ -146,6 +162,7 @@ class SiteController
 	}
 	/**
 	 * Add site
+	 *
 	 * @return \BX\MVC\SiteController
 	 * @throws InvalidArgumentException
 	 */
@@ -164,7 +181,8 @@ class SiteController
 		return $this;
 	}
 	/**
-	 * Get current site
+	 * Return current site
+	 *
 	 * @return null|Site
 	 */
 	protected function findSite($uri)
@@ -182,6 +200,7 @@ class SiteController
 	}
 	/**
 	 * Set current layout
+	 *
 	 * @param array $layout_rules
 	 * @param string $page
 	 */
@@ -197,6 +216,7 @@ class SiteController
 	}
 	/**
 	 * Render page
+	 *
 	 * @param SiteEntity $site
 	 * @param type $page
 	 * @param array $params
@@ -230,6 +250,7 @@ class SiteController
 	}
 	/**
 	 * Render response
+	 *
 	 * @param string $page
 	 * @param array $params
 	 * @return Response
@@ -240,7 +261,7 @@ class SiteController
 		if ($page === false){
 			$page = $this->getPathInfo();
 		}
-		if (Registry::isDevMode()){
+		if ($this->config()->isDevMode()){
 			set_error_handler(function($errno,$errstr,$errfile,$errline,array $errcontext){
 				if (0 === error_reporting()){
 					return false;
@@ -257,9 +278,9 @@ class SiteController
 					throw new \RuntimeException('Site not found',500);
 				}
 			}
-			$sContent = $this->renderPage($site,$page,$params);
-			$this->fire('afterRender',[&$sContent]);
-			$this->view()->send($sContent);
+			$content = $this->renderPage($site,$page,$params);
+			$this->fire('afterRender',[&$content]);
+			$this->view()->send($content);
 			$this->log()->debug('end render');
 			return $this->view()->response();
 		}catch (\Exception $e){
@@ -269,6 +290,7 @@ class SiteController
 	}
 	/**
 	 * Run render site
+	 *
 	 * @return \BX\MVC\SiteController
 	 */
 	public static function run()

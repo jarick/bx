@@ -1,5 +1,4 @@
 <?php namespace BX\Validator\Upload;
-use BX\Base\Registry;
 use BX\Validator\Collection\File;
 use BX\Validator\Upload\Checker\IUploadFileChecker;
 use BX\Validator\Upload\Checker\Image;
@@ -8,7 +7,8 @@ class UploadFile implements IUploadFile
 {
 	use \BX\String\StringTrait,
 	 \BX\Translate\TranslateTrait,
-	 \BX\Http\HttpTrait;
+	 \BX\Http\HttpTrait,
+	 \BX\Config\ConfigTrait;
 	const TYPE_IMAGE = 'image';
 	/**
 	 * @var array
@@ -158,8 +158,8 @@ class UploadFile implements IUploadFile
 	protected function getUploadDir()
 	{
 		if ($this->upload_dir === null){
-			if (Registry::exists('upload_dir')){
-				$this->upload_dir = Registry::get('upload_dir');
+			if ($this->config()->exists('upload_dir')){
+				$this->upload_dir = $this->config()->get('upload_dir');
 			}else{
 				$this->upload_dir = '~/upload';
 			}

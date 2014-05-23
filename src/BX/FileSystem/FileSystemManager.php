@@ -1,9 +1,9 @@
 <?php namespace BX\FileSystem;
-use BX\Base\Registry;
 
-class FileSystemManager
+class FileSystemManager implements IFileSystemManager
 {
-	use \BX\String\StringTrait;
+	use \BX\String\StringTrait,
+	 \BX\Config\ConfigTrait;
 	const DEFAULT_FILE_PERMISSION = 0644;
 	const DEFAULT_FOLDER_PERMISSION = 0755;
 	/**
@@ -23,7 +23,7 @@ class FileSystemManager
 		foreach($files as $file){
 			if (is_dir($file)){
 				$this->removePathDir($file);
-			} else{
+			}else{
 				unlink($file);
 			}
 		}
@@ -41,7 +41,7 @@ class FileSystemManager
 		$folder = rtrim($temp,"/");
 		if (!file_exists($folder)){
 			return mkdir($folder,$this->getPermissionFolder(),true);
-		} else{
+		}else{
 			return true;
 		}
 	}
@@ -51,9 +51,9 @@ class FileSystemManager
 	 */
 	public function getPermissionFolder()
 	{
-		if (Registry::exists('permission','folder')){
-			return Registry::get('permission','folder');
-		} else{
+		if ($this->config()->exists('permission','folder')){
+			return $this->config()->get('permission','folder');
+		}else{
 			return self::DEFAULT_FOLDER_PERMISSION;
 		}
 	}
@@ -63,9 +63,9 @@ class FileSystemManager
 	 */
 	public function getPermissionFile()
 	{
-		if (Registry::exists('permission','file')){
-			return Registry::get('permission','file');
-		} else{
+		if ($this->config()->exists('permission','file')){
+			return $this->config()->get('permission','file');
+		}else{
 			return self::DEFAULT_FILE_PERMISSION;
 		}
 	}

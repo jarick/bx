@@ -1,8 +1,8 @@
 <?php namespace BX\Date;
-use \BX\Base\Registry;
 
 class DateTimeManagerTest extends \BX\Test
 {
+	use \BX\Config\ConfigTrait;
 	private $reg;
 	/**
 	 * @var \BX\Date\DateTimeManager
@@ -11,13 +11,13 @@ class DateTimeManagerTest extends \BX\Test
 	public function setUp()
 	{
 		$this->date = new DateTimeManager();
-		$this->reg = Registry::all();
+		$this->reg = $this->config()->all();
 		$store = [
 			'date' => [
 				'timezone' => 'Europe/Kaliningrad',
 			],
 		];
-		Registry::init($store,Registry::FORMAT_ARRAY);
+		$this->config()->init('array',$store);
 	}
 	public function testCheckDateTime()
 	{
@@ -36,6 +36,6 @@ class DateTimeManagerTest extends \BX\Test
 	}
 	public function tearDown()
 	{
-		Registry::init($this->reg,Registry::FORMAT_ARRAY);
+		$this->config()->init('array',$this->reg);
 	}
 }

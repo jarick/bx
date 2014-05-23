@@ -1,14 +1,15 @@
 <?php namespace BX\Translate;
-use BX\Base\Registry;
 
 class TranslateManagerTest extends \BX\Test
 {
+	use \BX\Config\ConfigTrait;
 	private $trans;
 	private $reg;
 	public function setUp()
 	{
-		$this->reg = Registry::all();
-		Registry::init(['lang' => 'ru'],Registry::FORMAT_ARRAY);
+		$this->reg = $this->config()->all();
+		$store = ['lang' => 'ru'];
+		$this->config()->init('array',$store);
 		$this->trans = new TranslateManager();
 		$this->trans->addArrayResource(['test' => 'TEST #TEST#']);
 		parent::setUp();
@@ -20,7 +21,7 @@ class TranslateManagerTest extends \BX\Test
 	}
 	public function tearDown()
 	{
-		Registry::init($this->reg,Registry::FORMAT_ARRAY);
+		$this->config()->init('array',$this->reg);
 		parent::tearDown();
 	}
 }

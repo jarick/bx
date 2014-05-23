@@ -1,5 +1,4 @@
 <?php namespace BX\User\Entity;
-use BX\Base\Registry;
 
 /**
  * @property-read integer $id
@@ -18,7 +17,8 @@ class UserEntity implements \BX\Validator\IEntity
 {
 	use \BX\Validator\EntityTrait,
 	 \BX\Date\DateTrait,
-	 \BX\Translate\TranslateTrait;
+	 \BX\Translate\TranslateTrait,
+	 \BX\Config\ConfigTrait;
 	const C_ID = 'ID';
 	const C_GUID = 'GUID';
 	const C_LOGIN = 'LOGIN';
@@ -92,8 +92,8 @@ class UserEntity implements \BX\Validator\IEntity
 	 */
 	protected function getMinLengthPassword()
 	{
-		if (Registry::exists('user','password_min_length')){
-			return Registry::get('user','password_min_length');
+		if ($this->config()->exists('user','password_min_length')){
+			return $this->config()->get('user','password_min_length');
 		}
 		return 6;
 	}

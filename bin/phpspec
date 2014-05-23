@@ -18,6 +18,6 @@ if (is_dir($vendor = __DIR__.'/../vendor')){
 	);
 }
 
-BX\Base\Registry::init(dirname(__DIR__).'/config/test.yml');
+BX\Config\Config::init('yaml_file',dirname(__DIR__).'/config/test.yml');
 $app = new PhpSpec\Console\Application(PHPSPEC_VERSION);
 $app->run();

@@ -1,5 +1,4 @@
 <?php namespace BX\Cache;
-use BX\Base\Registry;
 use Illuminate\Cache\ApcStore;
 use Illuminate\Cache\ApcWrapper;
 use Illuminate\Cache\ArrayStore;
@@ -8,9 +7,10 @@ use Illuminate\Cache\StoreInterface;
 use Illuminate\Cache\WinCacheStore;
 use Illuminate\Cache\XCacheStore;
 
-class CacheManager
+class CacheManager implements ICacheManager
 {
-	use \BX\Event\EventTrait;
+	use \BX\Event\EventTrait,
+	 \BX\Config\ConfigTrait;
 	/**
 	 * @var boolean
 	 */
@@ -20,6 +20,17 @@ class CacheManager
 	 */
 	private $store = null;
 	/**
+	 * Set store
+	 *
+	 * @param \Illuminate\Cache\StoreInterface $store
+	 * @return \BX\Cache\CacheManager
+	 */
+	public function setStore(StoreInterface $store)
+	{
+		$this->store = $store;
+		return $this;
+	}
+	/**
 	 * get cache adaptor
 	 * @return StoreInterface
 	 * @throws InvalidArgumentException
@@ -27,10 +38,10 @@ class CacheManager
 	public function adaptor()
 	{
 		if ($this->store === null){
-			if (!Registry::exists('cache')){
+			if (!$this->config()->exists('cache')){
 				$this->store = new ArrayStore();
-			} else{
-				$cache = Registry::get('cache','type');
+			}else{
+				$cache = $this->config()->get('cache','type');
 				switch ($cache){
 					case 'wincache':
 						$this->store = new WinCacheStore();
@@ -45,22 +56,14 @@ class CacheManager
 						$this->store = new ApcStore(new ApcWrapper());
 						break;
 					case 'memcache':
-						$oMemcache = new Memcached();
-						$oMemcache->addServer(Registry::get('cache','host'),Registry::get('cache','port'));
-						$this->store = new MemcachedStore($oMemcache);
+						$memcache = new Memcached();
+						$host = $this->config()->get('cache','host');
+						$port = $this->config()->get('cache','port');
+						$memcache->addServer($host,$port);
+						$this->store = new MemcachedStore($memcache);
 						break;
 					default:
-						if (is_string($cache)){
-							if (class_exists($cache)){
-								$this->store = new $cache();
-							} else{
-								throw new \InvalidArgumentException("Cache adaptor `$cache` is not exists");
-							}
-						} elseif ($this->store instanceof StoreInterface){
-							$this->store = $cache;
-						} else{
-							throw new \InvalidArgumentException("Class `".get_class($cache)."` is not interface of StoreInterface");
-						}
+						$this->store = new $cache();
 						break;
 				}
 			}
@@ -69,26 +72,32 @@ class CacheManager
 	}
 	/**
 	 * Enable timezone
+	 * @return boolean
 	 */
 	public function enable()
 	{
 		$this->enable = true;
+		return true;
 	}
 	/**
 	 * Disable timezone
+	 * @return boolean
 	 */
 	public function disable()
 	{
 		$this->enable = false;
+		return true;
 	}
 	/**
 	 * Set cache tag
+	 *
 	 * @param string $ns
-	 * @param array $tags
-	 * @return array
+	 * @param array|string $tags
+	 * @return boolean
 	 */
-	public function setTags($ns,array $tags)
+	public function setTags($ns,$tags)
 	{
+		$tags = (array)$tags;
 		if (empty($tags)){
 			throw new InvalidArgumentException('Set empty tags');
 		}
@@ -96,10 +105,11 @@ class CacheManager
 			$tags = array_merge($tags,(array)$this->adaptor()->get($ns));
 			$this->adaptor()->forever($ns,$tags);
 		}
-		return $tags;
+		return true;
 	}
 	/**
 	 * Get cache
+	 *
 	 * @param string $unique_id
 	 * @param string $ns
 	 * @return null|string
@@ -110,7 +120,7 @@ class CacheManager
 			$tags = $this->adaptor()->get($ns);
 			if ($tags === null || empty($tags)){
 				return null;
-			} else{
+			}else{
 				return $this->adaptor()->tags($tags)->get($unique_id);
 			}
 		}
@@ -118,6 +128,7 @@ class CacheManager
 	}
 	/**
 	 * Set cache
+	 *
 	 * @param string $unique_id
 	 * @param mixed $value
 	 * @param string $ns
@@ -129,15 +140,17 @@ class CacheManager
 		if ($this->enable){
 			if (is_string($tags)){
 				$tags = (array)$tags;
-			} elseif (empty($tags)){
+			}elseif (empty($tags)){
 				$tags = ['default'];
 			}
 			$tags = $this->setTags($ns,$tags);
 			$this->adaptor()->tags($tags)->put($unique_id,$value,$ttl);
 		}
+		return true;
 	}
 	/**
 	 * Remove cache
+	 *
 	 * @param string $unique_id
 	 * @param string $ns
 	 * @return mixed
@@ -150,38 +163,53 @@ class CacheManager
 				$this->adaptor()->tags($tags)->forget($unique_id);
 			}
 		}
+		return true;
 	}
 	/**
 	 * Remove cache by namespace
+	 *
 	 * @param string $ns
+	 * @return boolean
 	 */
 	public function removeByNamespace($ns)
 	{
-		$this->adaptor()->forget($ns);
+		if ($this->enable){
+			$this->adaptor()->forget($ns);
+		}
+		return true;
 	}
 	/**
 	 * Clear cache by tags
-	 * @param array|string $aTags
+	 *
+	 * @param boolean
 	 */
-	public function clearByTags()
+	public function clearByTags($tags)
 	{
-		$tags = func_get_args();
-		if (isset($tags[0]) && is_array($tags[0])){
-			$tags = $tags[0];
+		if ($this->enable){
+			$tags = (array)$tags;
+			if (isset($tags[0]) && is_array($tags[0])){
+				$tags = $tags[0];
+			}
+			if (!empty($tags)){
+				$this->adaptor()->tags($tags)->flush();
+			}else{
+				throw new \InvalidArgumentException('Tags is not empty');
+			}
 		}
-		if (!empty($tags)){
-			$this->adaptor()->tags($tags)->flush();
-		} else{
-			throw new \InvalidArgumentException('Tags is not empty');
-		}
+		return true;
 	}
 	/**
 	 * Flush cache
+	 *
+	 * @return boolean
 	 */
 	public function flush()
 	{
-		if ($this->fire('cache.manager.cache.flush') !== false){
-			$this->adaptor()->flush();
+		if ($this->enable){
+			if ($this->fire('cache.manager.cache.flush') !== false){
+				$this->adaptor()->flush();
+			}
 		}
+		return true;
 	}
 }

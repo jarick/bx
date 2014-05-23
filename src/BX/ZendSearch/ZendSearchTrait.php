@@ -1,19 +1,22 @@
 <?php namespace BX\ZendSearch;
-use BX\Base\DI;
-use BX\ZendSearch\ZendSearchManager;
+use BX\Config\DICService;
 
 trait ZendSearchTrait
 {
 	/**
 	 * Get search manager
+	 *
 	 * @return ZendSearchManager
 	 */
 	public function zendsearch()
 	{
-		$key = 'zend_search';
-		if (DI::get($key) === null){
-			DI::set($key,new ZendSearchManager());
+		$name = 'zend_search';
+		if (DICService::get($name) === null){
+			$manager = function(){
+				return new ZendSearchManager();
+			};
+			DICService::set($name,$manager);
 		}
-		return DI::get($key);
+		return DICService::get($name);
 	}
 }

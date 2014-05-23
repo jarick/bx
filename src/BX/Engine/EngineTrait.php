@@ -1,21 +1,23 @@
 <?php namespace BX\Engine;
-use BX\Base\DI;
+use BX\Config\DICService;
 use BX\Engine\EngineManager;
-use ZendSearch\Lucene\Exception\InvalidArgumentException;
 
 trait EngineTrait
 {
 	/**
-	 * Get engine
+	 * Get engine manager
+	 *
 	 * @return EngineManager
-	 * @throws InvalidArgumentException
 	 */
-	public function engine()
+	protected function engine()
 	{
-		$key = 'render';
-		if (DI::get($key) === null){
-			DI::set($key,new EngineManager());
+		$name = 'render';
+		if (DICService::get($name) === null){
+			$manager = function(){
+				return new EngineManager();
+			};
+			DICService::set($name,$manager);
 		}
-		return DI::get($key);
+		return DICService::get($name);
 	}
 }

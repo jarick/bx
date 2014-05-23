@@ -1,9 +1,9 @@
 <?php namespace BX\User;
-use BX\Base\Registry;
 use BX\User\Store\TableUserGroupMemberStore;
 
 class UserGroupMemberManager
 {
+	use \BX\Config\ConfigTrait;
 	/**
 	 * @var TableUserGroupMemberStore
 	 */
@@ -17,8 +17,8 @@ class UserGroupMemberManager
 	private function store()
 	{
 		if ($this->store === null){
-			if (Registry::exists('user','group_member','store')){
-				$store = Registry::get('user','group_member','store');
+			if ($this->config()->exists('user','group_member','store')){
+				$store = $this->config()->get('user','group_member','store');
 				switch ($store){
 					case 'db': $this->store = new TableUserGroupMemberStore();
 						break;

@@ -1,19 +1,23 @@
 <?php namespace BX\String;
 use BX\String\StringManager;
-use BX\Base\DI;
+use BX\Config\DICService;
 
 trait StringTrait
 {
 	/**
 	 * Get string manager
+	 *
 	 * @return StringManager
 	 */
-	public function string()
+	protected function string()
 	{
-		$key = 'string';
-		if (DI::get($key) === null){
-			DI::set($key,new StringManager());
+		$name = 'string';
+		if (DICService::get($name) === null){
+			$manager = function(){
+				return new StringManager();
+			};
+			DICService::set($name,$manager);
 		}
-		return DI::get($key);
+		return DICService::get($name);
 	}
 }

@@ -4,11 +4,11 @@ use BX\Base\Collection;
 use \BX\Console\Writer\CliWriter;
 use \BX\Console\Writer\HtmlWriter;
 use \BX\Console\Writer\IWriter;
-use \BX\Base\Registry;
 use \BX\Console\IConsoleController;
 
 class ConsoleController implements IConsoleController
 {
+	use \BX\Config\ConfigTrait;
 	/**
 	 * @var Collection
 	 */
@@ -19,6 +19,7 @@ class ConsoleController implements IConsoleController
 	protected $writer = false;
 	/**
 	 * Set writer
+	 *
 	 * @param IWriter $writer
 	 */
 	public function setWriter($writer)
@@ -28,6 +29,7 @@ class ConsoleController implements IConsoleController
 	}
 	/**
 	 * Get writer
+	 *
 	 * @return IWriter
 	 */
 	public function getWriter()
@@ -41,17 +43,13 @@ class ConsoleController implements IConsoleController
 	{
 		$this->command = new Collection('BX\Console\Command\Console');
 		if ($this->writer === false){
-			if (Registry::exists('console','writer')){
-				$class = Registry::get('console','writer');
-				if (is_string($class)){
-					$this->setWriter(new $class());
-				} else{
-					$this->setWriter($class);
-				}
-			} else{
+			if ($this->config()->exists('console','writer')){
+				$class = $this->config()->get('console','writer');
+				$this->setWriter(new $class());
+			}else{
 				if (php_sapi_name() === 'cli'){
 					$this->setWriter(new CliWriter());
-				} else{
+				}else{
 					$this->setWriter(new HtmlWriter());
 				}
 			}
@@ -59,14 +57,14 @@ class ConsoleController implements IConsoleController
 	}
 	/**
 	 * Prepare argv argument
-	 * @global array $argv
-	 * @param type $io
+	 *
+	 * @param string $io
 	 */
 	private function getArgvArray($io = false)
 	{
 		if ($io !== false){
 			$argv_array = preg_split("/\s+/",'0 '.$io);
-		} else{
+		}else{
 			global $argv;
 			$argv_array = $argv;
 		}
@@ -74,6 +72,7 @@ class ConsoleController implements IConsoleController
 	}
 	/**
 	 * Render string
+	 *
 	 * @global array $argv
 	 * @param string $io
 	 * @throws \InvalidArgumentException
@@ -96,9 +95,9 @@ class ConsoleController implements IConsoleController
 			if (!$has_command){
 				throw new \InvalidArgumentException("Unknow command `$name`");
 			}
-		} catch (ConsoleException $e){
+		}catch (ConsoleException $e){
 			$e->render();
-		} catch (\Exception $e){
+		}catch (\Exception $e){
 			$exception = new ConsoleException($e->getMessage(),$this->writer);
 			$exception->setDebugInfo($e->getFile(),$e->getLine());
 			$exception->render();

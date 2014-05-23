@@ -1,28 +1,30 @@
 <?php namespace BX\Event;
 use Illuminate\Events\Dispatcher;
-use BX\Base\Registry;
-use BX\Base\DI;
+use BX\Config\DICService;
 
 class EventManager implements IEventManager
 {
+	use \BX\Config\ConfigTrait;
 	/**
 	 * Get dispatcher
 	 * @return Dispatcher
 	 */
 	private function getDispatcher()
 	{
-		if (DI::get('event_dispatcher') === null){
-			if (Registry::exists('event')){
-				$dispatcher = Registry::get('event');
-				if (is_string($dispatcher)){
+		$name = 'event_dispatcher';
+		if (DICService::get($name) === null){
+			$manager = function(){
+				if ($this->config()->exists('event','dispatcher')){
+					$dispatcher = $this->config()->get('event','dispatcher');
 					$dispatcher = new $dispatcher();
+				}else{
+					$dispatcher = new Dispatcher();
 				}
-			}else{
-				$dispatcher = new Dispatcher();
-			}
-			DI::set('event_dispatcher',$dispatcher);
+				return $dispatcher;
+			};
+			DICService::set($name,$manager);
 		}
-		return DI::get('event_dispatcher');
+		return DICService::get($name);
 	}
 	/**
 	 * Listner

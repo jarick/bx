@@ -1,15 +1,15 @@
 <?php namespace BX\DB;
-use BX\Base\DI;
+use BX\Config\DICService;
 use BX\Base\Dictionary;
 use BX\DB\Filter\SqlBuilder;
 use BX\DB\Helper\ColumnHelper;
 use BX\DB\Helper\RelationHelper;
-use BX\DB\UnitOfWork\Cacher;
 
 trait TableTrait
 {
 	/**
-	 * Get primary key column
+	 * Return primary key column
+	 *
 	 * @return string
 	 */
 	public function getPkColumn()
@@ -22,7 +22,8 @@ trait TableTrait
 	 */
 	abstract protected function settings();
 	/**
-	 * Get settings
+	 * Return settings
+	 *
 	 * @return array
 	 */
 	protected function getSettings($key)
@@ -30,7 +31,8 @@ trait TableTrait
 		return (array_key_exists($key,$this->settings())) ? $this->settings()[$key] : null;
 	}
 	/**
-	 * Get DB table
+	 * Return table name
+	 *
 	 * @return string
 	 */
 	public function getDbTable()
@@ -38,7 +40,8 @@ trait TableTrait
 		return $this->getSettings('db_table');
 	}
 	/**
-	 * Get cache tag
+	 * Return cache tag
+	 *
 	 * @return string|boolean
 	 */
 	public function getCacheTag()
@@ -46,7 +49,8 @@ trait TableTrait
 		return $this->getSettings('cache_tag');
 	}
 	/**
-	 * Get event
+	 * Return event
+	 *
 	 * @return string|boolean
 	 */
 	public function getEvent()
@@ -57,12 +61,13 @@ trait TableTrait
 	 * Get entity name for user field
 	 * @return string|boolean
 	 */
-	public function getUfEntity()
-	{
-		return $this->getSettings('uf_entity');
-	}
+	#public function getUfEntity()
+	#{
+	#	return $this->getSettings('uf_entity');
+	#}
 	/**
-	 * Get permission binding
+	 * Return permission binding
+	 *
 	 * @return string|boolean
 	 */
 	public function getPermissionBinding()
@@ -70,6 +75,7 @@ trait TableTrait
 		return $this->getSettings('permission_binding');
 	}
 	/**
+	 * Return permission table
 	 *
 	 * @return string|boolean
 	 */
@@ -78,7 +84,8 @@ trait TableTrait
 		return $this->getSettings('permission_table');
 	}
 	/**
-	 * Get acl rules
+	 * Return acl rules
+	 *
 	 * @return array
 	 */
 	protected function operations()
@@ -86,7 +93,8 @@ trait TableTrait
 		return [];
 	}
 	/**
-	 * Get operations
+	 * Return operations
+	 *
 	 * @return type
 	 */
 	public function getOperations()
@@ -94,18 +102,24 @@ trait TableTrait
 		return $this->operations();
 	}
 	/**
-	 * Get relation helper
+	 * Return relation helper
+	 *
 	 * @return RelationHelper
 	 */
 	protected function relation()
 	{
-		if (DI::get('relation_helper') === null){
-			DI::set('relation_helper',new RelationHelper());
+		$key = 'relation_helper';
+		if (DICService::get($key) === null){
+			$manager = function(){
+				return new RelationHelper();
+			};
+			DICService::set($key,$manager);
 		}
-		return DI::get('relation_helper');
+		return DICService::get($key);
 	}
 	/**
-	 * Get relation
+	 * Return relation
+	 *
 	 * @return array
 	 */
 	protected function relations()
@@ -113,7 +127,8 @@ trait TableTrait
 		return [];
 	}
 	/**
-	 * Get relation
+	 * Return relation
+	 *
 	 * @return array
 	 */
 	public function getRelations()
@@ -121,23 +136,30 @@ trait TableTrait
 		return $this->relations();
 	}
 	/**
-	 * Get column helper
+	 * Return column helper
+	 *
 	 * @return ColumnHelper
 	 */
 	protected function column()
 	{
-		if (DI::get('column_helper') === null){
-			DI::set('column_helper',new ColumnHelper());
+		$key = 'column_helper';
+		if (DICService::get($key) === null){
+			$manager = function(){
+				return new ColumnHelper();
+			};
+			DICService::set($key,$manager);
 		}
-		return DI::get('column_helper');
+		return DICService::get($key);
 	}
 	/**
-	 * Get columns
+	 * Return columns
+	 *
 	 * @return array
 	 */
 	abstract protected function columns();
 	/**
-	 * Get columns
+	 * Return columns
+	 *
 	 * @return Dictionary
 	 */
 	public function getColumns()
@@ -148,17 +170,8 @@ trait TableTrait
 		return $dictionary;
 	}
 	/**
-	 * Clear cache
-	 */
-	public function clearCache()
-	{
-		if (DI::get('uow_cache') === null){
-			DI::set('uow_cache',new Cacher());
-		}
-		return DI::get('uow_cache')->clear($this);
-	}
-	/**
 	 * Filter
+	 *
 	 * @param string $entity_class
 	 * @return SqlBuilder
 	 */

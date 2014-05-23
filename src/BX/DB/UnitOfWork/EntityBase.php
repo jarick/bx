@@ -19,6 +19,7 @@ abstract class EntityBase
 	protected $entity;
 	/**
 	 * Constructor
+	 *
 	 * @param \BX\DB\ITable $table
 	 * @param \BX\Validator\IEntity $entity
 	 */
@@ -33,6 +34,7 @@ abstract class EntityBase
 	}
 	/**
 	 * Clear cache
+	 *
 	 * @return boolean
 	 */
 	protected function clearCache()
@@ -45,6 +47,8 @@ abstract class EntityBase
 		return false;
 	}
 	/**
+	 * Return table
+	 *
 	 * @retrun \BX\DB\ITable
 	 */
 	public function getTable()
@@ -52,6 +56,8 @@ abstract class EntityBase
 		return $this->table;
 	}
 	/**
+	 * Return entity
+	 *
 	 * @retrun \BX\DB\IEntity
 	 */
 	public function getEntity()
@@ -60,6 +66,7 @@ abstract class EntityBase
 	}
 	/**
 	 * Add search index
+	 *
 	 * @param integer|string $id
 	 * @return boolean
 	 */
@@ -75,6 +82,7 @@ abstract class EntityBase
 	}
 	/**
 	 * Delete search index
+	 *
 	 * @param integer|string $id
 	 * @return boolean
 	 */
@@ -90,6 +98,7 @@ abstract class EntityBase
 	}
 	/**
 	 * Prepare array to db
+	 *
 	 * @param array $fields
 	 * @return array
 	 */

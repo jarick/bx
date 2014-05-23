@@ -1,6 +1,6 @@
 <?php namespace BX\Mutex;
 use BX\Base\Dictionary;
-use BX\Base\Registry;
+use BX\Config\Config;
 use BX\Mutex\Adaptor\IMutexAdaptor;
 use BX\Mutex\Adaptor\SystemMutex;
 use BX\Mutex\Entity\MutexEntity;
@@ -24,16 +24,17 @@ class MutexManager #implements IMutexManager
 		$this->dictionary = new Dictionary('BX\Mutex\Entity\MutexEntity');
 	}
 	/**
-	 * Get mutex
+	 * Return mutex
+	 *
 	 * @return IMutexAdaptor
 	 */
 	public function adaptor()
 	{
 		if ($this->mutex === null){
-			if (!Registry::exists('mutex','class')){
+			if (!Config::exists('mutex','class')){
 				$this->mutex = new SystemMutex();
 			}else{
-				$reg = Registry::get('mutex','class');
+				$reg = Config::get('mutex','class');
 				$this->mutex = new $reg();
 			}
 		}
@@ -41,6 +42,7 @@ class MutexManager #implements IMutexManager
 	}
 	/**
 	 * Acquire key
+	 *
 	 * @param string $key
 	 * @param integer $max_acquire
 	 * @return boolean
@@ -56,8 +58,8 @@ class MutexManager #implements IMutexManager
 		}else{
 			$entity = new MutexEntity();
 			$entity->generate($key,$max_acquire);
-			if (Registry::exists('mutex','perm')){
-				$entity->permission = Registry::get('mutex','perm');
+			if (Config::exists('mutex','perm')){
+				$entity->permission = Config::get('mutex','perm');
 			}
 			$this->dictionary->add($key,$entity);
 		}
@@ -65,6 +67,7 @@ class MutexManager #implements IMutexManager
 	}
 	/**
 	 * Release key
+	 *
 	 * @param string $key
 	 * @return boolean
 	 * @throws \InvalidArgumentException
@@ -81,6 +84,7 @@ class MutexManager #implements IMutexManager
 	}
 	/**
 	 * Unlock all mutex
+	 *
 	 * @return boolean
 	 */
 	public function releaseAll()

@@ -1,9 +1,9 @@
 <?php namespace BX\Date;
-use BX\Base\Registry;
 use Carbon\Carbon;
 
 class DateTimeManager
 {
+	use \BX\Config\ConfigTrait;
 	/**
 	 * @var boolean
 	 */
@@ -32,8 +32,8 @@ class DateTimeManager
 	 */
 	private function getTimeZone()
 	{
-		if (Registry::exists('date','timezone')){
-			return Registry::get('date','timezone');
+		if ($this->config()->exists('date','timezone')){
+			return $this->config()->get('date','timezone');
 		}else{
 			return date_default_timezone_get();
 		}
@@ -46,8 +46,8 @@ class DateTimeManager
 	 */
 	private function getFormat($type)
 	{
-		if (Registry::exists('date',$type)){
-			return Registry::get('date',$type);
+		if ($this->config()->exists('date',$type)){
+			return $this->config()->get('date',$type);
 		}elseif ($type === 'full'){
 			return 'd.m.Y H:i:s';
 		}elseif ($type === 'short'){
@@ -104,7 +104,7 @@ class DateTimeManager
 	 */
 	public function getOffset()
 	{
-		if (Registry::exists('date','disable_timezone') && self::$disableTimeZone){
+		if ($this->config()->exists('date','disable_timezone') && self::$disableTimeZone){
 			return 0;
 		}else{
 			return date('Z');

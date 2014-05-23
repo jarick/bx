@@ -1,12 +1,12 @@
 <?php namespace BX\User;
-use BX\Base\Registry;
 use BX\User\Entity\AccessEntity;
 use BX\User\Store\IAccessStore;
 use BX\User\Store\TableRememberPasswordStore;
 
 class RememberPasswordManager
 {
-	use \BX\String\StringTrait;
+	use \BX\String\StringTrait,
+	 \BX\Config\ConfigTrait;
 	protected $store;
 	/**
 	 * @return IAccessStore
@@ -14,8 +14,8 @@ class RememberPasswordManager
 	protected function store()
 	{
 		if ($this->store === null){
-			if (Registry::exists('user','remember_password','store')){
-				$store = Registry::get('user','remember_password','store');
+			if ($this->config()->exists('user','remember_password','store')){
+				$store = $this->config()->get('user','remember_password','store');
 				switch ($store){
 					case 'db': $this->store = new TableRememberPasswordStore();
 						break;

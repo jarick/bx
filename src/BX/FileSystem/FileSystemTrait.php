@@ -1,19 +1,22 @@
 <?php namespace BX\FileSystem;
-use BX\Base\DI;
-use BX\FileSystem\FileSystemManager;
+use BX\Config\DICService;
 
 trait FileSystemTrait
 {
 	/**
 	 * Get filesystem manager
-	 * @return FileSystemManager
+	 *
+	 * @return IFileSystemManager
 	 */
-	public function filesystem()
+	protected function filesystem()
 	{
-		$key = 'filesystem';
-		if (DI::get($key) === null){
-			DI::set($key,new FileSystemManager());
+		$name = 'filesystem';
+		if (DICService::get($name) === null){
+			$manager = function(){
+				return new FileSystemManager();
+			};
+			DICService::set($name,$manager);
 		}
-		return DI::get($key);
+		return DICService::get($name);
 	}
 }

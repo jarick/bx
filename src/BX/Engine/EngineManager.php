@@ -1,11 +1,11 @@
 <?php namespace BX\Engine;
-use BX\Base\Registry;
 use BX\Engine\Render\IRender;
 use BX\Engine\Render\HamlRender;
 use BX\Engine\Render\PhpRender;
 
 class EngineManager implements IEngineManager
 {
+	use \BX\Config\ConfigTrait;
 	/**
 	 * @var IRender
 	 */
@@ -18,8 +18,8 @@ class EngineManager implements IEngineManager
 	private function getRender()
 	{
 		if ($this->render === null){
-			if (Registry::exists('templating','engine')){
-				$engine = Registry::get('templating','engine');
+			if ($this->config()->exists('templating','engine')){
+				$engine = $this->config()->get('templating','engine');
 			}else{
 				$engine = 'php';
 			}

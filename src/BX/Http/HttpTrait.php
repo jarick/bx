@@ -1,33 +1,40 @@
 <?php namespace BX\Http;
 use BX\Http\Request;
 use BX\Http\Response;
-use BX\Http\FlashManager;
-use BX\Base\DI;
+use BX\Config\DICService;
 
 trait HttpTrait
 {
 	/**
-	 * Get request manager
+	 * Return request manager
+	 *
 	 * @return Request
 	 */
 	public function request()
 	{
 		$key = 'request';
-		if (DI::get($key) === null){
-			DI::set($key,new Request());
+		if (DICService::get($key) === null){
+			$manager = function(){
+				return new Request();
+			};
+			DICService::set($key,$manager);
 		}
-		return DI::get($key);
+		return DICService::get($key);
 	}
 	/**
-	 * Get response manager
+	 * Return response manager
+	 *
 	 * @return Response
 	 */
 	public function response()
 	{
 		$key = 'response';
-		if (DI::get($key) === null){
-			DI::set($key,new Response());
+		if (DICService::get($key) === null){
+			$manager = function(){
+				return new Response();
+			};
+			DICService::set($key,$manager);
 		}
-		return DI::get($key);
+		return DICService::get($key);
 	}
 }

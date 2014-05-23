@@ -1,11 +1,11 @@
 <?php namespace BX\Http;
-use BX\Base\Registry;
 use BX\Http\CookieStore;
 use BX\Http\IRequest;
 use BX\Http\Store;
 
 class Request implements IRequest
 {
+	use \BX\Config\ConfigTrait;
 	/**
 	 * @var Store|array
 	 */
@@ -88,7 +88,7 @@ class Request implements IRequest
 	}
 	/**
 	 * Prepare files array
-	 * 
+	 *
 	 * @param array $files
 	 * @return array
 	 */
@@ -221,7 +221,7 @@ class Request implements IRequest
 	 */
 	public function __construct()
 	{
-		if (Registry::isDevMode()){
+		if ($this->config()->isDevMode()){
 			$nead_keys = [
 				'REQUEST_METHOD',
 				'SCRIPT_NAME',

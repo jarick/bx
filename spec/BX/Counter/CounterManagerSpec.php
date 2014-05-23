@@ -20,7 +20,7 @@ class CounterManagerSpec extends ObjectBehavior
 		$data = $this->db()->query($sql)->fetch();
 		$count = intval($data['COUNTER']);
 		if ($count !== 3){
-			throw new \RuntimeException("Test error. Get: $count");
+			throw new \RuntimeException("Test fall");
 		}
 	}
 	function it_clear()
@@ -29,7 +29,7 @@ class CounterManagerSpec extends ObjectBehavior
 		$sql = 'SELECT * FROM tbl_counter';
 		$count = $this->db()->query($sql)->count();
 		if ($count !== 0){
-			throw new \RuntimeException("Test error. Get: $count");
+			throw new \RuntimeException("Test fall");
 		}
 	}
 	function it_clear_old()
@@ -38,14 +38,14 @@ class CounterManagerSpec extends ObjectBehavior
 		$sql = 'SELECT * FROM tbl_counter';
 		$count = $this->db()->query($sql)->count();
 		if ($count !== 0){
-			throw new \RuntimeException("Test error. Get: $count");
+			throw new \RuntimeException("Test fall");
 		}
 	}
 	function it_get()
 	{
 		$counter = $this->getWrappedObject()->get('qwerty','inc');
 		if ($counter != 2){
-			throw new \RuntimeException("Test error. Get: $count->counter");
+			throw new \RuntimeException("Test fall");
 		}
 	}
 }

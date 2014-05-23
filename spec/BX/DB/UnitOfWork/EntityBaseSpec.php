@@ -1,5 +1,5 @@
 <?php namespace spec\BX\DB\UnitOfWork;
-use BX\Base\DI;
+use BX\Config\DICService;
 use BX\Cache\CacheManager;
 use BX\DB\Test\TestTable;
 use BX\DB\UnitOfWork\EntityBase;
@@ -17,27 +17,36 @@ class EntityBaseSpec extends ObjectBehavior
 	}
 	function it_clearCache(CacheManager $cache)
 	{
-		$cache->clearByTags('test')->shouldBeCalled()->willReturn(null);
-		DI::set('cache',$cache->getWrappedObject());
+		$cache_ptr = function() use($cache){
+			$cache->clearByTags('test')->shouldBeCalled()->willReturn(null);
+			return $cache->getWrappedObject();
+		};
+		DICService::update('cache',$cache_ptr);
 		$this->clearCache();
-		DI::set('cache',null);
+		DICService::delete('cache');
 	}
 	function it_addSearchIndex(ZendSearchManager $zendsearch)
 	{
-		$str = Argument::type('string');
-		$coll = Argument::type('BX\ZendSearch\SearchCollection');
-		$zendsearch->add($str,$coll)->shouldBeCalled()->willReturn(null);
-		DI::set('zend_search',$zendsearch->getWrappedObject());
+		$zendsearch_ptr = function() use($zendsearch){
+			$str = Argument::type('string');
+			$coll = Argument::type('BX\ZendSearch\SearchCollection');
+			$zendsearch->add($str,$coll)->shouldBeCalled()->willReturn(null);
+			return $zendsearch->getWrappedObject();
+		};
+		DICService::update('zend_search',$zendsearch_ptr);
 		$this->addSearchIndex(1);
-		DI::set('zend_search',null);
+		DICService::delete('zend_search');
 	}
 	function it_deleteSearchIndex(ZendSearchManager $zendsearch)
 	{
-		$str = Argument::type('string');
-		$zendsearch->delete($str)->shouldBeCalled()->willReturn(null);
-		DI::set('zend_search',$zendsearch->getWrappedObject());
+		$zendsearch_ptr = function() use($zendsearch){
+			$str = Argument::type('string');
+			$zendsearch->delete($str)->shouldBeCalled()->willReturn(null);
+			return $zendsearch->getWrappedObject();
+		};
+		DICService::update('zend_search',$zendsearch_ptr);
 		$this->deleteSearchIndex(1);
-		DI::set('zend_search',null);
+		DICService::delete('zend_search');
 	}
 }
 

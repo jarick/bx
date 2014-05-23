@@ -51,5 +51,5 @@ if (is_dir($vendor = __DIR__.'/../vendor')){
 	);
 }
 
-BX\Base\Registry::init(dirname(__DIR__).'/config/test.yml');
+BX\Config\Config::init('yaml_file',dirname(__DIR__).'/config/test.yml');
 PHPUnit_TextUI_Command::main();

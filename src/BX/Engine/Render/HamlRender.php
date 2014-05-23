@@ -1,6 +1,5 @@
 <?php namespace BX\Engine\Render;
 use BX\Engine\Render\IRender;
-use BX\Base\Registry;
 use MtHaml\Environment;
 use Symfony\Component\Yaml\Yaml;
 
@@ -9,7 +8,8 @@ class HamlRender implements IRender
 	use \BX\Event\EventTrait,
 	 \BX\Http\HttpTrait,
 	 \BX\Logger\LoggerTrait,
-	 \BX\FileSystem\FileSystemTrait;
+	 \BX\FileSystem\FileSystemTrait,
+	 \BX\Config\ConfigTrait;
 	/**
 	 * @var string
 	 */
@@ -99,7 +99,7 @@ class HamlRender implements IRender
 	protected function getPhpCacheFolder()
 	{
 		if ($this->php_cache_folder === null){
-			$this->php_cache_folder = $this->getRealPath(Registry::get('templating','php'));
+			$this->php_cache_folder = $this->getRealPath($this->config()->get('templating','php'));
 		}
 		return $this->php_cache_folder;
 	}
@@ -120,7 +120,7 @@ class HamlRender implements IRender
 	protected function getDocRootFolder()
 	{
 		if ($this->doc_root === null){
-			$this->doc_root = $this->getRealPath(Registry::get('templating','doc_root'));
+			$this->doc_root = $this->getRealPath($this->config()->get('templating','doc_root'));
 		}
 		return $this->doc_root;
 	}
@@ -131,7 +131,7 @@ class HamlRender implements IRender
 	protected function getFolder()
 	{
 		if ($this->folder === null){
-			$this->folder = $this->getRealPath(Registry::get('templating','haml'));
+			$this->folder = $this->getRealPath($this->config()->get('templating','haml'));
 		}
 		return $this->folder;
 	}

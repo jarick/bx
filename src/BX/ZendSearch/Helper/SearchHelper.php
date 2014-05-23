@@ -1,10 +1,10 @@
 <?php namespace BX\ZendSearch\Helper;
-use BX\Base\Registry;
 use BX\Validator\IEntity;
 use ZendSearch\Lucene\Document\Field;
 
 class SearchHelper
 {
+	use \BX\Config\ConfigTrait;
 	/**
 	 * @var IEntity
 	 */
@@ -28,7 +28,7 @@ class SearchHelper
 		if ($value === null){
 			$value = $this->entity->getValue($name);
 		}
-		return Field::text($name,$value,Registry::getCharset());
+		return Field::text($name,$value,$this->config()->getCharset());
 	}
 	/**
 	 * Get keyword search field
@@ -38,7 +38,7 @@ class SearchHelper
 	 */
 	public function keyword($name,$value)
 	{
-		Field::keyword($name,$value,Registry::getCharset());
+		Field::keyword($name,$value,$this->config()->getCharset());
 	}
 	/**
 	 * Get un stored search field
@@ -48,7 +48,7 @@ class SearchHelper
 	 */
 	public function unStored($name,$value)
 	{
-		return Field::unStored($name,$value,Registry::getCharset());
+		return Field::unStored($name,$value,$this->config()->getCharset());
 	}
 	/**
 	 * Get binary search field

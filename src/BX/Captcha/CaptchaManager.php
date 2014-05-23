@@ -1,24 +1,25 @@
 <?php namespace BX\Captcha;
-use BX\Base\Registry;
+use BX\Config\Config;
 use BX\Captcha\Entity\CaptchaEntity;
 use BX\Captcha\Store\ICaptchaStore;
 use BX\Captcha\Store\TableCaptchaStore;
 
-class CaptchaManager
+class CaptchaManager implements ICaptchaManager
 {
 	/**
 	 * @var ICaptchaStore
 	 */
 	private $store = null;
 	/**
-	 * Get store
+	 * Return store
+	 *
 	 * @return ICaptchaStore
 	 */
 	private function store()
 	{
 		if ($this->store === null){
-			if (Registry::exists('captcha','store')){
-				$store = Registry::get('captcha','store');
+			if (Config::exists('captcha','store')){
+				$store = Config::get('captcha','store');
 				switch ($store){
 					case 'db': $this->store = new TableCaptchaStore();
 						break;
@@ -31,7 +32,8 @@ class CaptchaManager
 		return $this->store;
 	}
 	/**
-	 * Get guid
+	 * Return guid
+	 *
 	 * @return string
 	 */
 	public function getGuid()
@@ -40,7 +42,8 @@ class CaptchaManager
 		return $captcha->guid;
 	}
 	/**
-	 * Get code by guid
+	 * Return code by guid
+	 *
 	 * @param string $guid
 	 * @return string|null
 	 */
@@ -55,6 +58,7 @@ class CaptchaManager
 	}
 	/**
 	 * Check code
+	 *
 	 * @param string $guid
 	 * @param string $code
 	 * @return false|CaptchaEntity
@@ -65,6 +69,7 @@ class CaptchaManager
 	}
 	/**
 	 * Reaload current captcha
+	 *
 	 * @param integer $id
 	 * @return CaptchaEntity
 	 */
@@ -75,6 +80,7 @@ class CaptchaManager
 	}
 	/**
 	 * Clear captcha
+	 *
 	 * @param integer $id
 	 * @return true
 	 */
@@ -84,14 +90,15 @@ class CaptchaManager
 	}
 	/**
 	 * Clear old captches
+	 *
 	 * @param null|integer $day
 	 * @return true
 	 */
 	public function clearOld($day = null)
 	{
 		if ($day === null){
-			if (Registry::exists('captcha','day')){
-				$day = Registry::get('captcha','day');
+			if (Config::exists('captcha','day')){
+				$day = Config::get('captcha','day');
 			}else{
 				$day = 30;
 			}

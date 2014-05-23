@@ -1,6 +1,5 @@
 <?php namespace BX\Event;
-use BX\Event\EventManager;
-use BX\Base\DI;
+use BX\Config\DICService;
 
 trait EventTrait
 {
@@ -10,11 +9,14 @@ trait EventTrait
 	 */
 	private function event()
 	{
-		$key = 'event';
-		if (DI::get($key) === null){
-			DI::set($key,new EventManager());
+		$name = 'event';
+		if (DICService::get($name) === null){
+			$manager = function(){
+				return new EventManager();
+			};
+			DICService::set($name,$manager);
 		}
-		return DI::get($key);
+		return DICService::get($name);
 	}
 	/**
 	 * Listner

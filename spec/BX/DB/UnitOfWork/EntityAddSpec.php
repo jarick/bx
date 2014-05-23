@@ -1,7 +1,6 @@
 <?php namespace spec\BX\DB\UnitOfWork;
-use BX\Base\DI;
+use BX\Config\DICService;
 use BX\Cache\CacheManager;
-use BX\DB\Database;
 use BX\DB\Test\TestTable;
 use BX\Event\EventManager;
 use BX\ZendSearch\ZendSearchManager;
@@ -45,13 +44,19 @@ class EntityAddSpec extends ObjectBehavior
 		$event->fire('OnBeforeTestAdd',Argument::any(),true)->shouldBeCalled()->willReturn(true);
 		$event->fire('OnAfterTestAdd',Argument::any(),true)->shouldBeCalled()->willReturn(true);
 		$cache->clearByTags('test')->shouldBeCalled()->willReturn(null);
-		DI::set('cache',$cache->getWrappedObject());
-		DI::set('zend_search',$zendsearch->getWrappedObject());
-		DI::set('event',$event->getWrappedObject());
+		DICService::update('cache',function()use($cache){
+			return $cache->getWrappedObject();
+		});
+		DICService::update('zend_search',function()use($zendsearch){
+			return $zendsearch->getWrappedObject();
+		});
+		DICService::update('event',function()use($event){
+			return $event->getWrappedObject();
+		});
 		$this->validate();
 		$this->onAfterCommit();
-		DI::set('event',null);
-		DI::set('zend_search',null);
-		DI::set('cache',null);
+		DICService::delete('event');
+		DICService::delete('zend_search');
+		DICService::delete('cache');
 	}
 }

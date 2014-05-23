@@ -1,5 +1,4 @@
 <?php namespace BX\DB\Filter;
-use BX\Base\Registry;
 use BX\DB\Filter\Rule\String;
 use BX\DB\Filter\Rule\Number;
 use BX\DB\Filter\Rule\DateTime;
@@ -7,6 +6,7 @@ use BX\DB\Filter\Rule\Boolean;
 
 class LogicBlock
 {
+	use \BX\Config\ConfigTrait;
 	/**
 	 * @var SqlBuilder
 	 */
@@ -56,21 +56,18 @@ class LogicBlock
 				case 'datetime': return DateTime::full($this->sql_builder);
 				case 'boolean': return new Boolean($this->sql_builder);
 				default:
-					if (Registry::exists('filter_rule',$type)){
-						if (is_string($class = Registry::get('filter_rule',$type))){
-							if (class_exists($class)){
-								return new $class($this->sql_builder);
-							} else{
-								throw new \InvalidArgumentException("Filter rule class `$class` is not exists");
-							}
-						} else{
-							throw new \InvalidArgumentException("Filter rule .$type must be string");
+					if ($this->config()->exists('filter_rule',$type)){
+						$class = $this->config()->get('filter_rule',$type);
+						if (class_exists($class)){
+							return new $class($this->sql_builder);
+						}else{
+							throw new \InvalidArgumentException("Filter rule class `$class` is not exists");
 						}
-					} else{
+					}else{
 						throw new \InvalidArgumentException("Filter rule `$type` is not exists");
 					}
 			}
-		} else{
+		}else{
 			throw new \InvalidArgumentException("Unknow field `$key`");
 		}
 	}
@@ -88,13 +85,13 @@ class LogicBlock
 			if (is_numeric($key)){
 				$block = new LogicBlock($this->sql_builder,$this->filter_rule);
 				$return[] = '('.$block->toSql((array)$value).')';
-			} elseif ($key === 'LOGIC'){
+			}elseif ($key === 'LOGIC'){
 				if (in_array($value,['OR','AND'])){
 					$logic = $value;
-				} else{
+				}else{
 					throw new \InvalidArgumentException("Logic must be AND or OR set `$value`");
 				}
-			} else{
+			}else{
 				$return[] = $this->getType($key)->addCondition($key,$value);
 			}
 		}

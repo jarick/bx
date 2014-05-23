@@ -1,15 +1,15 @@
 <?php namespace spec\BX\Engine\Render;
-use BX\Base\Registry;
 use PhpSpec\Exception\Example\FailureException;
 use PhpSpec\ObjectBehavior;
 
 class HamlRenderSpec extends ObjectBehavior
 {
-	use \BX\FileSystem\FileSystemTrait;
+	use \BX\FileSystem\FileSystemTrait,
+	 \BX\Config\ConfigTrait;
 	private $store;
 	function let()
 	{
-		$this->store = Registry::all();
+		$this->store = $this->config()->all();
 		$store = [
 			'templating' => [
 				'engine'	 => 'php',
@@ -18,11 +18,11 @@ class HamlRenderSpec extends ObjectBehavior
 				'doc_root'	 => __DIR__.'/data',
 			],
 		];
-		Registry::init($store,Registry::FORMAT_ARRAY);
+		$this->config()->init('array',$store);
 	}
 	function letgo()
 	{
-		Registry::init($this->store,Registry::FORMAT_ARRAY);
+		$this->config()->init('array',$this->store);
 	}
 	function it_is_initializable()
 	{

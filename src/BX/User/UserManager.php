@@ -1,11 +1,11 @@
 <?php namespace BX\User;
-use BX\Base\Registry;
 use BX\DB\Filter\SqlBuilder;
 use BX\User\Store\TableUserStore;
 
 class UserManager
 {
-	use \BX\String\StringTrait;
+	use \BX\String\StringTrait,
+	 \BX\Config\ConfigTrait;
 	private $store = null;
 	/**
 	 * @return TableUserStore
@@ -13,8 +13,8 @@ class UserManager
 	private function store()
 	{
 		if ($this->store === null){
-			if (Registry::exists('user','store')){
-				$store = Registry::get('user','store');
+			if ($this->config()->exists('user','store')){
+				$store = $this->config()->get('user','store');
 				switch ($store){
 					case 'db': $this->store = new TableUserStore();
 						break;

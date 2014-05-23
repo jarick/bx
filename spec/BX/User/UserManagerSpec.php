@@ -24,7 +24,7 @@ class UserManagerSpec extends ObjectBehavior
 			'ACTIVE'		 => 'Y',
 			'PASSWORD'		 => 'qwerty',
 		];
-		$this->add($save)->shouldBe(true);
+		$this->add($save)->shouldBeLike(2);
 		unset($save['PASSWORD']);
 		$save['REGISTERED'] = $save['ACTIVE'] = '1';
 		$save['CODE'] = 'user2';

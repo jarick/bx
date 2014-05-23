@@ -3,7 +3,10 @@ use BX\MVC\SiteController;
 
 class RenderException
 {
+	use \BX\Config\ConfigTrait;
 	/**
+	 * Render catch esception
+	 *
 	 * @param \Exception $exception
 	 * @param SiteController $controller
 	 * @return Response
@@ -24,7 +27,7 @@ class RenderException
 			$content = $controller->view()->render($path,$params);
 			$controller->view()->send($content,'500');
 		}else{
-			if (\BX\Base\Registry::isDevMode()){
+			if ($this->config()->isDevMode()){
 				$run = new \Whoops\Run();
 				$run->pushHandler(new \Whoops\Handler\PrettyPageHandler());
 				$run->handleException($exception);

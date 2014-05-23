@@ -2,7 +2,7 @@
 use \BX\Captcha\Store\ICaptchaStore;
 use \BX\Counter\Store\ICounterStore;
 use \BX\Counter\Store\TableCounterStore;
-use \BX\Base\Registry;
+use BX\Config\Config;
 
 class CounterManager
 {
@@ -13,14 +13,15 @@ class CounterManager
 	 */
 	private $store = null;
 	/**
-	 * Get store
+	 * Return store
+	 *
 	 * @return ICaptchaStore
 	 */
 	private function store()
 	{
 		if ($this->store === null){
-			if (Registry::exists('counter','store')){
-				$store = Registry::get('counter','store');
+			if (Config::exists('counter','store')){
+				$store = Config::get('counter','store');
 				switch ($store){
 					case 'db': $this->store = new TableCounterStore();
 						break;
@@ -34,6 +35,7 @@ class CounterManager
 	}
 	/**
 	 * Increment counter
+	 *
 	 * @param string $entity_id
 	 * @return integer
 	 */
@@ -42,7 +44,8 @@ class CounterManager
 		return $this->store()->inc($entity,$entity_id);
 	}
 	/**
-	 * Get entity
+	 * Return entity
+	 *
 	 * @param string $entity_id
 	 * @return integer
 	 */
@@ -53,6 +56,7 @@ class CounterManager
 	}
 	/**
 	 * Clear counter
+	 *
 	 * @param string $entity
 	 * @param string $entity_id
 	 * @return true
@@ -63,14 +67,15 @@ class CounterManager
 	}
 	/**
 	 * Clear old counter
+	 *
 	 * @param integer $day
 	 * @return true
 	 */
 	public function clearOld($day = null)
 	{
 		if ($day === null){
-			if (Registry::exists('counter','day')){
-				$day = Registry::get('counter','day');
+			if (Config::exists('counter','day')){
+				$day = Config::get('counter','day');
 			}else{
 				$day = self::DEFAULT_DAY_SAVE;
 			}

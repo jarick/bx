@@ -4,8 +4,7 @@ use PhpSpec\ObjectBehavior;
 
 class CaptchaManagerSpec extends ObjectBehavior
 {
-	use \BX\DB\DBTrait,
-	 \BX\Translate\TranslateTrait;
+	use \BX\DB\DBTrait;
 	function let()
 	{
 		Schema::loadFromYamlFile();

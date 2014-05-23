@@ -17,6 +17,7 @@ class EntityAdd extends \BX\DB\UnitOfWork\EntityBase
 	private $repo;
 	/**
 	 * Set repository
+	 *
 	 * @param Repository $repo
 	 * @return \BX\DB\UnitOfWork\EntityAdd
 	 */
@@ -26,7 +27,8 @@ class EntityAdd extends \BX\DB\UnitOfWork\EntityBase
 		return $this;
 	}
 	/**
-	 * Before validate fields
+	 * Before validate fields event
+	 *
 	 * @param array $fields
 	 * @return boolean
 	 */
@@ -46,7 +48,8 @@ class EntityAdd extends \BX\DB\UnitOfWork\EntityBase
 		return true;
 	}
 	/**
-	 * After validate fields
+	 * After validate fields event
+	 *
 	 * @param array $fields
 	 * @return boolean
 	 */
@@ -64,7 +67,8 @@ class EntityAdd extends \BX\DB\UnitOfWork\EntityBase
 		return true;
 	}
 	/**
-	 * After add
+	 * After add event
+	 *
 	 * @param integer|string $id
 	 * @param array $fields
 	 */
@@ -77,6 +81,7 @@ class EntityAdd extends \BX\DB\UnitOfWork\EntityBase
 	}
 	/**
 	 * Validate values
+	 *
 	 * @return boolean
 	 */
 	public function validate()
@@ -96,6 +101,7 @@ class EntityAdd extends \BX\DB\UnitOfWork\EntityBase
 	}
 	/**
 	 * Save in db
+	 *
 	 * @return false|integer
 	 */
 	public function commit()
@@ -114,7 +120,7 @@ class EntityAdd extends \BX\DB\UnitOfWork\EntityBase
 		$id = $this->db()->add($this->table->getDbTable(),$this->fields);
 		if ($id > 0){
 			$this->id = $id;
-			$this->entity->setValue($this->table->getPkColumn(),$id);
+			$this->fields[$this->table->getPkColumn()] = $id;
 			if (!$this->repo->setLazy($this->entity,$id)){
 				return false;
 			}
