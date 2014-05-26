@@ -176,7 +176,6 @@ class File extends BaseValidator
 		if (!($value instanceof \BX\Validator\Upload\IUploadFile)){
 			throw new \InvalidArgumentException('Value must be instance of IUploadFile');
 		}
-		unset($fields[$key]);
 		if ($value->isEmpty()){
 			if (!$this->empty){
 				$this->addError($key,$this->getMessageEmpty(),[
@@ -193,7 +192,7 @@ class File extends BaseValidator
 			]);
 			return false;
 		}
-		if (!$value->checkSize()){
+		if (!$value->checkSize($this->size)){
 			$this->addError($key,$this->getMessageSize(),[
 				'#LABEL#'	 => $label,
 				'#SIZE#'	 => $this->size,
@@ -206,6 +205,7 @@ class File extends BaseValidator
 			]);
 			return false;
 		}
+		$value->setDirectory($this->dir);
 		return true;
 	}
 }

@@ -34,11 +34,25 @@ class TableNewsStore implements ITable
 			NewsEntity::C_ACTIVE		 => $this->column()->bool('T.ACTIVE'),
 			NewsEntity::C_PREVIEW_TEXT	 => $this->column()->string('T.PREVIEW_TEXT'),
 			NewsEntity::C_DETAIL_TEXT	 => $this->column()->string('T.DETAIL_TEXT'),
-			NewsEntity::C_PICTURE		 => $this->column()->file('T.PICTURE','image','news'),
+			NewsEntity::C_PICTURE		 => $this->column()->file('T.PICTURE','image'),
 			NewsEntity::C_SORT			 => $this->column()->int('T.SORT'),
 			NewsEntity::C_CREATE_DATE	 => $this->column()->datetime('T.CREATE_DATE'),
-			NewsEntity::C_TIMESTAMP_X	 => $this->column()->datetime('TIMESTAMP_X'),
+			NewsEntity::C_TIMESTAMP_X	 => $this->column()->datetime('T.TIMESTAMP_X'),
 			NewsEntity::C_USER_ID		 => $this->column()->int('T.USER_ID'),
+			NewsEntity::C_USER_GUID		 => $this->column()->string('U.GUID'),
+			NewsEntity::C_USER_LOGIN	 => $this->column()->string('U.LOGIN'),
+		];
+	}
+	/**
+	 * Return relation
+	 *
+	 * @return array
+	 */
+	public function relations()
+	{
+		return [
+			[NewsEntity::C_USER_GUID,NewsEntity::C_USER_LOGIN],
+			$this->relation()->left('tbl_user U','T.USER_ID = U.ID'),
 		];
 	}
 	/**
@@ -55,11 +69,14 @@ class TableNewsStore implements ITable
 		$repo = new Repository('news');
 		$repo->appendLockTables(['tbl_user']);
 		$repo->add($this,$entity);
+		$picture = $entity->picture;
 		if (!$repo->commit()){
 			$mess = print_r($repo->getErrorEntity()->getErrors()->all(),1);
 			throw new \RuntimeException("Error add news. Error: {$mess}.");
 		}
-		$entity->picture->saveFile();
+		if ($picture !== null){
+			$picture->saveFile();
+		}
 		return $entity->id;
 	}
 	/**
@@ -74,17 +91,20 @@ class TableNewsStore implements ITable
 	{
 		$entity = static::finder(NewsEntity::getClass())->filter(['ID' => $id])->get();
 		if ($entity === false){
-			throw new \RuntimeException("Error user is not found.");
+			throw new \RuntimeException("Error news is not found.");
 		}
 		$entity->setData($values);
 		$repo = new Repository('news');
 		$repo->appendLockTables(['tbl_user']);
 		$repo->update($this,$entity);
+		$picture = $entity->picture;
 		if (!$repo->commit()){
 			$mess = print_r($repo->getErrorEntity()->getErrors()->all(),1);
 			throw new \RuntimeException("Error update news. Error: {$mess}.");
 		}
-		$entity->picture->saveFile();
+		if ($picture !== null){
+			$picture->saveFile();
+		}
 		return true;
 	}
 	/**
@@ -98,15 +118,18 @@ class TableNewsStore implements ITable
 	{
 		$entity = static::finder(NewsEntity::getClass())->filter(['ID' => $id])->get();
 		if ($entity === false){
-			throw new \RuntimeException("Error user is not found.");
+			throw new \RuntimeException("Error news is not found.");
 		}
 		$repo = new Repository('news');
 		$repo->delete($this,$entity);
+		$picture = $entity->picture;
 		if (!$repo->commit()){
 			$mess = print_r($repo->getErrorEntity()->getErrors()->all(),1);
 			throw new \RuntimeException("Error delete news. Error: {$mess}.");
 		}
-		$entity->picture->deleteFile();
+		if ($picture !== null){
+			$picture->deleteFile();
+		}
 		return true;
 	}
 	/**

@@ -6,12 +6,6 @@ class Image implements IUploadFileChecker
 {
 	use \BX\Logger\LoggerTrait;
 	/**
-	 * @var array
-	 */
-	protected $exts = [
-		'gif','jpeg','png','ico','bmp',
-	];
-	/**
 	 * @var \Imagine\Image\AbstractImage
 	 */
 	protected $image;
@@ -52,18 +46,15 @@ class Image implements IUploadFileChecker
 	 * @param string $file
 	 * @return boolean
 	 */
-	public function analize($file)
+	public function analyze($file)
 	{
-		$pathinfo = pathinfo($file);
-		if (isset($pathinfo['extension']) && in_array($pathinfo['extension'],$this->exts)){
-			try{
-				$this->image = $this->getImagine()->open($file);
-				$this->name = sha1_file($file).'.png';
-				return true;
-			}catch (\Exception $ex){
-				$error = 'Error load image: '.$ex->getTraceAsString();
-				$this->log('validation.upload.checker.image')->err($error);
-			}
+		try{
+			$this->image = $this->getImagine()->open($file);
+			$this->name = sha1_file($file).'.png';
+			return true;
+		}catch (\Exception $ex){
+			$error = 'Error load image: '.$ex->getTraceAsString();
+			$this->log('validation.upload.checker.image')->err($error);
 		}
 		return false;
 	}

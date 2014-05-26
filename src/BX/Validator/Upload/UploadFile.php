@@ -8,16 +8,17 @@ class UploadFile implements IUploadFile
 	use \BX\String\StringTrait,
 	 \BX\Translate\TranslateTrait,
 	 \BX\Http\HttpTrait,
-	 \BX\Config\ConfigTrait;
+	 \BX\Config\ConfigTrait,
+	 \BX\FileSystem\FileSystemTrait;
 	const TYPE_IMAGE = 'image';
+	/**
+	 * @var string
+	 */
+	protected $dir = null;
 	/**
 	 * @var array
 	 */
 	protected $file = null;
-	/**
-	 * @var string
-	 */
-	protected $dir = '';
 	/**
 	 * @var IUploadFileChecker
 	 */
@@ -103,7 +104,7 @@ class UploadFile implements IUploadFile
 	 */
 	public function isEmpty()
 	{
-		return $this->file !== null;
+		return $this->file === null;
 	}
 	/**
 	 * Check size input file
@@ -114,7 +115,7 @@ class UploadFile implements IUploadFile
 	{
 		$file = $this->file;
 		if ($file !== null){
-			if ($file['size'] < $size){
+			if ($file['size'] > $size){
 				return false;
 			}
 		}
@@ -163,13 +164,29 @@ class UploadFile implements IUploadFile
 			}else{
 				$this->upload_dir = '~/upload';
 			}
-			$doc_root = $this->request()->server()->get('DOCUMENT_ROOT');
-			if ($this->string()->strpos($this->upload_dir,'~')){
+			if ($this->config()->exists('upload_dir')){
+				$doc_root = $this->config()->get('doc_root');
+			}else{
+				$doc_root = $this->request()->server()->get('DOCUMENT_ROOT');
+			}
+			if ($this->string()->strpos($this->upload_dir,'~') !== false){
 				$this->upload_dir = str_replace('~',$doc_root,$this->upload_dir);
 			}
-			$this->upload_dir = realpath($this->upload_dir);
 		}
 		return $this->upload_dir;
+	}
+	/**
+	 * Get path to file
+	 *
+	 * @return string
+	 */
+	public function getFilePath()
+	{
+		$dir = '';
+		if ($this->string()->length($this->dir) > 0){
+			$dir = $this->dir.DIRECTORY_SEPARATOR;
+		}
+		return $dir.$this->getName();
 	}
 	/**
 	 * Return name of save file
@@ -179,7 +196,7 @@ class UploadFile implements IUploadFile
 	 */
 	public function getName()
 	{
-		if ($this->file !== null){
+		if ($this->file === null){
 			return null;
 		}
 		if ($this->type === null){
@@ -191,6 +208,7 @@ class UploadFile implements IUploadFile
 	 * Save file
 	 *
 	 * @return boolean
+	 * @param string $dir
 	 * @throws \RuntimeException
 	 */
 	public function saveFile()
@@ -198,8 +216,9 @@ class UploadFile implements IUploadFile
 		$file = $this->file;
 		if ($file !== null){
 			$ds = DIRECTORY_SEPARATOR;
-			$path = $this->getUploadDir().$ds.$this->dir.$ds.$this->getName();
-			if (!move_uploaded_file($file['tmp_name'],$path)){
+			$path = $this->getUploadDir().$ds.$this->getFilePath();
+			$this->filesystem()->checkPathDir(dirname($path));
+			if (!copy($file['tmp_name'],$path)){
 				throw new \RuntimeException('Error save file');
 			}
 			return $this->type->save($path);
@@ -217,7 +236,7 @@ class UploadFile implements IUploadFile
 		$file = $this->file;
 		if ($file !== null){
 			$ds = DIRECTORY_SEPARATOR;
-			$path = $this->getUploadDir().$ds.$this->dir.$ds.$this->getName();
+			$path = $this->getUploadDir().$ds.$file;
 			if (!unlink($path)){
 				throw new \RuntimeException('Error delete file');
 			}

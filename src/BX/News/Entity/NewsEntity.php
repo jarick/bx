@@ -32,6 +32,8 @@ class NewsEntity implements IEntity
 	const C_TIMESTAMP_X = 'TIMESTAMP_X';
 	const C_CREATE_DATE = 'CREATE_DATE';
 	const C_USER_ID = 'USER_ID';
+	const C_USER_GUID = 'USER_GUID';
+	const C_USER_NAME = 'USER_NAME';
 	/**
 	 * Return rules
 	 *
@@ -80,18 +82,18 @@ class NewsEntity implements IEntity
 	protected function labels()
 	{
 		return [
-			self::C_ID			 => $this->trans('news.entuty.news.id'),
-			self::C_GUID		 => $this->trans('news.entuty.news.guid'),
-			self::C_ACTIVE		 => $this->trans('news.entuty.news.active'),
-			self::C_NAME		 => $this->trans('news.entuty.news.name'),
-			self::C_CODE		 => $this->trans('news.entuty.news.code'),
-			self::C_PREVIEW_TEXT => $this->trans('news.entuty.news.preview_text'),
-			self::C_DETAIL_TEXT	 => $this->trans('news.entuty.news.detail_text'),
-			self::C_PICTURE		 => $this->trans('news.entuty.news.picture'),
-			self::C_SORT		 => $this->trans('news.entuty.news.sort'),
-			self::C_TIMESTAMP_X	 => $this->trans('news.entuty.news.timestamp_x'),
-			self::C_CREATE_DATE	 => $this->trans('news.entuty.news.create_date'),
-			self::C_USER_ID		 => $this->trans('news.entuty.news.user_id'),
+			self::C_ID			 => $this->trans('news.entity.news.id'),
+			self::C_GUID		 => $this->trans('news.entity.news.guid'),
+			self::C_ACTIVE		 => $this->trans('news.entity.news.active'),
+			self::C_NAME		 => $this->trans('news.entity.news.name'),
+			self::C_CODE		 => $this->trans('news.entity.news.code'),
+			self::C_PREVIEW_TEXT => $this->trans('news.entity.news.preview_text'),
+			self::C_DETAIL_TEXT	 => $this->trans('news.entity.news.detail_text'),
+			self::C_PICTURE		 => $this->trans('news.entity.news.picture'),
+			self::C_SORT		 => $this->trans('news.entity.news.sort'),
+			self::C_TIMESTAMP_X	 => $this->trans('news.entity.news.timestamp_x'),
+			self::C_CREATE_DATE	 => $this->trans('news.entity.news.create_date'),
+			self::C_USER_ID		 => $this->trans('news.entity.news.user_id'),
 		];
 	}
 	/**

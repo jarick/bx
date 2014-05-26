@@ -95,15 +95,16 @@ class SqlBuilder
 	}
 	/**
 	 * Prepare array from db
+	 *
 	 * @param array $fields
 	 * @return array
 	 */
-	private function prepareArrayFromDb(array $fields)
+	protected function prepareArrayFromDb(array $fields)
 	{
 		$columns = $this->entity->getColumns();
 		foreach($fields as $field => &$value){
-			if (array_key_exists($field,$columns)){
-				$value = $columns[$field]->convertFromDB($value);
+			if ($columns->has($field)){
+				$value = $columns->get($field)->convertFromDB($value);
 			}
 		}
 		unset($value);

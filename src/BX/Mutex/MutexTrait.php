@@ -7,7 +7,7 @@ trait MutexTrait
 	 * Get mutex manager
 	 * @return IMutexManager
 	 */
-	public function mutex()
+	protected function mutex()
 	{
 		$name = 'mutex';
 		if (DICService::get($name) === null){

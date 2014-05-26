@@ -116,6 +116,6 @@ class User
 	 */
 	public static function finder()
 	{
-		return self::getManager()->getFinder();
+		return self::getManager()->finder();
 	}
 }

@@ -8,7 +8,7 @@ class NumberColumn extends BaseColumn
 	public $integer;
 	/**
 	 * Get filter filter rule name
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getFilterRule()
@@ -35,6 +35,9 @@ class NumberColumn extends BaseColumn
 	 */
 	public function convertToDB($value)
 	{
+		if ($value === null){
+			return $value;
+		}
 		if (!is_numeric($value)){
 			throw new \InvalidArgumentException('Bad format for numeric');
 		}
@@ -52,6 +55,9 @@ class NumberColumn extends BaseColumn
 	 */
 	public function convertFromDB($value)
 	{
+		if ($value === null){
+			return $value;
+		}
 		if (!is_numeric($value)){
 			throw new \InvalidArgumentException('Bad format for numeric');
 		}

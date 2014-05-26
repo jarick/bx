@@ -1,11 +1,9 @@
 <?php namespace BX\DB\Column;
+use BX\Validator\Upload\IUploadFile;
 
 class FileColumn extends BaseColumn
 {
-	/**
-	 * @var string
-	 */
-	private $dir = '';
+	use \BX\String\StringTrait;
 	/**
 	 * @var string|\BX\Validator\Upload\Checker\IUploadFileChecker
 	 */
@@ -22,26 +20,15 @@ class FileColumn extends BaseColumn
 		return $this;
 	}
 	/**
-	 * Set upload directory
-	 *
-	 * @param string $dir
-	 * @return \BX\DB\Column\FileColumn
-	 */
-	public function setDirectory($dir)
-	{
-		$this->dir = $dir;
-		return $this;
-	}
-	/**
 	 * Create column
 	 *
 	 * @param string $column
 	 * @param string|\BX\Validator\Upload\Checker\IUploadFileChecker $format
 	 * @return FileColumn
 	 */
-	public static function create($column,$format = 'image',$dir = '')
+	public static function create($column,$format = 'image')
 	{
-		return parent::create($column)->setFormat($format)->setDirectory($dir);
+		return parent::create($column)->setFormat($format);
 	}
 	/**
 	 * Get filter filter rule name
@@ -60,16 +47,23 @@ class FileColumn extends BaseColumn
 	 */
 	public function convertToDB($value)
 	{
-		return $value->getName();
+		if ($value === null){
+			return null;
+		}
+		return $value->getFilePath();
 	}
 	/**
 	 * Convert value from db
 	 *
-	 * @param string $value
-	 * @return \BX\Validator\Upload\ExistsFile
+	 * @param string|null $value
+	 * @return \BX\Validator\Upload\ExistsFile|null
 	 */
 	public function convertFromDB($value)
 	{
-		return new \BX\Validator\Upload\ExistsFile($value,$this->format,$this->dir,true);
+		if ($value === null){
+			return null;
+		}else{
+			return new \BX\Validator\Upload\ExistsFile($value,$this->format,true);
+		}
 	}
 }

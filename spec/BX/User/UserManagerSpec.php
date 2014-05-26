@@ -26,7 +26,6 @@ class UserManagerSpec extends ObjectBehavior
 		];
 		$this->add($save)->shouldBeLike(2);
 		unset($save['PASSWORD']);
-		$save['REGISTERED'] = $save['ACTIVE'] = '1';
 		$save['CODE'] = 'user2';
 		$this->finder()->filter(['=LOGIN' => 'user2'])->get()->getData()->shouldDbResult($save);
 	}
@@ -42,7 +41,6 @@ class UserManagerSpec extends ObjectBehavior
 		];
 		$this->update(1,$save)->shouldBe(true);
 		unset($save['PASSWORD']);
-		$save['REGISTERED'] = $save['ACTIVE'] = '1';
 		$save['CODE'] = 'user2';
 		$this->finder()->filter(['ID' => 1])->get()->getData()->shouldDbResult($save);
 	}

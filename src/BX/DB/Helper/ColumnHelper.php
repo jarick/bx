@@ -72,11 +72,10 @@ class ColumnHelper
 	 *
 	 * @param string $column
 	 * @param string|\BX\Validator\Upload\Checker\IUploadFileChecker $format
-	 * @param string $dir
 	 * @return \BX\Validator\Upload\ExistsFile
 	 */
-	public function file($column,$format = 'image',$dir = '')
+	public function file($column,$format = 'image')
 	{
-		return FileColumn::create($column,$format,$dir);
+		return FileColumn::create($column,$format);
 	}
 }

@@ -23,7 +23,7 @@ class Validator
 	protected $new = true;
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param array $labels
 	 * @param array $rules
 	 * @param boolean $new

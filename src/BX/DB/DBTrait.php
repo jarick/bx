@@ -6,7 +6,7 @@ trait DBTrait
 	/**
 	 * Get database manager
 	 *
-	 * @return Database
+	 * @return DatabaseManager
 	 */
 	public function db()
 	{

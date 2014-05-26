@@ -18,6 +18,7 @@ class EntityUpdate extends \BX\DB\UnitOfWork\EntityBase
 	public $old_fields;
 	/**
 	 * Before validate fields
+	 *
 	 * @param array $fields
 	 * @return boolean
 	 */
@@ -36,6 +37,7 @@ class EntityUpdate extends \BX\DB\UnitOfWork\EntityBase
 	}
 	/**
 	 * After validate fields
+	 *
 	 * @param array $fields
 	 * @return boolean
 	 */
@@ -54,6 +56,7 @@ class EntityUpdate extends \BX\DB\UnitOfWork\EntityBase
 	}
 	/**
 	 * After update
+	 *
 	 * @param integer|string $id
 	 * @param array $fields
 	 */
@@ -66,6 +69,7 @@ class EntityUpdate extends \BX\DB\UnitOfWork\EntityBase
 	}
 	/**
 	 * Validate fields
+	 *
 	 * @return boolean
 	 * @throws InvalidArgumentException
 	 */
@@ -104,6 +108,7 @@ class EntityUpdate extends \BX\DB\UnitOfWork\EntityBase
 	}
 	/**
 	 * Update
+	 *
 	 * @return boolean
 	 */
 	public function commit()
@@ -174,7 +179,7 @@ class EntityUpdate extends \BX\DB\UnitOfWork\EntityBase
 	 */
 	public function onAfterCommit()
 	{
-		$this->entity->setData($this->fields,true);
+		$this->entity->setData($this->prepareArrayFromDb($this->fields),true);
 		$this->deleteSearchIndex($this->id);
 		$this->addSearchIndex($this->id);
 		$this->clearCache();

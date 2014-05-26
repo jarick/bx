@@ -1,9 +1,10 @@
 <?php namespace BX\News;
-use BX\Base\Registry;
+use BX\User\User;
 use BX\News\Store\TableNewsStore;
 
 class NewsManager
 {
+	use \BX\Config\ConfigTrait;
 	/**
 	 * @var TableNewsStore
 	 */
@@ -14,8 +15,8 @@ class NewsManager
 	private function store()
 	{
 		if ($this->store === null){
-			if (Registry::exists('news','store')){
-				$store = Registry::get('news','store');
+			if ($this->config()->exists('news','store')){
+				$store = $this->config()->get('news','store');
 				switch ($store){
 					case 'db': $this->store = new TableNewsStore();
 						break;
@@ -36,7 +37,7 @@ class NewsManager
 	protected function checkUserExists($user_id)
 	{
 		$filter = ['ID' => $user_id];
-		return \User::finder()->filter($filter)->count() > 0;
+		return User::finder()->filter($filter)->count() > 0;
 	}
 	/**
 	 * Check fields

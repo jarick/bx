@@ -29,7 +29,7 @@ class EntityUpdateSpec extends ObjectBehavior
 	{
 		$this->entity->test = 'TEST2';
 		$this->validate()->shouldBe(true);
-		$this->commit()->shouldBe('1');
+		$this->commit()->shouldBeLike(1);
 		$return = ['ID' => '1','TEST' => 'TEST2'];
 		$this->db()->query('SELECT * FROM tbl_test')->fetch()->shouldBe($return);
 	}

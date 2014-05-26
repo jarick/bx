@@ -27,7 +27,7 @@ class EntityDeleteSpec extends ObjectBehavior
 	function it_commit()
 	{
 		$this->validate()->shouldBe(true);
-		$this->commit()->shouldBe('1');
+		$this->commit()->shouldBeLike(1);
 		$this->db()->query('SELECT * FROM tbl_test')->fetch()->shouldBe(false);
 	}
 	function it_rollback()

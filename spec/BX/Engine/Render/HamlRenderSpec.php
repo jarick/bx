@@ -30,7 +30,10 @@ class HamlRenderSpec extends ObjectBehavior
 	}
 	function it_render()
 	{
-		$this->filesystem()->removePathDir(__DIR__.'/data/css');
+		$dir = __DIR__.'/data/css';
+		if (is_dir($dir)){
+			$this->filesystem()->removePathDir($dir);
+		}
 		ob_start();
 		$this->render([],'index',['a' => 'A'])->shouldBe(true);
 		$content = ob_get_contents();

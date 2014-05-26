@@ -3,7 +3,17 @@
 class HtmlWriter implements IWriter
 {
 	/**
+	 * Write safe message
+	 *
+	 * @param string $message
+	 */
+	public function html($message)
+	{
+		echo $message;
+	}
+	/**
 	 * Write message
+	 *
 	 * @param string $message
 	 */
 	public function write($message)
@@ -12,6 +22,7 @@ class HtmlWriter implements IWriter
 	}
 	/**
 	 * Emulate read string
+	 *
 	 * @return string
 	 */
 	public function read()
@@ -21,6 +32,7 @@ class HtmlWriter implements IWriter
 	}
 	/**
 	 * Write error message
+	 *
 	 * @param string $message
 	 */
 	public function error($message)
@@ -30,6 +42,7 @@ class HtmlWriter implements IWriter
 	}
 	/**
 	 * Write success message
+	 *
 	 * @param string $message
 	 */
 	public function success($message)
@@ -38,6 +51,7 @@ class HtmlWriter implements IWriter
 	}
 	/**
 	 * Write color message
+	 *
 	 * @param string $message
 	 * @param string $color
 	 * @param string $background_color

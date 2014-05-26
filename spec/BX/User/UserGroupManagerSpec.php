@@ -21,7 +21,6 @@ class UserGroupManagerSpec extends ObjectBehavior
 			'SORT'			 => 500,
 		];
 		$this->add($save)->shouldBe(true);
-		$save['ACTIVE'] = '1';
 		$this->finder()->filter(['=NAME' => 'GROUP 2'])->get()->getData()->shouldDbResult($save);
 	}
 	function it_update()
@@ -33,7 +32,6 @@ class UserGroupManagerSpec extends ObjectBehavior
 			'SORT'			 => 500,
 		];
 		$this->update(1,$save)->shouldBe(true);
-		$save['ACTIVE'] = '1';
 		$this->finder()->filter(['=NAME' => 'GROUP 2'])->get()->getData()->shouldDbResult($save);
 	}
 	function it_delete()

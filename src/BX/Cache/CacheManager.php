@@ -95,7 +95,7 @@ class CacheManager implements ICacheManager
 	 * @param array|string $tags
 	 * @return boolean
 	 */
-	public function setTags($ns,$tags)
+	public function setTags($ns,&$tags)
 	{
 		$tags = (array)$tags;
 		if (empty($tags)){
@@ -143,7 +143,7 @@ class CacheManager implements ICacheManager
 			}elseif (empty($tags)){
 				$tags = ['default'];
 			}
-			$tags = $this->setTags($ns,$tags);
+			$this->setTags($ns,$tags);
 			$this->adaptor()->tags($tags)->put($unique_id,$value,$ttl);
 		}
 		return true;

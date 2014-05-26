@@ -155,7 +155,7 @@ class EntityAdd extends \BX\DB\UnitOfWork\EntityBase
 	 */
 	public function onAfterCommit()
 	{
-		$this->entity->setData($this->fields,true);
+		$this->entity->setData($this->prepareArrayFromDb($this->fields),true);
 		$this->onAfter($this->id,$this->fields);
 		$this->addSearchIndex($this->id);
 		$this->clearCache();

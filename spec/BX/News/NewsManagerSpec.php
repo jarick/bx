@@ -2,7 +2,7 @@
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-class NewsManagerS_pec extends ObjectBehavior
+class NewsManagerSpec extends ObjectBehavior
 {
 	use \BX\Http\HttpTrait;
 	private $filename;
@@ -19,7 +19,10 @@ class NewsManagerS_pec extends ObjectBehavior
 			],
 		];
 		$this->request()->setFiles($files);
-		$file = realpath(__DIR__.'/../../../../test/data/5885_1.jpeg');
+		$server = $this->request()->server()->all();
+		$server['DOCUMENT_ROOT'] = realpath(__DIR__.'/data');
+		$this->request()->setServer($server);
+		$file = realpath(__DIR__.'/../../../test/data/5885_1.jpeg');
 		copy($file,'/tmp/phpbQ4Z7l');
 	}
 	function it_is_initializable()
@@ -36,13 +39,14 @@ class NewsManagerS_pec extends ObjectBehavior
 			'DETAIL_TEXT'	 => 'DETAIL_TEXT',
 			'USER_ID'		 => 1,
 		];
-		$this->add($save)->shouldBe(true);
-		$save['CODE'] = 'news_2';
-		$save['PICTURE'] = '59daa7ab2dd0106a4a8b24a5f409480162007912.png';
+		$this->add($save)->shouldBeLike(2);
+		$save['CODE'] = 'news-2';
+		$save['PICTURE'] = 'news/59daa7ab2dd0106a4a8b24a5f409480162007912.png';
 		$save['SORT'] = 500;
 		$this->finder()->filter(['=NAME' => 'News 2'])->get()->getData()
 			->shouldDbResult($save);
-		$this->filename = $save['PICTURE']->getUploadDir().'/news/59daa7ab2dd0106a4a8b24a5f409480162007912.png';
+		$this->filename = $this->request()->server()->get('DOCUMENT_ROOT').
+			'/upload/news/59daa7ab2dd0106a4a8b24a5f409480162007912.png';
 		if (!file_exists($this->filename)){
 			throw new \RuntimeException('Test fall');
 		}
@@ -58,8 +62,8 @@ class NewsManagerS_pec extends ObjectBehavior
 			'USER_ID'		 => 1,
 		];
 		$this->update(1,$save)->shouldBe(true);
-		$save['CODE'] = 'news_1';
-		$save['PICTURE'] = '59daa7ab2dd0106a4a8b24a5f409480162007912.png';
+		$save['CODE'] = 'news-1';
+		$save['PICTURE'] = 'news/59daa7ab2dd0106a4a8b24a5f409480162007912.png';
 		$save['SORT'] = 500;
 		$this->finder()->filter(['ID' => '1'])->get()->getData()
 			->shouldDbResult($save);

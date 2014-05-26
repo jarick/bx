@@ -118,6 +118,23 @@ abstract class EntityBase
 		unset($value);
 		return $fields;
 	}
+	/**
+	 * Prepare array from db
+	 *
+	 * @param array $fields
+	 * @return array
+	 */
+	protected function prepareArrayFromDb(array $fields)
+	{
+		$columns = $this->table->getColumns();
+		foreach($fields as $field => &$value){
+			if ($columns->has($field)){
+				$value = $columns->get($field)->convertFromDB($value);
+			}
+		}
+		unset($value);
+		return $fields;
+	}
 	abstract public function validate();
 	abstract public function commit();
 	abstract public function rollback();

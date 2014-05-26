@@ -29,6 +29,8 @@ class FileSpec extends ObjectBehavior
 	{
 		$values = ['FILE' => new UploadFile('test','image')];
 		$labels = ['FILE' => 'file'];
-		$this->validateField('FILE',$values,$labels)->shoulBe(true);
+		if ($this->getWrappedObject()->validateField('FILE',$values,$labels) !== true){
+			throw new \RuntimeException('Test fall');
+		}
 	}
 }

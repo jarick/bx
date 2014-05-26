@@ -4,7 +4,7 @@
  * @property-read integer $id
  * @property integer $user_id
  * @property integer $group_id
- * @property-read strign $timestamp_x
+ * @property-read string $timestamp_x
  */
 class UserGroupMemberEntity implements \BX\Validator\IEntity
 {
