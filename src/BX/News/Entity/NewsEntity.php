@@ -14,6 +14,8 @@ use BX\Validator\IEntity;
  * @property-read string $timestamp_x
  * @property-read string $create_date
  * @property integer $user_id
+ * @property string $user_guid
+ * @property string $user_login
  */
 class NewsEntity implements IEntity
 {
@@ -33,7 +35,7 @@ class NewsEntity implements IEntity
 	const C_CREATE_DATE = 'CREATE_DATE';
 	const C_USER_ID = 'USER_ID';
 	const C_USER_GUID = 'USER_GUID';
-	const C_USER_NAME = 'USER_NAME';
+	const C_USER_LOGIN = 'USER_LOGIN';
 	/**
 	 * Return rules
 	 *

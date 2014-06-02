@@ -18,11 +18,12 @@ class NewsCategoryManagerSpec extends ObjectBehavior
 		$save = [
 			'ACTIVE'	 => 'Y',
 			'NAME'		 => 'Category 2',
-			'TEST'		 => 'text',
+			'TEXT'		 => 'text',
 			'PARENT_ID'	 => 1,
+			'USER_ID'	 => 1,
 		];
 		$this->add($save)->shouldBeLike(2);
-		$save['CODE'] = 'news-2';
+		$save['CODE'] = 'category-2';
 		$save['SORT'] = 500;
 		$this->finder()->filter(['ID' => 2])->get()->getData()->shouldDbResult($save);
 	}
@@ -38,10 +39,23 @@ class NewsCategoryManagerSpec extends ObjectBehavior
 	function it_delete()
 	{
 		$this->delete(1)->shouldBe(true);
-		$this->finder()->all()->shouldBe(false);
+		$this->finder()->count()->shouldBe(0);
 	}
 	function it_finder()
 	{
 		$this->finder()->shouldHaveType('BX\DB\Filter\SqlBuilder');
+	}
+	function getMatchers()
+	{
+		return [
+			'dbResult' => function($object,$array){
+			foreach($array as $key => $value){
+				if ($object[$key] != $value){
+					return false;
+				}
+			}
+			return true;
+		}
+		];
 	}
 }

@@ -3,6 +3,11 @@ use BX\News\Store\TableNewsCategoryStore;
 
 class NewsCategoryManager
 {
+	use \BX\Config\ConfigTrait;
+	/**
+	 * @var TableNewsCategoryStore
+	 */
+	private $store;
 	/**
 	 * @return TableNewsCategoryStore
 	 */

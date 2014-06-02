@@ -45,7 +45,7 @@ class User
 	/**
 	 * Добавление пользователя.
 	 *
-	 * @param array $user Массиы значения полей
+	 * @param array $user Массив значения полей
 	 * @return boolean <p>Возвращает <b>TRUE</b> в случае успеха.
 	 * </p>
 	 * <p>

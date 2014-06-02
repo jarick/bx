@@ -31,7 +31,7 @@ class NewsCategoryEntity implements \BX\Validator\IEntity
 	const C_PARENT_ID = 'PARENT_ID';
 	const C_PARENT_NAME = 'PARENT_NAME';
 	const C_PARENT_GUID = 'PARENT_GUID';
-	const C_USER_NAME = 'USER_NAME';
+	const C_USER_LOGIN = 'USER_LOGIN';
 	const C_USER_GUID = 'USER_GUID';
 	/**
 	 * Return rules
@@ -88,7 +88,7 @@ class NewsCategoryEntity implements \BX\Validator\IEntity
 			self::C_CREATE_DATE	 => $this->trans('news.entity.category.create_date'),
 			self::C_USER_ID		 => $this->trans('news.entity.category.user_id'),
 			self::C_USER_GUID	 => $this->trans('news.entity.category.user_guid'),
-			self::C_USER_NAME	 => $this->trans('news.entity.category.user_name'),
+			self::C_USER_LOGIN	 => $this->trans('news.entity.category.user_login'),
 			self::C_PARENT_ID	 => $this->trans('news.entity.category.parent_id'),
 			self::C_PARENT_GUID	 => $this->trans('news.entity.category.parent_guid'),
 			self::C_PARENT_NAME	 => $this->trans('news.entity.category.parent_name'),

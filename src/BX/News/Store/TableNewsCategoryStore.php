@@ -1,5 +1,6 @@
 <?php namespace BX\News\Store;
 use BX\News\Entity\NewsCategoryEntity;
+use BX\DB\UnitOfWork\Repository;
 
 class TableNewsCategoryStore implements \BX\DB\ITable
 {
@@ -46,9 +47,9 @@ class TableNewsCategoryStore implements \BX\DB\ITable
 	protected function relations()
 	{
 		return [
-			[self::C_USER_GUID,self::C_USER_NAME],
+			[NewsCategoryEntity::C_USER_GUID,NewsCategoryEntity::C_USER_LOGIN],
 			$this->relation()->left('tbl_user U','T.USER_ID = U.ID'),
-			[self::C_USER_ID,self::C_USER_LOGIN],
+			[NewsCategoryEntity::C_PARENT_GUID,NewsCategoryEntity::C_PARENT_NAME],
 			$this->relation()->left('tbl_news_category T2','T.PARENT_ID = T2.ID'),
 		];
 	}
@@ -125,6 +126,6 @@ class TableNewsCategoryStore implements \BX\DB\ITable
 	 */
 	public function getFinder()
 	{
-		return self::finder(NewsEntity::getClass());
+		return self::finder(NewsCategoryEntity::getClass());
 	}
 }
