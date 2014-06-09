@@ -1,10 +1,13 @@
 <?php namespace BX\News;
 use BX\User\User;
 use BX\News\Store\TableNewsStore;
+use BX\News\Entity\NewsEntity;
+use BX\Event\Event;
 
 class NewsManager
 {
-	use \BX\Config\ConfigTrait;
+	use \BX\Config\ConfigTrait,
+	 \BX\String\StringTrait;
 	/**
 	 * @var TableNewsStore
 	 */
@@ -29,34 +32,6 @@ class NewsManager
 		return $this->store;
 	}
 	/**
-	 * Check user exists
-	 *
-	 * @param integer $user_id
-	 * @return boolean
-	 */
-	protected function checkUserExists($user_id)
-	{
-		$filter = ['ID' => $user_id];
-		return User::finder()->filter($filter)->count() > 0;
-	}
-	/**
-	 * Check fields
-	 *
-	 * @param array $values
-	 * @throws \RuntimeException
-	 * @return boolean
-	 */
-	protected function checkFields(array $values)
-	{
-		if (isset($values['USER_ID'])){
-			$user_id = intval($values['USER_ID']);
-			if (!$this->checkUserExists($user_id)){
-				throw new \RuntimeException('User is not found');
-			}
-		}
-		return true;
-	}
-	/**
 	 * Add news
 	 *
 	 * @param array $news
@@ -64,9 +39,19 @@ class NewsManager
 	 */
 	public function add(array $news)
 	{
-		if ($this->checkFields($news)){
-			return $this->store()->add($news);
+		$repo = $this->store()->getRepository('news');
+		$repo->appendLockTables(['tbl_user']);
+		if (isset($news['USER_ID'])){
+			$user_id = intval($news['USER_ID']);
+			$filter = ['ID' => $user_id];
+			$user = User::finder()->filter($filter)->count();
+			if ($user == 0){
+				throw new \RuntimeException('User is not found');
+			}
 		}
+		$entity = new NewsEntity();
+		$entity->setData($news);
+		return $this->store()->add($repo,$entity);
 	}
 	/**
 	 * Update news
@@ -77,9 +62,23 @@ class NewsManager
 	 */
 	public function update($id,array $news)
 	{
-		if ($this->checkFields($news)){
-			return $this->store()->update($id,$news);
+		$repo = $this->store()->getRepository('news');
+		$repo->appendLockTables(['tbl_user']);
+		if (isset($news['USER_ID'])){
+			$user_id = intval($news['USER_ID']);
+			$filter = ['ID' => $user_id];
+			$user = User::finder()->filter($filter)->count();
+			if ($user == 0){
+				throw new \RuntimeException('User is not found');
+			}
 		}
+		$entity = $this->finder()->filter(['ID' => $id])->get();
+		if ($entity === false){
+			$repo->rollback();
+			throw new \RuntimeException("Error news is not found.");
+		}
+		$entity->setData($news);
+		return $this->store()->update($repo,$entity);
 	}
 	/**
 	 * Delete news
@@ -89,7 +88,23 @@ class NewsManager
 	 */
 	public function delete($id)
 	{
-		return $this->store()->delete($id);
+		$repo = $this->store()->getRepository('news');
+		$repo->appendLockTables(['tbl_news_category_link']);
+		$entity = $this->finder()->filter(['ID' => $id])->get();
+		if ($entity === false){
+			$repo->rollback();
+			throw new \RuntimeException("Error news is not found.");
+		}
+		$event = $this->store()->getEvent();
+		if ($this->string()->length($event) > 0){
+			$event = 'OnPost'.$this->string()->ucwords($event).'Delete';
+			Event::on($event,function($id){
+				if (!NewsCategoryLink::deleteAllByNewsId($id)){
+					throw new \RuntimeException("Error delete link on news category.");
+				}
+			});
+		}
+		return $this->store()->delete($repo,$entity);
 	}
 	/**
 	 * Return finder

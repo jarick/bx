@@ -262,7 +262,7 @@ class SiteController
 			$page = $this->getPathInfo();
 		}
 		if ($this->config()->isDevMode()){
-			set_error_handler(function($errno,$errstr,$errfile,$errline,array $errcontext){
+			set_error_handler(function($errno,$errstr,$errfile,$errline){
 				if (0 === error_reporting()){
 					return false;
 				}
@@ -276,6 +276,11 @@ class SiteController
 				$site = $this->findSite($page);
 				if ($site === null){
 					throw new \RuntimeException('Site not found',500);
+				}
+			}
+			foreach((array)$site->url_rewrite as $path => $regex){
+				if (preg_match("/^$regex/",$page)){
+					$page = $path;
 				}
 			}
 			$content = $this->renderPage($site,$page,$params);

@@ -16,6 +16,8 @@ class SiteEntity implements IEntity
 	use \BX\Validator\EntityTrait,
 	 \BX\Translate\TranslateTrait;
 	const C_NAME = 'NAME';
+	const C_TITLE = 'TITLE';
+	const C_KEYWORDS = 'KEYWORDS';
 	const C_REGEX = 'REGEX';
 	const C_FOLDER = 'FOLDER';
 	const C_LAYOUT_RULE = 'LAYOUT_RULE';
@@ -28,6 +30,8 @@ class SiteEntity implements IEntity
 	{
 		return [
 			self::C_NAME		 => $this->trans('mvc.entity.site.name'),
+			self::C_TITLE		 => $this->trans('mvc.entity.site.title'),
+			self::C_KEYWORDS	 => $this->trans('mvc.entity.site.keywords'),
 			self::C_REGEX		 => $this->trans('mvc.entity.site.regex'),
 			self::C_FOLDER		 => $this->trans('mvc.entity.site.folder'),
 			self::C_LAYOUT_RULE	 => $this->trans('mvc.entity.site.layout_rule'),
@@ -41,8 +45,10 @@ class SiteEntity implements IEntity
 	protected function rules()
 	{
 		return [
-			[self::C_NAME,self::C_FOLDER],
+			[self::C_NAME,self::C_TITLE,self::C_FOLDER],
 			String::create()->notEmpty(),
+			[self::C_KEYWORDS],
+			String::create(),
 			[self::C_REGEX],
 			Multy::create(String::create()->notEmpty()),
 			[self::C_LAYOUT_RULE],

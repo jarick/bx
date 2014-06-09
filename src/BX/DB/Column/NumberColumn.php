@@ -56,7 +56,7 @@ class NumberColumn extends BaseColumn
 	public function convertFromDB($value)
 	{
 		if ($value === null){
-			return $value;
+			return null;
 		}
 		if (!is_numeric($value)){
 			throw new \InvalidArgumentException('Bad format for numeric');

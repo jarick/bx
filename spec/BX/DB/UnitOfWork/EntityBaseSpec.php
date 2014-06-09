@@ -68,6 +68,10 @@ class TestEntityBase extends EntityBase
 	{
 
 	}
+	public function onPostCommit()
+	{
+
+	}
 	public function onAfterCommit()
 	{
 

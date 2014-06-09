@@ -94,7 +94,7 @@ class ConfigManager implements IConfigManager
 			$args = $args[0];
 		}
 		foreach($args as $name){
-			if (isset($temp[$name])){
+			if (array_key_exists($name,$temp)){
 				$temp = $temp[$name];
 			}else{
 				throw new \InvalidArgumentException("Key '".$name."' not found in store");

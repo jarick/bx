@@ -10,7 +10,7 @@ class UserManagerSpec extends ObjectBehavior
 	{
 		Schema::loadFromYamlFile();
 	}
-	function _it_is_initializable()
+	function it_is_initializable()
 	{
 		$this->shouldHaveType('BX\User\UserManager');
 	}

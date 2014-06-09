@@ -44,47 +44,52 @@ class TableUserGroupMemberStore implements ITable
 	/**
 	 * Add user group member
 	 *
-	 * @param array $group
+	 * @param Repository $repo
+	 * @param UserGroupMemberEntity $entity
 	 * @return boolean
 	 * @throws \RuntimeException
 	 */
-	public function add($user_id,$group_id)
+	public function add(Repository $repo,UserGroupMemberEntity $entity)
 	{
-		$entity = new UserGroupMemberEntity();
-		$entity->user_id = $user_id;
-		$entity->group_id = $group_id;
-		$repo = new Repository('user_group_member');
-		$repo->appendLockTables(['tbl_user','tbl_user_group']);
 		$repo->add($this,$entity);
 		if (!$repo->commit()){
 			$mess = print_r($repo->getErrorEntity()->getErrors()->all(),1);
 			throw new \RuntimeException("Error add user group member. Error: {$mess}.");
 		}
-		return true;
+		return $entity->id;
 	}
 	/**
-	 * Delete user group
+	 * Delete user group member
 	 *
-	 * @param integer $id
+	 * @param Repository $repo
+	 * @param UserGroupMemberEntity $entity
 	 * @return boolean
 	 * @throws \RuntimeException
 	 */
-	public function delete($user_id,$group_id)
+	public function delete(Repository $repo,UserGroupMemberEntity $entity)
 	{
-		$repo = new Repository('user_group_member');
-		$repo->appendLockTables(['tbl_user','tbl_user_group']);
-		$filter = [
-			'USER_ID'	 => $user_id,
-			'GROUP_ID'	 => $group_id,
-		];
-		$entity = $this->getFinder()->filter($filter)->get();
-		if ($entity === false){
-			throw new \RuntimeException("Error user group member is not found.");
-		}
 		$repo->delete($this,$entity);
 		if (!$repo->commit()){
 			$mess = print_r($repo->getErrorEntity()->getErrors()->all(),1);
 			throw new \RuntimeException("Error delete user group member. Error: {$mess}.");
+		}
+		return true;
+	}
+	/**
+	 * Delete all user group member by list
+	 *
+	 * @param Repository $repo
+	 * @param UserGroupMemberEntity[] $entities
+	 * @return boolean
+	 */
+	public function deleteAll(Repository $repo,$entities)
+	{
+		foreach($entities as $entity){
+			$repo->delete($this,$entity);
+		}
+		if (!$repo->commit()){
+			$mess = print_r($repo->getErrorEntity()->getErrors()->all(),1);
+			throw new \RuntimeException("Error delete user group members. Error: {$mess}.");
 		}
 		return true;
 	}

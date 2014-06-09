@@ -40,6 +40,9 @@ class NewsCategoryManagerSpec extends ObjectBehavior
 	{
 		$this->delete(1)->shouldBe(true);
 		$this->finder()->count()->shouldBe(0);
+		if (\BX\News\NewsCategoryLink::finder()->count() > 0){
+			throw new \RuntimeException('Test fall');
+		}
 	}
 	function it_finder()
 	{

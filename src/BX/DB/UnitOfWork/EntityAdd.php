@@ -67,6 +67,21 @@ class EntityAdd extends \BX\DB\UnitOfWork\EntityBase
 		return true;
 	}
 	/**
+	 * After add event before unlock tables
+	 *
+	 * @param integer|string $id
+	 * @param array $fields
+	 * @return boolean
+	 */
+	private function onPost($id,array &$fields)
+	{
+		$event = $this->table->getEvent();
+		if ($this->string()->length($event) > 0){
+			$this->fire('OnPost'.$this->string()->ucwords($event).'Add',[$id,$fields]);
+		}
+		return true;
+	}
+	/**
 	 * After add event
 	 *
 	 * @param integer|string $id
@@ -76,7 +91,7 @@ class EntityAdd extends \BX\DB\UnitOfWork\EntityBase
 	{
 		$event = $this->table->getEvent();
 		if ($this->string()->length($event) > 0){
-			$this->fire('OnAfter'.$this->string()->ucwords($event).'Add',[$id,&$fields]);
+			$this->fire('OnAfter'.$this->string()->ucwords($event).'Add',[$id,$fields]);
 		}
 	}
 	/**
@@ -151,11 +166,18 @@ class EntityAdd extends \BX\DB\UnitOfWork\EntityBase
 		}
 	}
 	/**
+	 * Call post commit transaction
+	 */
+	public function onPostCommit()
+	{
+		$this->entity->setData($this->prepareArrayFromDb($this->fields),true);
+		$this->onPost($this->id,$this->fields);
+	}
+	/**
 	 * Call after commit transaction
 	 */
 	public function onAfterCommit()
 	{
-		$this->entity->setData($this->prepareArrayFromDb($this->fields),true);
 		$this->onAfter($this->id,$this->fields);
 		$this->addSearchIndex($this->id);
 		$this->clearCache();

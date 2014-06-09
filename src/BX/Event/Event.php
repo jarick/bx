@@ -47,14 +47,7 @@ class Event
 	 */
 	public static function fire($name,array $params = [],$halt = false)
 	{
-		Error::reset();
-		try{
-			$return = self::getManager()->fire($name,$params,$halt);
-		}catch (Exception $ex){
-			Error::set($ex);
-			$return = false;
-		}
-		return $return;
+		return self::getManager()->fire($name,$params,$halt);
 	}
 	/**
 	 * Зарегистрировать обработчик события
@@ -71,14 +64,6 @@ class Event
 	 */
 	public static function on($name,$func,$sort = 500)
 	{
-		Error::reset();
-		try{
-			self::getManager()->on($name,$func,$sort);
-			$return = true;
-		}catch (Exception $ex){
-			Error::set($ex);
-			$return = false;
-		}
-		return $return;
+		return self::getManager()->on($name,$func,$sort);
 	}
 }

@@ -52,15 +52,13 @@ class TableUserStore implements ITable
 	/**
 	 * Add user
 	 *
-	 * @param array $user
+	 * @param Repository $repo
+	 * @param UserEntity $entity
 	 * @return integer
 	 * @throws \RuntimeException
 	 */
-	public function add(array $user)
+	public function add(Repository $repo,UserEntity $entity)
 	{
-		$entity = new UserEntity();
-		$entity->setData($user);
-		$repo = new Repository('user');
 		$repo->add($this,$entity);
 		if (!$repo->commit()){
 			$mess = print_r($repo->getErrorEntity()->getErrors()->all(),1);
@@ -71,19 +69,13 @@ class TableUserStore implements ITable
 	/**
 	 * Update user
 	 *
-	 * @param integer $id
-	 * @param array $user
+	 * @param Repository $repo
+	 * @param UserEntity $entity
 	 * @return boolean
 	 * @throws \RuntimeException
 	 */
-	public function update($id,array $user)
+	public function update(Repository $repo,UserEntity $entity)
 	{
-		$repo = new Repository('user');
-		$entity = static::finder(UserEntity::getClass())->filter(['ID' => $id])->get();
-		if ($entity === false){
-			throw new \RuntimeException("Error user is not found.");
-		}
-		$entity->setData($user);
 		$repo->update($this,$entity);
 		if (!$repo->commit()){
 			$mess = print_r($repo->getErrorEntity()->getErrors()->all(),1);
@@ -94,17 +86,13 @@ class TableUserStore implements ITable
 	/**
 	 * Delete user
 	 *
-	 * @param integer $id
+	 * @param Repository $repo
+	 * @param UserEntity $entity
 	 * @return boolean
 	 * @throws \RuntimeException
 	 */
-	public function delete($id)
+	public function delete(Repository $repo,UserEntity $entity)
 	{
-		$repo = new Repository('user');
-		$entity = static::finder(UserEntity::getClass())->filter(['ID' => $id])->get();
-		if ($entity === false){
-			throw new \RuntimeException("Error user is not found.");
-		}
 		$repo->delete($this,$entity);
 		if (!$repo->commit()){
 			$mess = print_r($repo->getErrorEntity()->getErrors()->all(),1);

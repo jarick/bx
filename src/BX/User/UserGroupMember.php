@@ -82,6 +82,50 @@ class UserGroupMember
 		return $return;
 	}
 	/**
+	 * Удаление всех привязок пользователя к группам
+	 *
+	 * @param integer $user_id ID пользователя
+	 * @return boolean <p>Возвращает <b>TRUE</b> в случае успеха.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function deleteAllByUserId($user_id)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->deleteAllByUserId($user_id);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+	/**
+	 * Удаление всех привязок пользователей к группе
+	 *
+	 * @param integer $group_id ID группы
+	 * @return boolean <p>Возвращает <b>TRUE</b> в случае успеха.
+	 * </p>
+	 * <p>
+	 * Возвращает <b>FALSE</b> в случае ошибки. Саму ошибку можно получить с помощью
+	 * функции <b>Error::get</b>
+	 * </p>
+	 */
+	public static function deleteAllByGroupId($group_id)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->deleteAllByGroupId($group_id);
+		}catch (Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+	/**
 	 * Фильтр по привязки пользователей к группе
 	 *
 	 * @return SqlBuilder

@@ -4,6 +4,7 @@ use BX\Base\Dictionary;
 use BX\DB\Filter\SqlBuilder;
 use BX\DB\Helper\ColumnHelper;
 use BX\DB\Helper\RelationHelper;
+use BX\DB\UnitOfWork\Repository;
 
 trait TableTrait
 {
@@ -181,5 +182,16 @@ trait TableTrait
 			$entity_class = get_called_class();
 		}
 		return new SqlBuilder(new static(),$entity_class);
+	}
+	/**
+	 * Return repository
+	 *
+	 * @param string $key
+	 * @param integer $max_acquire
+	 * @return UnitOfWork\Repository
+	 */
+	public function getRepository($key = null,$max_acquire = 1)
+	{
+		return new Repository($key,$max_acquire);
 	}
 }

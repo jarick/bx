@@ -7,7 +7,8 @@ class PhpRender implements IRender, \ArrayAccess
 	use \BX\Event\EventTrait,
 	 \BX\Http\HttpTrait,
 	 \BX\Logger\LoggerTrait,
-	 \BX\Config\ConfigTrait;
+	 \BX\Config\ConfigTrait,
+	 \BX\String\StringTrait;
 	/**
 	 * @var string
 	 */
@@ -40,7 +41,9 @@ class PhpRender implements IRender, \ArrayAccess
 	}
 	/**
 	 * Get real path for file
+	 *
 	 * @param string $path
+	 * @return string
 	 */
 	public function getRealPath($path)
 	{
@@ -94,6 +97,16 @@ class PhpRender implements IRender, \ArrayAccess
 		return false;
 	}
 	/**
+	 * Escape string to html
+	 *
+	 * @param string $string
+	 * @return string
+	 */
+	public function esc($string)
+	{
+		return $this->string()->escape($string);
+	}
+	/**
 	 * Render file
 	 * @param type $view
 	 * @param type $path
@@ -110,7 +123,7 @@ class PhpRender implements IRender, \ArrayAccess
 		}
 		$yml = $this->getFolder().DIRECTORY_SEPARATOR.$path.$this->suffix_yml;
 		if (file_exists($yml)){
-			$this->meta = Yaml::parse(file_get_contents($yml));
+			$this->setMeta(Yaml::parse(file_get_contents($yml)));
 		}
 		if (is_array($params)){
 			extract($params,EXTR_PREFIX_SAME,'data');

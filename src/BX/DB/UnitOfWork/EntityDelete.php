@@ -20,7 +20,7 @@ class EntityDelete extends EntityBase
 		$event = $this->table->getEvent();
 		if ($this->string()->length($event) > 0){
 			$event = 'OnBefore'.$this->string()->ucwords($event).'Delete';
-			if ($this->fire($event,[$this->entity]) === false){
+			if ($this->fire($event,[$this->id]) === false){
 				if (!$this->entity->hasErrors()){
 					$trans = 'db.unitofwork.delete_unknow_error';
 					$this->entity->addError(false,$this->trans($trans));
@@ -29,6 +29,19 @@ class EntityDelete extends EntityBase
 			}
 		}
 		return true;
+	}
+	/**
+	 * On post delete event
+	 *
+	 * @return boolean
+	 */
+	protected function onPostDelete()
+	{
+		$event = $this->table->getEvent();
+		if ($this->string()->length($event) > 0){
+			$event = 'OnPost'.$this->string()->ucwords($event).'Delete';
+			$this->fire($event,[$this->id]);
+		}
 	}
 	/**
 	 * On after delete event
@@ -40,7 +53,7 @@ class EntityDelete extends EntityBase
 		$event = $this->table->getEvent();
 		if ($this->string()->length($event) > 0){
 			$event = 'OnAfter'.$this->string()->ucwords($event).'Delete';
-			$this->fire($event,[$this]);
+			$this->fire($event,[$this->id]);
 		}
 	}
 	/**
@@ -78,11 +91,18 @@ class EntityDelete extends EntityBase
 		return $id;
 	}
 	/**
+	 * Post commit event
+	 */
+	public function onPostCommit()
+	{
+		$this->entity->setData([],true);
+		$this->onPostDelete();
+	}
+	/**
 	 * After commit event
 	 */
 	public function onAfterCommit()
 	{
-		$this->entity->setData([],true);
 		$this->onAfterDelete();
 		$this->deleteSearchIndex($this->id);
 		$this->clearCache();

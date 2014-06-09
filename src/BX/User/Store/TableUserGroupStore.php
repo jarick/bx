@@ -48,38 +48,30 @@ class TableUserGroupStore implements ITable
 	/**
 	 * Add user group
 	 *
-	 * @param array $group
-	 * @return boolean
+	 * @param Repository $repo
+	 * @param UserGroupEntity $entity
+	 * @return integer
 	 * @throws \RuntimeException
 	 */
-	public function add(array $group)
+	public function add(Repository $repo,UserGroupEntity $entity)
 	{
-		$entity = new UserGroupEntity();
-		$entity->setData($group);
-		$repo = new Repository('user_group');
 		$repo->add($this,$entity);
 		if (!$repo->commit()){
 			$mess = print_r($repo->getErrorEntity()->getErrors()->all(),1);
 			throw new \RuntimeException("Error add user group. Error: {$mess}.");
 		}
-		return true;
+		return $entity->id;
 	}
 	/**
 	 * Update user group
 	 *
-	 * @param integer $id
-	 * @param array $group
+	 * @param Repository $repo
+	 * @param UserGroupEntity $entity
 	 * @return boolean
 	 * @throws \RuntimeException
 	 */
-	public function update($id,array $group)
+	public function update(Repository $repo,UserGroupEntity $entity)
 	{
-		$repo = new Repository('user_group');
-		$entity = $this->getFinder()->filter(['ID' => $id])->get();
-		if ($entity === false){
-			throw new \RuntimeException("Error user group is not found.");
-		}
-		$entity->setData($group);
 		$repo->update($this,$entity);
 		if (!$repo->commit()){
 			$mess = print_r($repo->getErrorEntity()->getErrors()->all(),1);
@@ -90,17 +82,13 @@ class TableUserGroupStore implements ITable
 	/**
 	 * Delete user group
 	 *
-	 * @param integer $id
+	 * @param Repository $repo
+	 * @param UserGroupEntity $entity
 	 * @return boolean
 	 * @throws \RuntimeException
 	 */
-	public function delete($id)
+	public function delete(Repository $repo,UserGroupEntity $entity)
 	{
-		$repo = new Repository('user');
-		$entity = $this->getFinder()->filter(['ID' => $id])->get();
-		if ($entity === false){
-			throw new \RuntimeException("Error user group is not found.");
-		}
 		$repo->delete($this,$entity);
 		if (!$repo->commit()){
 			$mess = print_r($repo->getErrorEntity()->getErrors()->all(),1);

@@ -137,6 +137,7 @@ class HamlRender implements IRender
 	}
 	/**
 	 * Set php engine
+	 *
 	 * @param PhpEngine $engine
 	 */
 	public function setPhpEngine($engine)
@@ -157,7 +158,30 @@ class HamlRender implements IRender
 		$this->haml_engine = new Environment('php',['enable_escaper' => false]);
 	}
 	/**
+	 * Render jss
+	 *
+	 * @param string $path
+	 */
+	private function renderScript($view,$path)
+	{
+		$js = $this->getFolder().DIRECTORY_SEPARATOR.$path.$this->suffix_js;
+		if (file_exists($js)){
+			$js_new = $this->getDocRootFolder().DIRECTORY_SEPARATOR.$this->folder_js.DIRECTORY_SEPARATOR.$path.$this->suffix_js;
+			if (!file_exists($js_new) || filemtime($js) !== filemtime($js_new)){
+				$this->log('engine.render.haml')->debug("copy js file `{$js}`");
+				$js_code = file_get_contents($js);
+				$this->filesystem()->checkPathDir(dirname($js_new));
+				file_put_contents($js_new,$js_code);
+				touch($js);
+			}
+			$list = (isset($view['footer_js'])) ? $view['footer_js'] : [];
+			$list[] = DIRECTORY_SEPARATOR.$this->folder_js.DIRECTORY_SEPARATOR.$path.$this->suffix_js;
+			$view['footer_js'] = array_unique($list);
+		}
+	}
+	/**
 	 * Render less
+	 *
 	 * @param string $path
 	 */
 	private function renderStyle($view,$path)
@@ -165,17 +189,18 @@ class HamlRender implements IRender
 		$less = $this->getFolder().DIRECTORY_SEPARATOR.$path.$this->suffix_less;
 		if (file_exists($less)){
 			$css = $this->getDocRootFolder().DIRECTORY_SEPARATOR.$this->folder_css.DIRECTORY_SEPARATOR.$path.$this->suffix_css;
-			if (!file_exists($css) || filemtime($less) !== file_exists($css)){
+			if (!file_exists($css) || filemtime($less) !== filemtime($css)){
 				$this->log('engine.render.haml')->debug("render less file `{$less}`");
 				$less_code = file_get_contents($less);
 				$lessc = new \lessc();
 				$css_code = $lessc->compile($less_code);
 				$this->filesystem()->checkPathDir(dirname($css));
 				file_put_contents($css,$css_code);
-				$list = (isset($view['css'])) ? $view['css'] : [];
-				$list[] = DIRECTORY_SEPARATOR.$this->folder_css.DIRECTORY_SEPARATOR.$path.$this->suffix_css;
-				$view['css'] = array_unique($list);
+				touch($css);
 			}
+			$list = (isset($view['css'])) ? $view['css'] : [];
+			$list[] = DIRECTORY_SEPARATOR.$this->folder_css.DIRECTORY_SEPARATOR.$path.$this->suffix_css;
+			$view['css'] = array_unique($list);
 		}
 	}
 	/**
@@ -236,6 +261,7 @@ class HamlRender implements IRender
 		}
 		if ($path_php){
 			$this->renderStyle($view,$path);
+			$this->renderScript($view,$path);
 			$this->php_engine->setMeta($meta)->render($view,$path_php,$params);
 		}else{
 			return false;

@@ -139,4 +139,5 @@ abstract class EntityBase
 	abstract public function commit();
 	abstract public function rollback();
 	abstract public function onAfterCommit();
+	abstract public function onPostCommit();
 }

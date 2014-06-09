@@ -1,4 +1,5 @@
 <?php namespace BX\News\Store;
+use BX\DB\Filter\SqlBuilder;
 use BX\DB\ITable;
 use BX\DB\UnitOfWork\Repository;
 use BX\News\Entity\NewsEntity;
@@ -58,16 +59,12 @@ class TableNewsStore implements ITable
 	/**
 	 * Add news
 	 *
-	 * @param array $values
-	 * @return integer
+	 * @param Repository $repo
+	 * @return NewsEntity $entity
 	 * @throws \RuntimeException
 	 */
-	public function add(array $values)
+	public function add(Repository $repo,NewsEntity $entity)
 	{
-		$entity = new NewsEntity();
-		$entity->setData($values);
-		$repo = new Repository('news');
-		$repo->appendLockTables(['tbl_user']);
 		$repo->add($this,$entity);
 		$picture = $entity->picture;
 		if (!$repo->commit()){
@@ -82,20 +79,13 @@ class TableNewsStore implements ITable
 	/**
 	 * Update news
 	 *
-	 * @param integer $id
-	 * @param array $values
+	 * @param Repository $repo
+	 * @return NewsEntity $entity
 	 * @return boolean
 	 * @throws \RuntimeException
 	 */
-	public function update($id,array $values)
+	public function update(Repository $repo,NewsEntity $entity)
 	{
-		$entity = static::finder(NewsEntity::getClass())->filter(['ID' => $id])->get();
-		if ($entity === false){
-			throw new \RuntimeException("Error news is not found.");
-		}
-		$entity->setData($values);
-		$repo = new Repository('news');
-		$repo->appendLockTables(['tbl_user']);
 		$repo->update($this,$entity);
 		$picture = $entity->picture;
 		if (!$repo->commit()){
@@ -110,17 +100,13 @@ class TableNewsStore implements ITable
 	/**
 	 * Delete news
 	 *
-	 * @param integer $id
+	 * @param Repository $repo
+	 * @return NewsEntity $entity
 	 * @return boolean
 	 * @throws \RuntimeException
 	 */
-	public function delete($id)
+	public function delete(Repository $repo,NewsEntity $entity)
 	{
-		$entity = static::finder(NewsEntity::getClass())->filter(['ID' => $id])->get();
-		if ($entity === false){
-			throw new \RuntimeException("Error news is not found.");
-		}
-		$repo = new Repository('news');
 		$repo->delete($this,$entity);
 		$picture = $entity->picture;
 		if (!$repo->commit()){
@@ -135,7 +121,7 @@ class TableNewsStore implements ITable
 	/**
 	 * Return finder
 	 *
-	 * @return \BX\DB\Filter\SqlBuilder
+	 * @return SqlBuilder
 	 */
 	public function getFinder()
 	{

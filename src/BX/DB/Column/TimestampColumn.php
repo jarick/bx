@@ -63,6 +63,9 @@ class TimestampColumn extends BaseColumn
 	 */
 	public function convertFromDB($value)
 	{
+		if ($value === null){
+			return null;
+		}
 		if ($value > 0){
 			$value = intval($value) - $this->date()->getOffset();
 			return $this->date()->convertTimeStamp($value,$this->format);

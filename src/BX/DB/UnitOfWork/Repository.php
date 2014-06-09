@@ -54,13 +54,12 @@ class Repository
 		$this->adds = new Collection('BX\DB\UnitOfWork\EntityBase');
 		$this->deletes = new Collection('BX\DB\UnitOfWork\EntityBase');
 		$this->success = new Collection('BX\DB\UnitOfWork\EntityBase');
-		$this->key = $key;
-		if (!self::$lock){
-			throw new \RuntimeException('Nested transactions is not support');
-		}
-		self::$lock = false;
-		if ($key !== null){
-			$this->mutex()->acquire($key,$max_acquire);
+		if (self::$lock){
+			$this->key = $key;
+			self::$lock = false;
+			if ($this->key !== null){
+				$this->mutex()->acquire($key,$max_acquire);
+			}
 		}
 	}
 	/**
@@ -187,11 +186,20 @@ class Repository
 	/**
 	 * Rollback transaction
 	 */
-	private function rollback()
+	private function rollbackUpdate()
 	{
 		while ($update = $this->success->pop()){
 			$update->rollback();
 		}
+	}
+	/**
+	 * On post commit transaction
+	 */
+	private function onPostCommitAll()
+	{
+		$this->onPostCommit($this->adds);
+		$this->onPostCommit($this->updates);
+		$this->onPostCommit($this->deletes);
 	}
 	/**
 	 * On after commit transaction
@@ -209,6 +217,15 @@ class Repository
 	{
 		foreach($collection as $update){
 			$update->onAfterCommit();
+		}
+	}
+	/**
+	 * On after commit transaction
+	 */
+	private function onPostCommit(Collection $collection)
+	{
+		foreach($collection as $update){
+			$update->onPostCommit();
 		}
 	}
 	/**
@@ -262,10 +279,13 @@ class Repository
 				}
 				$send = $this->sendAll();
 				if (!$send){
-					$this->rollback();
+					$this->rollbackUpdate();
+				}else{
+					$this->onPostCommitAll();
 				}
 				if ($lock){
 					$this->unlock($this->tables);
+					$lock = false;
 				}
 				if ($this->key !== null){
 					$this->mutex()->release($this->key);
@@ -279,16 +299,23 @@ class Repository
 			}
 			return false;
 		}catch (\Exception $e){
-			$this->rollback();
+			$this->rollbackUpdate();
 			if ($lock){
 				$this->unlock($this->tables);
 			}
-			if ($this->key !== null){
-				$this->mutex()->release($this->key);
-			}
-			self::$lock = true;
+			$this->rollback();
 			throw $e;
 		}
+	}
+	/**
+	 * Rollback
+	 */
+	public function rollback()
+	{
+		if ($this->key !== null){
+			$this->mutex()->release($this->key);
+		}
+		self::$lock = true;
 	}
 	/**
 	 * Autocomit on destruct
@@ -299,7 +326,7 @@ class Repository
 			if ($this->success !== null){
 				$this->commit();
 			}else{
-				$this->mutex()->releaseAll();
+				$this->mutex()->release($this->key);
 			}
 			self::$lock = true;
 		}

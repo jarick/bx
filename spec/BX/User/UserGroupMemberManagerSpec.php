@@ -16,7 +16,7 @@ class UserGroupMemberManagerSpec extends ObjectBehavior
 	{
 		$this->delete(1,1)->shouldBe(true);
 		$this->finder()->count()->shouldBeLike(0);
-		$this->add(1,1)->shouldBe(true);
+		$this->add(1,1)->shouldBe(1);
 		$should = [
 			'USER_ID'	 => 1,
 			'GROUP_ID'	 => 1,

@@ -50,7 +50,7 @@ class BooleanColumn extends BaseColumn
 				throw new \InvalidArgumentException("Bad format, must be `{$this->true}` or `{$this->false}`");
 			}
 			$value = intval($value == $this->true);
-		} else{
+		}else{
 			if ($value !== $this->true && $value !== $this->false){
 				throw new \InvalidArgumentException("Bad format, must be `{$this->true}` or `{$this->false}`");
 			}
@@ -65,12 +65,15 @@ class BooleanColumn extends BaseColumn
 	 */
 	public function convertFromDB($value)
 	{
+		if ($value === null){
+			$value = 0;
+		}
 		if ($value != 0 && $value != 1){
 			throw new \InvalidArgumentException("Bad format, must be `0` or `1`");
 		}
 		if ($value == 1){
 			return $this->true;
-		} else{
+		}else{
 			return $this->false;
 		}
 	}

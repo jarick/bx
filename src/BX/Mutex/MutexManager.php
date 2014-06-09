@@ -76,7 +76,7 @@ class MutexManager #implements IMutexManager
 	{
 		$key = $this->string()->toUpper($key);
 		if (!$this->dictionary->has($key)){
-			throw new \InvalidArgumentException('Mutex is not acquire');
+			return true;
 		}
 		$entity = $this->dictionary->get($key);
 		$this->dictionary->delete($key);

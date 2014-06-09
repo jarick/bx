@@ -72,6 +72,9 @@ class NewsManagerSpec extends ObjectBehavior
 	{
 		$this->delete(1)->shouldBe(true);
 		$this->finder()->count()->shouldBe(0);
+		if (\BX\News\NewsCategoryLink::finder()->count() > 0){
+			throw new \RuntimeException('Test fall');
+		}
 		if (file_exists($this->filename)){
 			throw new \RuntimeException('Test fall');
 		}

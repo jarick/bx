@@ -20,7 +20,7 @@ class UserGroupManagerSpec extends ObjectBehavior
 			'DESCRIPTION'	 => '',
 			'SORT'			 => 500,
 		];
-		$this->add($save)->shouldBe(true);
+		$this->add($save)->shouldBe(2);
 		$this->finder()->filter(['=NAME' => 'GROUP 2'])->get()->getData()->shouldDbResult($save);
 	}
 	function it_update()

@@ -1,5 +1,7 @@
 <?php namespace BX\News;
-use BX\News\NewsCategoryLinkManager;
+use BX\Error\Error;
+use BX\News\NewsCategoryManager;
+use BX\Config\DICService;
 
 /**
  * Раздел новостей
@@ -17,13 +19,13 @@ class NewsCategory
 	/**
 	 * Return news link manager
 	 *
-	 * @return NewsManager
+	 * @return NewsCategoryManager
 	 */
 	private static function getManager()
 	{
 		if (DICService::get(self::$manager) === null){
 			$manager = function(){
-				return new NewsManager();
+				return new NewsCategoryManager();
 			};
 			DICService::set(self::$manager,$manager);
 		}

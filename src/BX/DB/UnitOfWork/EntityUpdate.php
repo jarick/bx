@@ -26,7 +26,7 @@ class EntityUpdate extends \BX\DB\UnitOfWork\EntityBase
 	{
 		$event = $this->table->getEvent();
 		if ($this->string()->length($event) > 0){
-			if ($this->fire('OnStart'.$this->string()->ucwords($event).'Update',[$this,$id,&$fields]) === false){
+			if ($this->fire('OnStart'.$this->string()->ucwords($event).'Update',[$id,&$fields]) === false){
 				if (!$this->hasErrors()){
 					$this->entity->addError(false,$this->trans('db.unitofwork.update_unknow_error'));
 				}
@@ -45,7 +45,7 @@ class EntityUpdate extends \BX\DB\UnitOfWork\EntityBase
 	{
 		$event = $this->table->getEvent();
 		if ($this->string()->length($event) > 0){
-			if ($this->fire('OnBefore'.$this->string()->ucwords($event).'Update',[$this,$id,&$fields]) === false){
+			if ($this->fire('OnBefore'.$this->string()->ucwords($event).'Update',[$id,&$fields]) === false){
 				if (!$this->hasErrors()){
 					$this->entity->addError(false,$this->trans('db.unitofwork.update_unknow_error'));
 				}
@@ -53,6 +53,19 @@ class EntityUpdate extends \BX\DB\UnitOfWork\EntityBase
 			}
 		}
 		return true;
+	}
+	/**
+	 * On post update
+	 *
+	 * @param integer|string $id
+	 * @param array $fields
+	 */
+	protected function onPostUpdate($id,array $fields)
+	{
+		$event = $this->table->getEvent();
+		if ($this->string()->length($event) > 0){
+			$this->fire('OnPost'.$this->string()->ucwords($event).'Update',[$id,$fields]);
+		}
 	}
 	/**
 	 * After update
@@ -64,7 +77,7 @@ class EntityUpdate extends \BX\DB\UnitOfWork\EntityBase
 	{
 		$event = $this->table->getEvent();
 		if ($this->string()->length($event) > 0){
-			$this->fire('OnAfter'.$this->string()->ucwords($event).'Update',[$this,$id,$fields]);
+			$this->fire('OnAfter'.$this->string()->ucwords($event).'Update',[$id,$fields]);
 		}
 	}
 	/**
@@ -175,14 +188,21 @@ class EntityUpdate extends \BX\DB\UnitOfWork\EntityBase
 		}
 	}
 	/**
+	 * Call after commit transaction before unlock table
+	 */
+	public function onPostCommit()
+	{
+		$this->entity->setData($this->prepareArrayFromDb($this->fields),true);
+		$this->onPostUpdate($this->id,$this->fields);
+	}
+	/**
 	 * Call after commit transaction
 	 */
 	public function onAfterCommit()
 	{
-		$this->entity->setData($this->prepareArrayFromDb($this->fields),true);
+		$this->onAfterUpdate($this->id,$this->fields);
 		$this->deleteSearchIndex($this->id);
 		$this->addSearchIndex($this->id);
 		$this->clearCache();
-		$this->onAfterUpdate($this->id,$this->fields);
 	}
 }

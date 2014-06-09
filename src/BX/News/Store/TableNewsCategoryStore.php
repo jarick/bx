@@ -56,16 +56,13 @@ class TableNewsCategoryStore implements \BX\DB\ITable
 	/**
 	 * Add news category
 	 *
-	 * @param array $values
+	 * @param Repository $repo
+	 * @param NewsCategoryEntity $entity
 	 * @return integer
 	 * @throws \RuntimeException
 	 */
-	public function add(array $values)
+	public function add(Repository $repo,NewsCategoryEntity $entity)
 	{
-		$repo = new Repository('news_category');
-		$repo->appendLockTables(['tbl_news']);
-		$entity = new NewsCategoryEntity();
-		$entity->setData($values);
 		$repo->add($this,$entity);
 		if (!$repo->commit()){
 			$mess = print_r($repo->getErrorEntity()->getErrors()->all(),1);
@@ -76,20 +73,13 @@ class TableNewsCategoryStore implements \BX\DB\ITable
 	/**
 	 * Update news category
 	 *
-	 * @param integer $id
-	 * @param array $values
+	 * @param Repository $repo
+	 * @param NewsCategoryEntity $entity
 	 * @return boolean
 	 * @throws \RuntimeException
 	 */
-	public function update($id,array $values)
+	public function update(Repository $repo,NewsCategoryEntity $entity)
 	{
-		$repo = new Repository('news_category');
-		$repo->appendLockTables(['tbl_news']);
-		$entity = static::finder(NewsCategoryEntity::getClass())->filter(['ID' => $id])->get();
-		if ($entity === false){
-			throw new \RuntimeException("Error news category is not found.");
-		}
-		$entity->setData($values);
 		$repo->update($this,$entity);
 		if (!$repo->commit()){
 			$mess = print_r($repo->getErrorEntity()->getErrors()->all(),1);
@@ -100,18 +90,13 @@ class TableNewsCategoryStore implements \BX\DB\ITable
 	/**
 	 * Delete news
 	 *
-	 * @param integer $id
+	 * @param Repository $repo
+	 * @param NewsCategoryEntity $entity
 	 * @return boolean
 	 * @throws \RuntimeException
 	 */
-	public function delete($id)
+	public function delete(Repository $repo,NewsCategoryEntity $entity)
 	{
-		$repo = new Repository('news_category');
-		$repo->appendLockTables(['tbl_news']);
-		$entity = static::finder(NewsCategoryEntity::getClass())->filter(['ID' => $id])->get();
-		if ($entity === false){
-			throw new \RuntimeException("Error news category is not found.");
-		}
 		$repo->delete($this,$entity);
 		if (!$repo->commit()){
 			$mess = print_r($repo->getErrorEntity()->getErrors()->all(),1);

@@ -1,4 +1,5 @@
-<?php namespace BX\News;
+<?php namespace BX\News\Entity;
+use BX\Validator\IEntity;
 
 /**
  * @property-read integer $id
@@ -6,7 +7,7 @@
  * @property integer $category_id
  * @property-read string $timestamp_x
  */
-class NewsCategoryLinkEntity
+class NewsCategoryLinkEntity implements IEntity
 {
 	use \BX\Validator\EntityTrait,
 	 \BX\Date\DateTrait,
@@ -32,7 +33,7 @@ class NewsCategoryLinkEntity
 			self::C_CATEGORY_ID		 => $this->trans('news.entity.link.category_id'),
 			self::C_TIMESTAMP_X		 => $this->trans('news.entity.link.timestamp_x'),
 			self::C_NEWS_GUID		 => $this->trans('news.entity.link.news_guid'),
-			self::C_NEWS_CODE		 => $this->trans('news.entity.link.news_code'),
+			self::C_NEWS_NAME		 => $this->trans('news.entity.link.news_code'),
 			self::C_CATEGORY_GUID	 => $this->trans('news.entity.link.category_guid'),
 			self::C_CATEGORY_NAME	 => $this->trans('news.entity.link.category_name'),
 		];

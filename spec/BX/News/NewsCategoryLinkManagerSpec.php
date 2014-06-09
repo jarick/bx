@@ -8,19 +8,19 @@ class NewsCategoryLinkManagerSpec extends ObjectBehavior
 	{
 		$this->shouldHaveType('BX\News\NewsCategoryLinkManager');
 	}
-	function it_add()
-	{
-		$save = [
-			'NEWS_ID'		 => 1,
-			'CATEGORY_ID'	 => 'Category 2',
-		];
-		$this->add($save)->shouldBeLike(2);
-		$this->finder()->filter(['ID' => 2])->get()->shouldDbResult($save);
-	}
 	function it_delete()
 	{
-		$this->delete(1)->shouldBe(true);
+		$this->delete(1,1)->shouldBe(true);
 		$this->finder()->count()->shouldBe(0);
+	}
+	function it_add()
+	{
+		$this->add(1,1)->shouldBeLike(2);
+		$save = [
+			'NEWS_ID'		 => 1,
+			'CATEGORY_ID'	 => 1,
+		];
+		$this->finder()->filter(['ID' => 2])->get()->shouldDbResult($save);
 	}
 	function getMatchers()
 	{
