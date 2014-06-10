@@ -3,7 +3,8 @@ use BX\Validator\IValidator;
 
 class Multy extends BaseValidator
 {
-	use \BX\String\StringTrait;
+	use \BX\String\StringTrait,
+	 \BX\Translate\TranslateTrait;
 	/**
 	 * @var integer
 	 */

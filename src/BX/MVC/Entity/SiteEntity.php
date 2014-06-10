@@ -50,7 +50,7 @@ class SiteEntity implements IEntity
 			[self::C_KEYWORDS],
 			String::create(),
 			[self::C_REGEX],
-			Multy::create(String::create()->notEmpty()),
+			Multy::create(String::create()->notEmpty())->notEmpty(),
 			[self::C_LAYOUT_RULE],
 			Custom::create([$this,'validateLayoutRule']),
 			[self::C_URL_REWITE],

@@ -6,7 +6,8 @@ abstract class Widget
 	use \BX\String\StringTrait,
 	 \BX\Http\HttpTrait,
 	 \BX\Logger\LoggerTrait,
-	 \BX\Event\EventTrait;
+	 \BX\Event\EventTrait,
+	 \BX\Translate\TranslateTrait;
 	const ON_BEFORE_RENDER_WIDGET = 'BeforeRenderWidget';
 	const ON_AFTER_RENDER_WIDGET = 'AfterRenderWidget';
 	const WIDGETS_DIR = 'widgets/';
@@ -17,6 +18,7 @@ abstract class Widget
 	protected $view;
 	/**
 	 * Set view
+	 *
 	 * @return Widget
 	 */
 	public function setView(IView $view)
@@ -25,7 +27,8 @@ abstract class Widget
 		return $this;
 	}
 	/**
-	 * Get view
+	 * Return view
+	 *
 	 * @return View
 	 */
 	public function view()
@@ -34,6 +37,7 @@ abstract class Widget
 	}
 	/**
 	 * Return current page path with query params
+	 *
 	 * @param array $add_params
 	 * @param array $kill_params
 	 * @return string
@@ -60,7 +64,8 @@ abstract class Widget
 		return $path.implode('&',$add_params);
 	}
 	/**
-	 * Get session id
+	 * Return session id
+	 *
 	 * @return string
 	 */
 	public function getSessionId()
@@ -69,6 +74,7 @@ abstract class Widget
 	}
 	/**
 	 * Redirect
+	 *
 	 * @param string $url
 	 * @param integer $status
 	 */
@@ -78,6 +84,7 @@ abstract class Widget
 	}
 	/**
 	 * Render widget
+	 *
 	 * @param string $file
 	 * @param array $params
 	 */
@@ -88,6 +95,7 @@ abstract class Widget
 	}
 	/**
 	 * Execute run
+	 *
 	 * @param array $params
 	 * @return Widget
 	 */
@@ -109,6 +117,7 @@ abstract class Widget
 	}
 	/**
 	 * Render widget
+	 *
 	 * @param View $view
 	 * @param array $params
 	 * @return Widget
@@ -117,6 +126,28 @@ abstract class Widget
 	{
 		$widget = new static();
 		return $widget->setView($view)->execRun($params);
+	}
+	/**
+	 * Return flash message
+	 *
+	 * @return string
+	 */
+	public function getFlash()
+	{
+		$key = 'widget:'.get_called_class();
+		return $this->session()->getFlash($key);
+	}
+	/**
+	 * Set flash message
+	 *
+	 * @param string $message
+	 * @return Widget
+	 */
+	public function setFlash($message)
+	{
+		$key = 'widget:'.get_called_class();
+		$this->session()->setFlash($key,$message);
+		return $this;
 	}
 	abstract public function run();
 }

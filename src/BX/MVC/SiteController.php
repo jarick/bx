@@ -258,6 +258,7 @@ class SiteController
 	 */
 	public function render($page = false,array $params = [])
 	{
+		$this->session()->load();
 		if ($page === false){
 			$page = $this->getPathInfo();
 		}
@@ -270,7 +271,7 @@ class SiteController
 			});
 		}
 		try{
-			$this->log()->debug("start render `".$this->getHost().$page."`");
+			$this->log('mvc.manager.site_controller')->debug("start render `".$this->getHost().$page."`");
 			$this->fire('BeforeRender');
 			if ($this->getSiteName() === false){
 				$site = $this->findSite($page);
@@ -286,9 +287,12 @@ class SiteController
 			$content = $this->renderPage($site,$page,$params);
 			$this->fire('afterRender',[&$content]);
 			$this->view()->send($content);
-			$this->log()->debug('end render');
-			return $this->view()->response();
+			$this->log('mvc.manager.site_controller')->debug('end render');
+			$return = $this->view()->response();
+			$this->session()->save();
+			return $return;
 		}catch (\Exception $e){
+			$this->session()->save();
 			$this->log()->error($e->getMessage());
 			return $this->getRenderException()->render($e,$this);
 		}
