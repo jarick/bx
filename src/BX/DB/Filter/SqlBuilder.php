@@ -1,7 +1,7 @@
 <?php namespace BX\DB\Filter;
 use BX\DB\Adaptor\IAdaptor;
-use BX\DB\Manager\DBResult;
 use BX\Base\Collection;
+use BX\DB\DBResult;
 
 class SqlBuilder
 {
@@ -261,7 +261,10 @@ class SqlBuilder
 			$filter_rule[$key] = $column->getFilterRule();
 		}
 		$block = new LogicBlock($this,$filter_rule);
-		$this->filter_sql[] = $block->toSql($filter);
+		$sql = $block->toSql($filter);
+		if ($this->string()->length($sql) > 0){
+			$this->filter_sql[] = $sql;
+		}
 		return $this;
 	}
 	/**
@@ -350,7 +353,8 @@ class SqlBuilder
 		return $result;
 	}
 	/**
-	 * Get all
+	 * Return all rows
+	 *
 	 * @return \BX\Base\Collection
 	 */
 	public function all()
@@ -359,6 +363,7 @@ class SqlBuilder
 	}
 	/**
 	 * Find all rows
+	 *
 	 * @return DBResult
 	 */
 	public function find()

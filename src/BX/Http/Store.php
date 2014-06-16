@@ -8,6 +8,7 @@ class Store implements \IteratorAggregate, \ArrayAccess, \Countable
 	private $data = [];
 	/**
 	 * Constructor
+	 *
 	 * @param array|integer $data
 	 */
 	public function __construct($data = [])
@@ -15,20 +16,21 @@ class Store implements \IteratorAggregate, \ArrayAccess, \Countable
 		$this->data = $data;
 	}
 	/**
-	 * Get value
+	 * Return value
+	 *
 	 * @param string|array $key
 	 * @return null|string
 	 */
-	public function get($key)
+	public function &get($key)
 	{
-		if ($this->has($key)){
-			return $this->data[$key];
-		}else{
-			return null;
+		if (!$this->has($key)){
+			$this->data[$key] = null;
 		}
+		return $this->data[$key];
 	}
 	/**
-	 * has key
+	 * Return is has key
+	 *
 	 * @param string|array $key
 	 * @return boolean
 	 */
@@ -38,6 +40,7 @@ class Store implements \IteratorAggregate, \ArrayAccess, \Countable
 	}
 	/**
 	 * Get all values
+	 *
 	 * @return array
 	 */
 	public function all()
@@ -46,6 +49,7 @@ class Store implements \IteratorAggregate, \ArrayAccess, \Countable
 	}
 	/**
 	 * Get count
+	 *
 	 * @return integer
 	 */
 	public function count()
@@ -53,7 +57,8 @@ class Store implements \IteratorAggregate, \ArrayAccess, \Countable
 		return count($this->data);
 	}
 	/**
-	 * Get iterator
+	 * Return iterator
+	 *
 	 * @return \BX\Http\ArrayIterator
 	 */
 	public function getIterator()
@@ -62,6 +67,7 @@ class Store implements \IteratorAggregate, \ArrayAccess, \Countable
 	}
 	/**
 	 * Offset exists
+	 *
 	 * @param string $offset
 	 * @return boolean
 	 */
@@ -71,17 +77,17 @@ class Store implements \IteratorAggregate, \ArrayAccess, \Countable
 	}
 	/**
 	 * Offset get
+	 *
 	 * @param string $offset
 	 * @return string|array
 	 */
-	public function offsetGet($offset)
+	public function &offsetGet($offset)
 	{
 		return $this->get($offset);
 	}
 	/**
 	 * Read only
-	 * @param string $offset
-	 * @param string $value
+	 *
 	 * @throws \InvalidArgumentException
 	 */
 	public function offsetSet($offset,$value)

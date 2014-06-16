@@ -5,7 +5,8 @@ use BX\User\Entity\UserEntity;
 
 class TableUserStore implements ITable
 {
-	use \BX\DB\TableTrait;
+	use \BX\DB\TableTrait,
+	 \BX\DB\DBTrait;
 	/**
 	 * Return settings
 	 *
@@ -30,7 +31,6 @@ class TableUserStore implements ITable
 			UserEntity::C_ID			 => $this->column()->int('T.ID'),
 			UserEntity::C_GUID			 => $this->column()->string('T.GUID'),
 			UserEntity::C_LOGIN			 => $this->column()->string('T.LOGIN'),
-			UserEntity::C_PASSWORD		 => $this->column()->string('T.PASSWORD'),
 			UserEntity::C_EMAIL			 => $this->column()->string('T.EMAIL'),
 			UserEntity::C_CODE			 => $this->column()->string('T.CODE'),
 			UserEntity::C_CREATE_DATE	 => $this->column()->datetime('T.CREATE_DATE'),
@@ -48,6 +48,39 @@ class TableUserStore implements ITable
 	public function getFinder()
 	{
 		return static::finder(UserEntity::getClass());
+	}
+	/**
+	 * Return password for user
+	 *
+	 * @param integer $user_id
+	 * @return string
+	 * @throws \RuntimeException
+	 */
+	public function getPasswordByUserID($user_id)
+	{
+		$sql = 'SELECT T.PASSWORD as PASSWORD FROM '.$this->getDbTable().' T WHERE T.ID = :user_id LIMIT 1';
+		$array = $this->db()->query($sql,['user_id' => $user_id])->fetch();
+		if ($array === false){
+			throw new \RuntimeException("User $user_id is not found");
+		}
+		return $array['PASSWORD'];
+	}
+	/**
+	 * Update password
+	 *
+	 * @param integer $user_id
+	 * @param string $password_hash
+	 * @return boolean
+	 * @throws \RuntimeException
+	 */
+	public function updatePassword(Repository $repo,UserEntity $entity,$password_hash)
+	{
+		$sql = 'UPDATE '.$this->getDbTable().' SET PASSWORD = :hash WHERE ID = :id';
+		if (!$this->db()->execute($sql,['id' => $entity->id,'hash' => $password_hash])){
+			throw new \RuntimeException("Error update password for {$entity->id}");
+		}
+		$repo->commit();
+		return true;
 	}
 	/**
 	 * Add user

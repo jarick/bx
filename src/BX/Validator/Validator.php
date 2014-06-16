@@ -183,6 +183,9 @@ class Validator
 		if ($this->error === null){
 			$this->error = new MessageBag();
 		}
+		if ($key === false){
+			$key = 'UNKNOW_COLUMN';
+		}
 		$this->error->add($this->string()->toUpper($key),(!empty($params)) ? strtr($message,$params) : $message);
 	}
 	/**

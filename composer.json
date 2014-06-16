@@ -24,7 +24,8 @@
 		"filp/whoops": "1.*",
 		"gregwar/captcha": "dev-master",
 		"imagine/imagine": "0.5.*",
-		"pimple/pimple": "2.0.*"
+		"pimple/pimple": "2.0.*",
+		"phpoffice/phpexcel": "dev-develop"
     },
     "autoload": {
         "psr-4": {

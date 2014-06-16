@@ -54,7 +54,7 @@ class UserGroup
 		Error::reset();
 		try{
 			$return = self::getManager()->add($group);
-		}catch (Exception $ex){
+		}catch (\Exception $ex){
 			Error::set($ex);
 			$return = false;
 		}
@@ -77,7 +77,7 @@ class UserGroup
 		Error::reset();
 		try{
 			$return = self::getManager()->update($id,$group);
-		}catch (Exception $ex){
+		}catch (\Exception $ex){
 			Error::set($ex);
 			$return = false;
 		}
@@ -99,7 +99,7 @@ class UserGroup
 		Error::reset();
 		try{
 			$return = self::getManager()->delete($id);
-		}catch (Exception $ex){
+		}catch (\Exception $ex){
 			Error::set($ex);
 			$return = false;
 		}
@@ -112,6 +112,6 @@ class UserGroup
 	 */
 	public static function finder()
 	{
-		return $this->finder();
+		return self::getManager()->finder();
 	}
 }

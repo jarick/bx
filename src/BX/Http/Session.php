@@ -1,7 +1,7 @@
 <?php namespace BX\Http;
 use BX\Http\Store\NativeSessionStore;
 
-class Session
+class Session implements \ArrayAccess
 {
 	use \BX\Config\ConfigTrait;
 	const VALUE = 'value';
@@ -127,5 +127,44 @@ class Session
 			$store[self::FLASH_KEY] = self::$save_flash;
 			self::$start = true;
 		}
+	}
+	/**
+	 * Exists key in store
+	 *
+	 * @param string $offset
+	 * @return boolean
+	 */
+	public function offsetExists($offset)
+	{
+		return $this->store()->offsetExists($offset);
+	}
+	/**
+	 * Return value by key from store
+	 *
+	 * @param string $offset
+	 * @return string
+	 */
+	public function &offsetGet($offset)
+	{
+		return $this->store()->offsetGet($offset);
+	}
+	/**
+	 * Set value in store
+	 *
+	 * @param string $offset
+	 * @param string $value
+	 */
+	public function offsetSet($offset,$value)
+	{
+		$this->store()->offsetSet($offset,$value);
+	}
+	/**
+	 * Unset value in store by key
+	 *
+	 * @param string $offset
+	 */
+	public function offsetUnset($offset)
+	{
+		$this->store()->offsetUnset($offset);
 	}
 }

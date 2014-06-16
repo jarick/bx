@@ -1,5 +1,6 @@
 <?php namespace BX\Cache;
 use BX\Error\Error;
+use BX\Config\DICService;
 
 /**
  * Кеш

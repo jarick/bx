@@ -10,7 +10,8 @@ use InvalidArgumentException;
 class DatabaseManager implements IDatabaseManager
 {
 	use \BX\String\StringTrait,
-	 \BX\Logger\LoggerTrait;
+	 \BX\Logger\LoggerTrait,
+	 \BX\Event\EventTrait;
 	const AI = 'AI';
 	const PK = 'PK';
 	const NN = 'NN';
@@ -227,6 +228,7 @@ class DatabaseManager implements IDatabaseManager
 	 */
 	public function execute($sql,array $vars = [])
 	{
+		$this->fire('DBQuery',[$sql,$vars]);
 		return false !== $this->adaptor()->execute($sql,$vars);
 	}
 	/**
@@ -245,6 +247,7 @@ class DatabaseManager implements IDatabaseManager
 	 */
 	public function query($sql,array $vars = [])
 	{
+		$this->fire('DBQuery',[$sql,$vars]);
 		$return = $this->adaptor()->query($sql,$vars);
 		if ($return === false){
 			$error = implode(' ',$this->adaptor()->pdo()->errorInfo());

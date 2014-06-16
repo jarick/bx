@@ -155,7 +155,11 @@ class HamlRender implements IRender
 		}else{
 			$this->setPhpEngine($php_engine);
 		}
-		$this->haml_engine = new Environment('php',['enable_escaper' => false]);
+		$this->haml_engine = new Environment('php',[
+			'enable_escaper' => false,
+			'escape_attrs'	 => false,
+			'escape_html'	 => false,
+		]);
 	}
 	/**
 	 * Render jss

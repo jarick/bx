@@ -58,7 +58,7 @@ class User
 		Error::reset();
 		try{
 			$return = self::getManager()->add($user);
-		}catch (Exception $ex){
+		}catch (\Exception $ex){
 			Error::set($ex);
 			$return = false;
 		}
@@ -81,7 +81,7 @@ class User
 		Error::reset();
 		try{
 			$return = self::getManager()->update($id,$user);
-		}catch (Exception $ex){
+		}catch (\Exception $ex){
 			Error::set($ex);
 			$return = false;
 		}
@@ -103,7 +103,7 @@ class User
 		Error::reset();
 		try{
 			$return = self::getManager()->delete($id);
-		}catch (Exception $ex){
+		}catch (\Exception $ex){
 			Error::set($ex);
 			$return = false;
 		}
@@ -112,10 +112,76 @@ class User
 	/**
 	 * Фильтр по пользователям
 	 *
-	 * @return SqlBuilder
+	 * @return \BX\DB\Filter\SqlBuilder
 	 */
 	public static function finder()
 	{
 		return self::getManager()->finder();
+	}
+	/**
+	 * Получить пользователя по его ID
+	 *
+	 * @return \BX\DB\Filter\SqlBuilder
+	 */
+	public static function GetByID($id)
+	{
+		return self::getManager()->finder()->filter(['ID' => $id])->get();
+	}
+	/**
+	 * Получить хеш от пароля пользователя
+	 *
+	 * @param integer $user_id
+	 * @return boolean
+	 */
+	public static function getHashPasswordByUserID($user_id)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->getHashPasswordByUserID($user_id);
+		}catch (\Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
+	}
+	/**
+	 * Возвращает захешированный пароль
+	 *
+	 * @param string $pass
+	 * @param string $sold
+	 * @return string
+	 */
+	public static function getHashPassword($pass,$sold = 'sold')
+	{
+		return self::getManager()->getHashPassword($pass,$sold);
+	}
+	/**
+	 *
+	 * @param string $value
+	 * @param string $hash
+	 * @param string $sold
+	 * @return boolean
+	 */
+	public static function checkPasswordByHash($value,$hash,$sold = 'sold')
+	{
+		return self::getManager()->checkPasswordByHash($value,$hash,$sold);
+	}
+	/**
+	 * Обновить пароль пользователя
+	 *
+	 * @param integer $user_id
+	 * @param string $password
+	 * @return boolean
+	 */
+	public static function updatePassword($user_id,$password)
+	{
+		Error::reset();
+		try{
+			$return = self::getManager()->updatePasssword($user_id,$password);
+		}catch (\Exception $ex){
+			Error::set($ex);
+			$return = false;
+		}
+		return $return;
 	}
 }

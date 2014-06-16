@@ -155,9 +155,13 @@ class String extends BaseValidator
 			$this->addError($key,$this->getMessageInvalid(),['#LABEL#' => $label]);
 			return false;
 		}
-		if (!$this->empty && $this->isEmpty($value)){
-			$this->addError($key,$this->getMessageEmpty(),['#LABEL#' => $label]);
-			return false;
+		if ($this->isEmpty($value)){
+			if (!$this->empty){
+				$this->addError($key,$this->getMessageEmpty(),['#LABEL#' => $label]);
+				return false;
+			}else{
+				return true;
+			}
 		}
 		$length = $this->string()->length($value);
 		if ($this->min !== null && $length < $this->min){

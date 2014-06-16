@@ -49,7 +49,7 @@ class Error
 	 * Name of the logging channel
 	 * </p>
 	 */
-	public static function set(Exception $ex,$component = 'default')
+	public static function set(\Exception $ex,$component = 'default')
 	{
 		return self::getManager()->set($ex,$component);
 	}

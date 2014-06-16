@@ -162,4 +162,22 @@ class Date
 			return false;
 		}
 	}
+	/**
+	 * Возвращает формат даты сайта
+	 *
+	 * @return integer
+	 */
+	public static function getShortFormat()
+	{
+		return self::getManager()->getFormat('short');
+	}
+	/**
+	 * Возвращает формат даты сайта
+	 *
+	 * @return integer
+	 */
+	public static function getFullFormat()
+	{
+		return self::getManager()->getFormat('full');
+	}
 }

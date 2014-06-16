@@ -13,7 +13,10 @@ class View implements IView, \ArrayAccess
 	/**
 	 * @var array
 	 */
-	public $meta = [];
+	public $meta = [
+		'css'		 => [],
+		'footer_js'	 => [],
+	];
 	/**
 	 * Return buffer
 	 *
@@ -90,6 +93,28 @@ class View implements IView, \ArrayAccess
 		throw new Abort();
 	}
 	/**
+	 * Send stream answer
+	 *
+	 * @throws Abort
+	 */
+	public function stream($stream)
+	{
+		$this->buffer()->flush();
+		$this->response()->stream($stream);
+		throw new Abort();
+	}
+	/**
+	 * Send json response
+	 *
+	 * @throws Abort
+	 */
+	public function json(array $data)
+	{
+		$this->buffer()->flush();
+		$this->response()->json($data);
+		throw new Abort();
+	}
+	/**
 	 * Redirect
 	 *
 	 * @param string $url
@@ -139,9 +164,12 @@ class View implements IView, \ArrayAccess
 	 * @param string $offset
 	 * @return string|null
 	 */
-	public function offsetGet($offset)
+	public function &offsetGet($offset)
 	{
-		return isset($this->meta[$offset]) ? $this->meta[$offset] : null;
+		if (!isset($this->meta[$offset])){
+			$this->meta[$offset] = null;
+		}
+		return $this->meta[$offset];
 	}
 	/**
 	 * Set meta

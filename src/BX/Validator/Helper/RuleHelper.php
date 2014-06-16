@@ -2,6 +2,7 @@
 use BX\Validator\Collection\Boolean;
 use BX\Validator\Collection\Custom;
 use BX\Validator\Collection\DateTime;
+use BX\Validator\Collection\DateTimeFilter;
 use BX\Validator\Collection\File;
 use BX\Validator\Collection\Multy;
 use BX\Validator\Collection\Number;
@@ -13,7 +14,7 @@ use BX\Validator\IValidator;
 class RuleHelper
 {
 	/**
-	 * Get boolean validator
+	 * Return boolean validator
 	 *
 	 * @return Boolean
 	 */
@@ -22,7 +23,7 @@ class RuleHelper
 		return Boolean::create();
 	}
 	/**
-	 * Get custom validator
+	 * Return custom validator
 	 *
 	 * @param string $function
 	 * @return Custom
@@ -32,7 +33,7 @@ class RuleHelper
 		return Custom::create($function);
 	}
 	/**
-	 * Get date validator
+	 * Return date validator
 	 *
 	 * @return DateTime
 	 */
@@ -41,7 +42,16 @@ class RuleHelper
 		return DateTime::create();
 	}
 	/**
-	 * Get datetime validator
+	 * Return datetime filter validator
+	 *
+	 * @return DateTime
+	 */
+	public function datetime_filter()
+	{
+		return DateTimeFilter::create();
+	}
+	/**
+	 * Return datetime validator
 	 *
 	 * @return DateTime
 	 */
@@ -50,7 +60,7 @@ class RuleHelper
 		return DateTime::create()->withTime();
 	}
 	/**
-	 * Get multy validator
+	 * Return multy validator
 	 *
 	 * @param IValidator $validator
 	 * @return Multy
@@ -69,7 +79,7 @@ class RuleHelper
 		return Number::create();
 	}
 	/**
-	 * Get safe validator
+	 * Return safe validator
 	 *
 	 * @return Safe
 	 */
@@ -78,7 +88,7 @@ class RuleHelper
 		return Safe::create();
 	}
 	/**
-	 * Get setter
+	 * Return setter
 	 *
 	 * @return Setter
 	 */
@@ -87,7 +97,7 @@ class RuleHelper
 		return Setter::create();
 	}
 	/**
-	 * Get string validator
+	 * Return string validator
 	 *
 	 * @return String
 	 */
@@ -96,7 +106,7 @@ class RuleHelper
 		return String::create();
 	}
 	/**
-	 * Get file validator
+	 * Return file validator
 	 *
 	 * @return File
 	 */

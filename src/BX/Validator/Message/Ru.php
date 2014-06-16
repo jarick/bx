@@ -7,6 +7,7 @@ class Ru
 		return [
 			'validator.collection.string.empty'	 => 'Необходимо заполнить поле «#LABEL#».',
 			'validator.manager.multy.empty'		 => 'Необходимо заполнить хотя бы одно поле «#LABEL#».',
+			'validator.manager.custom.empty'	 => 'Необходимо заполнить поле «#LABEL#».',
 		];
 	}
 }

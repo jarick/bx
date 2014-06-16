@@ -188,6 +188,7 @@ class DateTime extends BaseValidator
 	public function setFormat($format)
 	{
 		$this->format_input = $format;
+		return $this;
 	}
 	/**
 	 * Set format for rule date
@@ -197,6 +198,7 @@ class DateTime extends BaseValidator
 	public function setFormatRules($format)
 	{
 		$this->format_rules = $format;
+		return $this;
 	}
 	/**
 	 * Validate
@@ -215,11 +217,15 @@ class DateTime extends BaseValidator
 			]);
 			return false;
 		}
-		if (!$this->empty && $this->isEmpty($value)){
-			$this->addError($key,$this->getMessageEmpty(),[
-				'#LABEL#' => $label,
-			]);
-			return false;
+		if ($this->isEmpty($value)){
+			if (!$this->empty){
+				$this->addError($key,$this->getMessageEmpty(),[
+					'#LABEL#' => $label,
+				]);
+				return false;
+			}else{
+				return true;
+			}
 		}
 		if (!$this->date()->checkDateTime($value,$this->format_input)){
 			$this->addError($key,$this->getMessageInvalid(),[

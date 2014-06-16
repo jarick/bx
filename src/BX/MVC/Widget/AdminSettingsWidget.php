@@ -137,6 +137,6 @@ class AdminSettingsWidget extends Widget
 			$entity->setData($data);
 		}
 		$flash = $this->getFlash();
-		$this->render('admin/user/settings',compact('entity','flash','post'));
+		$this->render('admin/mvc/settings_form',compact('entity','flash','post'));
 	}
 }

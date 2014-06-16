@@ -1,8 +1,10 @@
 <?php namespace BX\Error;
 use Monolog;
+use BX\Logger\Logger;
 
 class ErrorManager implements IErrorManager
 {
+	use \BX\Logger\LoggerTrait;
 	/**
 	 * @var \Exception
 	 */
@@ -35,7 +37,7 @@ class ErrorManager implements IErrorManager
 		}
 		$result .= $trace[0]['function'];
 		$result .= '();'.PHP_EOL;
-		Monolog::get($component)->error($result);
+		Logger::getInstance($component)->err($result);
 		return true;
 	}
 	/**

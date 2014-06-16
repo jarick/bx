@@ -1,6 +1,8 @@
 <?php namespace BX\Http;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class Response implements \ArrayAccess
 {
@@ -46,11 +48,45 @@ class Response implements \ArrayAccess
 	}
 	/**
 	 * Send response
-	 * @param type $content
+	 *
+	 * @param string $content
 	 */
 	public function send($content)
 	{
+		foreach($this->headers as $key => $value){
+			if ($value === null){
+				unset($this->headers[$key]);
+			}
+		}
 		$this->setResponse(new SymfonyResponse($content,$this->code,$this->headers));
+	}
+	/**
+	 * Send stream response
+	 *
+	 * @param callable $stream
+	 */
+	public function stream($stream)
+	{
+		foreach($this->headers as $key => $value){
+			if ($value === null){
+				unset($this->headers[$key]);
+			}
+		}
+		$this->setResponse(new StreamedResponse($stream,$this->code,$this->headers));
+	}
+	/**
+	 * Send json response
+	 *
+	 * @param array $data
+	 */
+	public function json(array $data)
+	{
+		foreach($this->headers as $key => $value){
+			if ($value === null){
+				unset($this->headers[$key]);
+			}
+		}
+		$this->setResponse(new JsonResponse($data,$this->code,$this->headers));
 	}
 	/**
 	 * Redirect
@@ -82,9 +118,12 @@ class Response implements \ArrayAccess
 	 * @param string $offset
 	 * @return string
 	 */
-	public function offsetGet($offset)
+	public function &offsetGet($offset)
 	{
-		return isset($this->headers[$offset]) ? $this->headers[$offset] : null;
+		if (!isset($this->headers[$offset])){
+			$this->headers[$offset] = null;
+		}
+		return $this->headers[$offset];
 	}
 	/**
 	 * Offset set

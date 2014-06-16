@@ -2,7 +2,8 @@
 
 class Custom extends BaseValidator
 {
-	use \BX\String\StringTrait;
+	use \BX\String\StringTrait,
+	 \BX\Translate\TranslateTrait;
 	/**
 	 * @var \Closure
 	 */

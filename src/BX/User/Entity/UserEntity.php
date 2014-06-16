@@ -1,4 +1,6 @@
 <?php namespace BX\User\Entity;
+use BX\Error\Error;
+use BX\User\User;
 
 /**
  * @property-read integer $id
@@ -30,6 +32,10 @@ class UserEntity implements \BX\Validator\IEntity
 	const C_REGISTERED = 'REGISTERED';
 	const C_ACTIVE = 'ACTIVE';
 	const C_DISPLAY_NAME = 'DISPLAY_NAME';
+	/**
+	 * @var array
+	 */
+	protected $filters = [];
 	/**
 	 * Return labels
 	 *
@@ -66,11 +72,11 @@ class UserEntity implements \BX\Validator\IEntity
 				$this->rule()->string()->notEmpty()->setMax(50),
 			])->onAdd(),
 			[self::C_PASSWORD],
-			$this->rule()->custom([$this,'filterPassword'])->notEmpty(),
+			$this->rule()->custom([$this,'filterPassword'])->notEmpty()->onAdd(),
 			[self::C_CODE],
 			$this->rule()->setter()->setFunction([$this,'filterCode'])->setValidators([
 				$this->rule()->string()->notEmpty()->setMax(50),
-			]),
+			])->onAdd(),
 			[self::C_CREATE_DATE],
 			$this->rule()->setter()->setValidators([
 				$this->rule()->datetime()->withTime()->notEmpty()
@@ -86,16 +92,27 @@ class UserEntity implements \BX\Validator\IEntity
 		];
 	}
 	/**
-	 * Return min length password
+	 * Return rules for filter
 	 *
-	 * @return int
+	 * @return array
 	 */
-	protected function getMinLengthPassword()
+	protected function filter()
 	{
-		if ($this->config()->exists('user','password_min_length')){
-			return $this->config()->get('user','password_min_length');
-		}
-		return 6;
+		return[
+			[self::C_ID],
+			$this->rule()->number()->integer()->setMin(1),
+			[self::C_DISPLAY_NAME,self::C_LOGIN,self::C_EMAIL,self::C_LOGIN,self::C_CODE,self::C_GUID],
+			$this->rule()->safe(),
+			[self::C_CREATE_DATE,self::C_TIMESTAMP_X],
+			$this->rule()->datetime_filter()->filter(function($filter){
+				return [
+					$filter->min()->withTime()->setFormat('full'),
+					$filter->max()->withTime()->setFormat('full')
+				];
+			})->setMinKey('from')->setMaxKey('to'),
+			[self::C_REGISTERED,self::C_ACTIVE],
+			$this->rule()->boolean(),
+		];
 	}
 	/**
 	 * Filter password
@@ -104,15 +121,10 @@ class UserEntity implements \BX\Validator\IEntity
 	 */
 	public function filterPassword(&$value)
 	{
-		$value = $this->getValue(self::C_PASSWORD);
-		if ($this->string()->length($value) === 0){
-			return $this->trans('user.entity.user.error_password_empty');
+		$value = User::getHashPassword($value);
+		if ($value === false){
+			return $this->trans('user.entity.user.error_password_min',['#MIN#' => 6]);
 		}
-		$min = $this->getMinLengthPassword();
-		if ($this->string()->length($value) < $min){
-			return $this->trans('user.entity.user.error_password_min',['#MIN#' => $min]);
-		}
-		$value = password_hash($value,PASSWORD_BCRYPT);
 	}
 	/**
 	 * Filter code

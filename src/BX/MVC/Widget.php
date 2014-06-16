@@ -11,7 +11,7 @@ abstract class Widget
 	const ON_BEFORE_RENDER_WIDGET = 'BeforeRenderWidget';
 	const ON_AFTER_RENDER_WIDGET = 'AfterRenderWidget';
 	const WIDGETS_DIR = 'widgets/';
-	protected $sWidgetFolder = 'widgets';
+	protected $widget_folder = 'widgets';
 	/**
 	 * @var View
 	 */
@@ -36,6 +36,50 @@ abstract class Widget
 		return $this->view;
 	}
 	/**
+	 * Return query string
+	 *
+	 * @param array $data
+	 * @return string
+	 */
+	private function getBuildQuery(array $data)
+	{
+		$return = [];
+		foreach($data as $key => $value){
+			if (is_array($value)){
+				$this->getBuildQueryRec($value,$key,$return);
+			}elseif ($value !== null){
+				$return[] = $key.'='.urlencode($value);
+			}
+		}
+		return implode('&',$return);
+	}
+	/**
+	 * Build recursive query strinq
+	 *
+	 * @param array $data
+	 * @param string $skey
+	 * @param array $return
+	 */
+	private function getBuildQueryRec(array $data,$skey,array &$return)
+	{
+		foreach($data as $key => $value){
+			if (is_array($value)){
+				$this->getBuildQueryRec($value,$skey.'['.$key.']',$return);
+			}elseif ($value !== null){
+				$return[] = $skey.'['.$key.']='.urlencode($value);
+			}
+		}
+	}
+	/**
+	 * Return current page path without query params
+	 *
+	 * @return string
+	 */
+	public function getCurPage()
+	{
+		return $this->request()->getPathInfo();
+	}
+	/**
 	 * Return current page path with query params
 	 *
 	 * @param array $add_params
@@ -54,14 +98,7 @@ abstract class Widget
 		if (!empty($add_params)){
 			$path .= '?';
 		}
-		foreach($add_params as $key => &$value){
-			if (is_string($value)){
-				$value = $key.'='.urlencode($value);
-			}else{
-				$value = $key.'='.http_build_query($value);
-			}
-		}
-		return $path.implode('&',$add_params);
+		return $path.$this->getBuildQuery($add_params);
 	}
 	/**
 	 * Return session id
@@ -94,6 +131,13 @@ abstract class Widget
 		echo $this->view()->render(self::WIDGETS_DIR.$file,$params);
 	}
 	/**
+	 * Init
+	 */
+	protected function init()
+	{
+
+	}
+	/**
 	 * Execute run
 	 *
 	 * @param array $params
@@ -108,6 +152,7 @@ abstract class Widget
 			}
 			$this->$func($value);
 		}
+		$this->init();
 		$this->fire(self::ON_BEFORE_RENDER_WIDGET,[&$this]);
 		$this->log()->debug('start widget `'.get_class($this).'`');
 		$this->run();

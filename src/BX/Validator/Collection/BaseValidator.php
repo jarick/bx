@@ -94,6 +94,15 @@ abstract class BaseValidator implements IValidator
 		return $this->new;
 	}
 	/**
+	 * Return field is required
+	 * 
+	 * @return boolean
+	 */
+	public function isRequired()
+	{
+		return !$this->empty;
+	}
+	/**
 	 * Has errors
 	 * @return array
 	 */

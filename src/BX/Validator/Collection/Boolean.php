@@ -2,6 +2,8 @@
 
 class Boolean extends BaseValidator
 {
+	use \BX\String\StringTrait,
+	 \BX\Translate\TranslateTrait;
 	/**
 	 * @var mixed
 	 */

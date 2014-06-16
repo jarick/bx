@@ -56,9 +56,13 @@ class CacheManager implements ICacheManager
 						$this->store = new ApcStore(new ApcWrapper());
 						break;
 					case 'memcache':
-						$memcache = new Memcached();
+						$memcache = new \Memcached();
 						$host = $this->config()->get('cache','host');
-						$port = $this->config()->get('cache','port');
+						if ($this->config()->exists('cache','port')){
+							$port = $this->config()->get('cache','port');
+						}else{
+							$port = 11211;
+						}
 						$memcache->addServer($host,$port);
 						$this->store = new MemcachedStore($memcache);
 						break;

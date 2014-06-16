@@ -5,6 +5,7 @@ use BX\Validator\Collection\Validator;
 use Illuminate\Support\MessageBag;
 use BX\ZendSearch\Helper\SearchHelper;
 use BX\ZendSearch\SearchCollection;
+use BX\Validator\Collection\Setter;
 
 trait EntityTrait
 {
@@ -31,9 +32,13 @@ trait EntityTrait
 	 */
 	protected $rules = [];
 	/**
+	 * @var array
+	 */
+	protected $cache_rules = null;
+	/**
 	 * Set labels,values and rules
 	 */
-	private function complete()
+	protected function complete()
 	{
 		$rules = $this->getRules();
 		for($i = 0; $i < count($rules); $i+=2){
@@ -53,6 +58,10 @@ trait EntityTrait
 					$this->value[$key] = null;
 				}
 			}
+		}
+		$filters = $this->filter();
+		for($i = 0; $i < count($filters); $i+=2){
+			$this->filters[] = [$filters[$i],$filters[$i + 1]];
 		}
 		return $this;
 	}
@@ -231,6 +240,42 @@ trait EntityTrait
 		return $this;
 	}
 	/**
+	 * Return is required field
+	 *
+	 * @param string $key
+	 * @return boolean
+	 * @throws \InvalidArgumentException
+	 */
+	public function isRequired($key)
+	{
+		if (!$this->exists($key)){
+			$fields = [
+				'#KEY#'		 => $key,
+				'#MODEL#'	 => get_class($this)
+			];
+			throw new \InvalidArgumentException(strtr("`#KEY#` is not field #MODEL#",$fields));
+		}
+		if ($this->cache_rules === null){
+			$this->cache_rules = [];
+			foreach($this->rules as $rule){
+				foreach($rule[0] as $field){
+					$this->cache_rules[$field][] = $rule[1];
+				}
+			}
+		}
+		if (isset($this->cache_rules[$key])){
+			foreach($this->cache_rules[$key] as $rule){
+				if ($rule instanceof Setter){
+					continue;
+				}
+				if ($rule->isRequired()){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	/**
 	 * Return old data
 	 *
 	 * @return array|null
@@ -293,6 +338,38 @@ trait EntityTrait
 			}
 		}
 		return $this;
+	}
+	/**
+	 * Return filter
+	 *
+	 * @return array
+	 */
+	protected function filter()
+	{
+		return [];
+	}
+	/**
+	 * Return filter array
+	 *
+	 * @param array $data
+	 * @return array
+	 */
+	public function getFilter($data = null)
+	{
+		if ($data === null){
+			$data = $this->getData();
+		}
+		$this->validator = $this->validator($this->filters,$this->labels);
+		if ($this->validator->check($data)){
+			foreach($data as $key => $value){
+				if ($this->string()->length($value) === 0){
+					unset($data[$key]);
+				}
+			}
+			return $data;
+		}else{
+			return array();
+		}
 	}
 	/**
 	 * Load validator

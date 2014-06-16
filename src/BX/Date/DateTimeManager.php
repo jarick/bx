@@ -39,12 +39,13 @@ class DateTimeManager
 		}
 	}
 	/**
-	 * Get format
+	 * Return format
+	 * 
 	 * @param string $type
 	 * @return string
 	 * @throws \InvalidArgumentException
 	 */
-	private function getFormat($type)
+	public function getFormat($type)
 	{
 		if ($this->config()->exists('date',$type)){
 			return $this->config()->get('date',$type);

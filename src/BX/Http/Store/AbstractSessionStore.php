@@ -31,16 +31,15 @@ abstract class AbstractSessionStore implements \ArrayAccess
 	 * @param type $offset
 	 * @return mised
 	 */
-	public function offsetGet($offset)
+	public function &offsetGet($offset)
 	{
 		$key = (array)$offset;
 		$bag = $this->getSessionBag();
 		foreach($key as $item){
-			if (isset($bag[$item])){
-				$bag = $bag[$item];
-			}else{
-				return null;
+			if (!isset($bag[$item])){
+				$bag[$item] = null;
 			}
+			$bag = &$bag[$item];
 		}
 		return $bag;
 	}

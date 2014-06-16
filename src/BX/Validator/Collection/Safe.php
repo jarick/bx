@@ -1,11 +1,11 @@
-<?php namespace BX\Validator\Manager;
+<?php namespace BX\Validator\Collection;
 
 class Safe extends BaseValidator
 {
 	private $security = false;
 	public function setSecurity($security = true)
 	{
-		$this->security = (bool) $security;
+		$this->security = (bool)$security;
 		return this;
 	}
 	/**
@@ -21,7 +21,7 @@ class Safe extends BaseValidator
 		if ($this->security){
 			$fields['~'.$key] = $value;
 			unset($fields[$key]);
-		} else{
+		}else{
 			return true;
 		}
 	}
