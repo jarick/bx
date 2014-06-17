@@ -51,10 +51,11 @@ class AdminUserEditWidget extends Widget
 	 * Return current object of UserEntity
 	 *
 	 * @param integer $id
+	 * @param integer $copy
 	 * @return \BX\User\Entity\UserEntity
 	 * @throws PageNotFound
 	 */
-	private function getUser($id)
+	private function getUser($id = 0,$copy = 0)
 	{
 		$post = $this->request()->post()->get('FORM');
 		if ($id > 0){
@@ -63,10 +64,9 @@ class AdminUserEditWidget extends Widget
 				throw new PageNotFound($this->trans('user.widgets.edit.user_not_found'));
 			}
 			if ($post !== null){
-				$save = array_merge($user->getData(),$this->trim($post));
-				$user->setData($save);
-				if ($this->checkFields($save,$user) && $user->checkFields($save,false)){
-					if (User::update($id,$save)){
+				$user->setData($post);
+				if ($this->checkFields($post,$user) && $user->checkFields($post,false)){
+					if (User::update($id,$post)){
 						$this->session()->setFlash(self::FLASH_KEY,$this->trans('user.widgets.edit.update_success'));
 						$this->onLocalRedirect($id);
 					}else{
@@ -75,7 +75,14 @@ class AdminUserEditWidget extends Widget
 				}
 			}
 		}else{
-			$user = new UserEntity();
+			if ($copy > 0){
+				$user = User::GetByID($copy);
+				if ($user === false){
+					throw new PageNotFound($this->trans('user.widgets.edit.user_not_found'));
+				}
+			}else{
+				$user = new UserEntity();
+			}
 			if ($post !== null){
 				$user->setData($this->trim($post));
 				if ($this->checkFields($post,$user) && $user->checkFields($post,true)){
@@ -205,15 +212,20 @@ class AdminUserEditWidget extends Widget
 	}
 	/**
 	 * Run
-	 *
-	 * @throws PageNotFound
 	 */
 	public function run()
 	{
 		$id = intval($this->request()->query()->get('id'));
-		$this->actionChangePassword($id);
-		$this->actionDelete($id);
-		$user = $this->getUser($id);
+		$copy = intval($this->request()->query()->get('copy'));
+		if ($id > 0){
+			$this->actionChangePassword($id);
+			$this->actionDelete($id);
+			$user = $this->getUser($id);
+		}elseif ($copy > 0){
+			$user = $this->getUser($id,$copy);
+		}else{
+			$user = $this->getUser();
+		}
 		$message = $this->session()->getFlash(self::FLASH_KEY);
 		if ($user->hasErrors()){
 			$error = $user->getErrors();
@@ -224,6 +236,6 @@ class AdminUserEditWidget extends Widget
 		$members = $this->getGroupsIdByUserId($id);
 		$session_id = $this->session()->getId();
 		$params = compact('user','message','id','error','groups','members','session_id');
-		$this->render('admin/user/user_edit',$params);
+		$this->render('admin/user/edit',$params);
 	}
 }

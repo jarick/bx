@@ -1,9 +1,8 @@
 <?php namespace BX\User\Widget;
-use BX\MVC\Widget\BaseAdminListWidget;
-use BX\User\User;
-use BX\User\Entity\UserEntity;
+use BX\User\Widget\UserGroup;
+use BX\User\Entity\UserGroupEntity;
 
-class AdminUserListWidget extends BaseAdminListWidget
+class AdminUserGroupListWidget extends BaseAdminListWidget
 {
 	/**
 	 * Delete group
@@ -13,7 +12,7 @@ class AdminUserListWidget extends BaseAdminListWidget
 	 */
 	protected function delete($id)
 	{
-		return User::delete($id);
+		return UserGroup::delete($id);
 	}
 	/**
 	 * Return filter entity
@@ -22,7 +21,7 @@ class AdminUserListWidget extends BaseAdminListWidget
 	 */
 	protected function getFilterEntity()
 	{
-		return new UserEntity();
+		return new UserGroupEntity();
 	}
 	/**
 	 * Return flash key
@@ -31,7 +30,7 @@ class AdminUserListWidget extends BaseAdminListWidget
 	 */
 	protected function getFlashKey()
 	{
-		return 'admin_user_widgets';
+		return 'admin_user_list_widgets';
 	}
 	/**
 	 * Return template
@@ -40,7 +39,7 @@ class AdminUserListWidget extends BaseAdminListWidget
 	 */
 	protected function getTemplate()
 	{
-		return 'admin/user/list';
+		return 'admin/user/group_list';
 	}
 	/**
 	 * Return SQL Builder
@@ -53,7 +52,7 @@ class AdminUserListWidget extends BaseAdminListWidget
 	 */
 	protected function getList(array $sort,array $filter,$offset = null,$limit = null)
 	{
-		$return = User::finder()->sort($sort)->filter($filter);
+		$return = UserGroup::finder()->sort($sort)->filter($filter);
 		if ($offset !== null){
 			$return->offset($offset);
 		}
