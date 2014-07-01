@@ -1,6 +1,6 @@
 <?php namespace BX\Validator\Collection;
 
-class Safe extends BaseValidator
+class SafeValidator extends BaseValidator
 {
 	private $security = false;
 	public function setSecurity($security = true)

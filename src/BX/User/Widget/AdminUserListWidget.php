@@ -1,7 +1,7 @@
 <?php namespace BX\User\Widget;
 use BX\MVC\Widget\BaseAdminListWidget;
 use BX\User\User;
-use BX\User\Entity\UserEntity;
+use BX\User\Form\AdminFilterForm;
 
 class AdminUserListWidget extends BaseAdminListWidget
 {
@@ -16,13 +16,13 @@ class AdminUserListWidget extends BaseAdminListWidget
 		return User::delete($id);
 	}
 	/**
-	 * Return filter entity
+	 * Return filter form
 	 *
-	 * @return \BX\User\Entity\UserGroupEntity
+	 * @return \BX\User\Form\AdminFilterForm
 	 */
-	protected function getFilterEntity()
+	protected function getFilterForm()
 	{
-		return new UserEntity();
+		return new AdminFilterForm();
 	}
 	/**
 	 * Return flash key

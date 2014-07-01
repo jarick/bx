@@ -10,7 +10,7 @@ class Dictionary implements \Iterator
 	/**
 	 * @var array
 	 */
-	private $array = [];
+	protected $array = [];
 	/**
 	 * Constructor
 	 * @param type $type
@@ -48,7 +48,18 @@ class Dictionary implements \Iterator
 		return $this;
 	}
 	/**
+	 * Magic return value by key
+	 *
+	 * @param string $key
+	 * @return string
+	 */
+	public function __get($key)
+	{
+		return $this->get($key);
+	}
+	/**
 	 * Has key
+	 *
 	 * @param string $key
 	 * @return boolean
 	 */
@@ -57,7 +68,8 @@ class Dictionary implements \Iterator
 		return array_key_exists($key,$this->array);
 	}
 	/**
-	 * Get value by key
+	 * Return value by key
+	 *
 	 * @param string $key
 	 * @return mixed
 	 */

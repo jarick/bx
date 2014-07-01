@@ -46,15 +46,15 @@ class SiteEntity implements IEntity
 	{
 		return [
 			[self::C_NAME,self::C_TITLE,self::C_FOLDER],
-			String::create()->notEmpty(),
+			$this->rule()->string()->notEmpty(),
 			[self::C_KEYWORDS],
-			String::create(),
+			$this->rule()->string(),
 			[self::C_REGEX],
-			Multy::create(String::create()->notEmpty())->notEmpty(),
+			$this->rule()->multy($this->rule()->string()->notEmpty())->notEmpty(),
 			[self::C_LAYOUT_RULE],
-			Custom::create([$this,'validateLayoutRule']),
+			$this->rule()->custom([$this,'validateLayoutRule']),
 			[self::C_URL_REWITE],
-			Custom::create([$this,'validateUrlRewrite']),
+			$this->rule()->custom([$this,'validateUrlRewrite']),
 		];
 	}
 	/**

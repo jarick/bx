@@ -8,7 +8,7 @@ class Validator
 	/**
 	 * @var MessageBag
 	 */
-	private $error;
+	private $error = null;
 	/**
 	 * @var labels
 	 */

@@ -1,6 +1,6 @@
 <?php namespace BX\Validator\Collection;
 
-class DateTime extends BaseValidator
+class DateTimeValidator extends BaseValidator
 {
 	use \BX\Date\DateTrait,
 	 \BX\String\StringTrait,

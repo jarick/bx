@@ -12,10 +12,6 @@ class AuthManager
 	const COOKIE_GUID = 'BX_USER_GUID';
 	const COOKIE_TOKEN = 'BX_USER_TOKEN';
 	/**
-	 * @var AccessEntity
-	 */
-	private $session_store = null;
-	/**
 	 * @var IAccessStore
 	 */
 	private $store = null;
@@ -49,8 +45,7 @@ class AuthManager
 	 */
 	public function login($guid = null,$token = null)
 	{
-		$session = $this->getSession();
-		if ($session === null){
+		if ($this->get() === null){
 			if ($guid === null){
 				$guid = $this->request()->cookie()->get(self::COOKIE_GUID);
 			}
@@ -67,13 +62,10 @@ class AuthManager
 			if ($access === false){
 				return false;
 			}
-			if (session_start()){
-				$data = $access->getData();
-				unset($data[AccessEntity::C_TIMESTAMP_X]);
-				unset($data[AccessEntity::C_TOKEN]);
-				$_SESSION[self::KEY] = $data;
-				session_write_close();
-			}
+			$data = $access->getData();
+			unset($data[AccessEntity::C_TIMESTAMP_X]);
+			unset($data[AccessEntity::C_TOKEN]);
+			$this->session()->set(self::KEY,$data);
 		}
 		return true;
 	}
@@ -90,16 +82,12 @@ class AuthManager
 		if (!$this->login($guid,$token)){
 			throw new \RuntimeException('Auth is not found');
 		}
-		$session = $this->getSession();
-		if ($session === null){
+		$access = $this->get();
+		if ($access === null){
 			throw new \RuntimeException('Auth session is not found');
 		}
-		if (session_start()){
-			unset($_SESSION[self::KEY]);
-			session_write_close();
-		}
-		$this->session_store = null;
-		return $this->store()->clear($session->user_id);
+		$this->session()->remove(self::KEY);
+		return $this->store()->clear($access->user_id);
 	}
 	/**
 	 * Clear old auth
@@ -131,10 +119,7 @@ class AuthManager
 		$access->user_id = $user_id;
 		$access->token = $token;
 		$this->store()->add($access);
-		if (session_start()){
-			$_SESSION[self::KEY] = $access->getData();
-			session_write_close();
-		}
+		$this->session()->set(self::KEY,$access->getData());
 		if ($http){
 			$this->request()->cookie()->set(self::COOKIE_GUID,$access->guid);
 			$this->request()->cookie()->set(self::COOKIE_TOKEN,$access->token);
@@ -147,35 +132,16 @@ class AuthManager
 	 * @return AccessEntity|null
 	 * @throws \RuntimeException
 	 */
-	public function getSession()
+	public function get()
 	{
-		if ($this->session_store === null){
-			if (session_start()){
-				if (isset($_SESSION[self::KEY])){
-					$access = new AccessEntity();
-					$access->setData($_SESSION[self::KEY],true);
-					$this->session_store = $access;
-				}
-				session_write_close();
-			}else{
-				throw new \RuntimeException('Session start return false');
+		if ($this->session()->has(self::KEY)){
+			$data = $this->session()->get(self::KEY);
+			if ($data !== null){
+				$access = new AccessEntity();
+				$access->setData($data,true);
+				return $access;
 			}
 		}
-		return $this->session_store;
-	}
-	/**
-	 * Reset sesion auth
-	 *
-	 * @throws \RuntimeException
-	 */
-	public function resetSession()
-	{
-		$this->session_store = null;
-		if (session_start()){
-			unset($_SESSION[self::KEY]);
-			session_write_close();
-		}else{
-			throw new \RuntimeException('Session start return false');
-		}
+		return null;
 	}
 }

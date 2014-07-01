@@ -22,7 +22,7 @@ class UserGroupEntity implements \BX\Validator\IEntity
 	const C_DESCRIPTION = 'DESCRIPTION';
 	const C_SORT = 'SORT';
 	/**
-	 * Get labels
+	 * Return labels
 	 *
 	 * @return array
 	 */
@@ -39,7 +39,7 @@ class UserGroupEntity implements \BX\Validator\IEntity
 		];
 	}
 	/**
-	 * Get rules
+	 * Return rules
 	 *
 	 * @return array
 	 */
@@ -58,6 +58,19 @@ class UserGroupEntity implements \BX\Validator\IEntity
 			$this->rule()->string()->setMax(1000),
 			[self::C_SORT],
 			$this->rule()->number()->integer()->setMin(0)->setDefault(500),
+		];
+	}
+	protected function filter()
+	{
+		return [
+			[self::C_ACTIVE],
+			$this->rule()->boolean(),
+			[self::C_TIMESTAMP_X],
+			$this->rule()->datetime_filter(),
+			[self::C_NAME,self::C_DESCRIPTION],
+			$this->rule()->string(),
+			[self::C_SORT],
+			$this->rule()->number()->integer(),
 		];
 	}
 }

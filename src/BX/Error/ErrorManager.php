@@ -1,6 +1,7 @@
 <?php namespace BX\Error;
 use Monolog;
 use BX\Logger\Logger;
+use \BX\Validator\Exception\ValidateException;
 
 class ErrorManager implements IErrorManager
 {
@@ -27,17 +28,19 @@ class ErrorManager implements IErrorManager
 	public static function set(\Exception $ex,$component = 'default')
 	{
 		self::$e = $ex;
-		$trace = $ex->getTrace();
-		$result = 'Exception: "';
-		$result .= $ex->getMessage();
-		$result .= '" @ ';
-		if ($trace[0]['class'] !== ''){
-			$result .= $trace[0]['class'];
-			$result .= '->';
+		if (!($ex instanceof ValidateException)){
+			$trace = $ex->getTrace();
+			$result = 'Exception: "';
+			$result .= $ex->getMessage();
+			$result .= '" @ ';
+			if ($trace[0]['class'] !== ''){
+				$result .= $trace[0]['class'];
+				$result .= '->';
+			}
+			$result .= $trace[0]['function'];
+			$result .= '();'.PHP_EOL;
+			Logger::getInstance($component)->err($result);
 		}
-		$result .= $trace[0]['function'];
-		$result .= '();'.PHP_EOL;
-		Logger::getInstance($component)->err($result);
 		return true;
 	}
 	/**

@@ -22,6 +22,17 @@ trait TranslateTrait
 		return DICService::get($name);
 	}
 	/**
+	 * Load messages from lang file
+	 *
+	 * @param string $package
+	 * @param string $service
+	 * @param string $lang
+	 */
+	protected function loadMessages($package,$service,$lang = null)
+	{
+		$this->translator()->load($package,$service,$lang);
+	}
+	/**
 	 * Translate message
 	 *
 	 * @params string $message

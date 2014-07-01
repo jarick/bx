@@ -111,15 +111,15 @@ abstract class BaseAdminListWidget extends Widget
 	/**
 	 * Retrurn sorting array
 	 *
-	 * @param IEntity $filter
+	 * @param IEntity $entity
 	 * @return array
 	 */
-	protected function getSorting(IEntity $filter)
+	protected function getSorting(IEntity $entity)
 	{
 		$value = $this->getQueryParam(self::Q_SORT);
 		if (is_array($value)){
 			foreach($value as $key => &$val){
-				if ($filter->exists($key)){
+				if ($entity->exists($key)){
 					if ($this->string()->toLower($val) !== 'asc'){
 						$val = 'desc';
 					}
@@ -252,7 +252,7 @@ abstract class BaseAdminListWidget extends Widget
 		}
 	}
 	abstract protected function delete($id);
-	abstract protected function getFilterEntity();
+	abstract protected function getFilterForm();
 	abstract protected function getFlashKey();
 	abstract protected function getTemplate();
 	/**
@@ -280,19 +280,20 @@ abstract class BaseAdminListWidget extends Widget
 	 */
 	private function actionIndex()
 	{
-		$filter = $this->getFilterEntity();
+		$filter = $this->getFilterForm();
+		$filter_array = $filter->getFilter();
 		$error = false;
 		$this->actionDelete($error);
-		$query_filter = $this->getQueryParam(self::Q_FILTER);
-		$filter->setData($this->trim($query_filter));
-		$count = $this->getList(array(),$filter->getFilter())->count();
+		$count = $this->getList(array(),$filter_array)->count();
 		$offset = intval($this->getQueryParam(self::Q_OFFSET));
 		$limit = intval($this->getQueryParam(self::Q_LIMIT));
 		if ($offset >= $limit){
 			$offset = 0;
 		}
-		$sort = $this->getSorting($filter);
-		$list = $this->getList($sort,$filter->getFilter(),$offset,$limit)->all();
+		//TODO
+		#$sort = $this->getSorting($filter);
+		$sort = [];
+		$list = $this->getList($sort,$filter_array,$offset,$limit)->all();
 		$format = $this->request()->query()->get('format');
 		if ($format !== null){
 			foreach($this->formats as $render){

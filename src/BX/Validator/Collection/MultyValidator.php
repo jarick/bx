@@ -1,7 +1,7 @@
 <?php namespace BX\Validator\Collection;
 use BX\Validator\IValidator;
 
-class Multy extends BaseValidator
+class MultyValidator extends BaseValidator
 {
 	use \BX\String\StringTrait,
 	 \BX\Translate\TranslateTrait;

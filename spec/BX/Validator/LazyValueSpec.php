@@ -1,6 +1,6 @@
 <?php namespace spec\BX\Validator;
 use BX\DB\Test\TestTable;
-use BX\Validator\Collection\String;
+use BX\Validator\Collection\StringValidator;
 use PhpSpec\ObjectBehavior;
 
 class LazyValueSpec extends ObjectBehavior
@@ -19,7 +19,7 @@ class LazyValueSpec extends ObjectBehavior
 		$labels = ['ID' => 'ID','TEST' => 'TEST'];
 		$key = 'TEST';
 		$this->setParameters($key,$fields,$labels);
-		$this->add(String::create()->notEmpty()->setMin(5)->setMessageMin('IS MIN'));
+		$this->add(StringValidator::create()->notEmpty()->setMin(5)->setMessageMin('IS MIN'));
 		$this->check('TEST')->shouldBe(false);
 		$this->getEntity()->getErrors()->get('TEST')->shouldBe(['IS MIN']);
 		$this->check('TEST5')->shouldBe(true);

@@ -39,7 +39,7 @@ class Session implements \ArrayAccess
 	/**
 	 * Return flash store
 	 *
-	 * @return AbstractSessionStore
+	 * @return Store\AbstractSessionStore
 	 */
 	public function store()
 	{
@@ -127,6 +127,48 @@ class Session implements \ArrayAccess
 			$store[self::FLASH_KEY] = self::$save_flash;
 			self::$start = true;
 		}
+	}
+	/**
+	 * Set value in session
+	 *
+	 * @param string $key
+	 * @param string $value
+	 * @return Session
+	 */
+	public function set($key,$value)
+	{
+		$this->store()->offsetSet($key,$value);
+		return $this;
+	}
+	/**
+	 * Return value by key
+	 *
+	 * @param string $key
+	 * @return Session
+	 */
+	public function get($key)
+	{
+		return $this->store()->offsetGet($key);
+	}
+	/**
+	 * Return is has key in store
+	 *
+	 * @param string $key
+	 */
+	public function has($key)
+	{
+		return $this->store()->offsetExists($key);
+	}
+	/**
+	 * Remove store by key
+	 *
+	 * @param string $key
+	 * @return Session
+	 */
+	public function remove($key)
+	{
+		$this->store()->offsetUnset($key);
+		return $this;
 	}
 	/**
 	 * Exists key in store

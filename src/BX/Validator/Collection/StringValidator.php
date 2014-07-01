@@ -1,17 +1,32 @@
 <?php namespace BX\Validator\Collection;
 
-class String extends BaseValidator
+class StringValidator extends BaseValidator
 {
 	use \BX\String\StringTrait,
 	 \BX\Translate\TranslateTrait;
+	/**
+	 * @var integer
+	 */
 	protected $min = null;
+	/**
+	 * @var integer
+	 */
 	protected $max = null;
+	/**
+	 * @var integer
+	 */
 	protected $is = null;
+	/**
+	 * @var string
+	 */
 	protected $massage_invalid = false;
 	/**
 	 * @var string
 	 */
 	protected $message_empty = null;
+	/**
+	 * @var string
+	 */
 	protected $massage_min = false;
 	protected $massage_max = false;
 	protected $massage_is = false;
@@ -31,6 +46,7 @@ class String extends BaseValidator
 	}
 	/**
 	 * Set empty message
+	 *
 	 * @param string $message
 	 * @return \BX\Validator\Collection\String
 	 */
@@ -40,7 +56,8 @@ class String extends BaseValidator
 		return $this;
 	}
 	/**
-	 * Get empty message
+	 * Return message if value is empty
+	 *
 	 * @return string
 	 */
 	protected function getMessageEmpty()

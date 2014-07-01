@@ -292,8 +292,8 @@ class SiteController
 			$this->session()->save();
 			return $return;
 		}catch (\Exception $e){
-			$this->session()->save();
 			$this->log()->error($e->getMessage());
+			$this->session()->save();
 			return $this->getRenderException()->render($e,$this);
 		}
 	}

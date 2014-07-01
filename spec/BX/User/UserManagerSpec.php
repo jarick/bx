@@ -41,7 +41,6 @@ class UserManagerSpec extends ObjectBehavior
 		];
 		$this->update(1,$save)->shouldBe(true);
 		unset($save['PASSWORD']);
-		$save['CODE'] = 'user2';
 		$this->finder()->filter(['ID' => 1])->get()->getData()->shouldDbResult($save);
 	}
 	function it_filter()

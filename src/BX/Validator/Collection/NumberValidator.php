@@ -1,6 +1,6 @@
 <?php namespace BX\Validator\Collection;
 
-class Number extends BaseValidator
+class NumberValidator extends BaseValidator
 {
 	use \BX\String\StringTrait,
 	 \BX\Translate\TranslateTrait;

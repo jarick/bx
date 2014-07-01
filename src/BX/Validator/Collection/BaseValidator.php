@@ -1,6 +1,7 @@
 <?php namespace BX\Validator\Collection;
 use BX\Validator\IValidator;
 use Illuminate\Support\MessageBag;
+use BX\String\Str;
 
 abstract class BaseValidator implements IValidator
 {
@@ -76,7 +77,8 @@ abstract class BaseValidator implements IValidator
 		return (isset($value[$key])) ? $value[$key] : null;
 	}
 	/**
-	 * Is empty
+	 * Return is empty
+	 *
 	 * @param string $value
 	 * @param boolean $trim
 	 * @return bollean
@@ -95,7 +97,7 @@ abstract class BaseValidator implements IValidator
 	}
 	/**
 	 * Return field is required
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public function isRequired()
@@ -125,6 +127,16 @@ abstract class BaseValidator implements IValidator
 		return $this->error;
 	}
 	/**
+	 * Clear error
+	 *
+	 * @return BaseValidator
+	 */
+	public function clearErrors()
+	{
+		$this->error = new MessageBag();
+		return $this;
+	}
+	/**
 	 * Add error
 	 * @param string $key
 	 * @param string $message
@@ -135,7 +147,7 @@ abstract class BaseValidator implements IValidator
 		if ($this->error === null){
 			$this->error = new MessageBag();
 		}
-		$this->error->add($this->string()->toUpper($key),(!empty($params)) ? strtr($message,$params) : $message);
+		$this->error->add(Str::toUpper($key),(!empty($params)) ? strtr($message,$params) : $message);
 	}
 	/**
 	 * Validate field

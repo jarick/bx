@@ -2,6 +2,7 @@
 use BX\DB\ITable;
 use BX\DB\UnitOfWork\Repository;
 use BX\User\Entity\UserEntity;
+use BX\Validator\Exception\ValidateException;
 
 class TableUserStore implements ITable
 {
@@ -94,8 +95,7 @@ class TableUserStore implements ITable
 	{
 		$repo->add($this,$entity);
 		if (!$repo->commit()){
-			$mess = print_r($repo->getErrorEntity()->getErrors()->all(),1);
-			throw new \RuntimeException("Error add user. Error: {$mess}.");
+			throw new ValidateException($repo->getErrorEntity()->getErrors());
 		}
 		return $entity->id;
 	}
@@ -111,8 +111,7 @@ class TableUserStore implements ITable
 	{
 		$repo->update($this,$entity);
 		if (!$repo->commit()){
-			$mess = print_r($repo->getErrorEntity()->getErrors()->all(),1);
-			throw new \RuntimeException("Error update user. Error: {$mess}.");
+			throw new ValidateException($repo->getErrorEntity()->getErrors());
 		}
 		return true;
 	}
@@ -128,8 +127,7 @@ class TableUserStore implements ITable
 	{
 		$repo->delete($this,$entity);
 		if (!$repo->commit()){
-			$mess = print_r($repo->getErrorEntity()->getErrors()->all(),1);
-			throw new \RuntimeException("Error delete user. Error: {$mess}.");
+			throw new ValidateException($repo->getErrorEntity()->getErrors());
 		}
 		return true;
 	}

@@ -2,6 +2,12 @@
 
 class NativeSessionStore extends AbstractSessionStore
 {
+	public function __construct()
+	{
+		if (session_status() == PHP_SESSION_NONE){
+			session_start();
+		}
+	}
 	/**
 	 * Return session bag
 	 *
@@ -10,7 +16,6 @@ class NativeSessionStore extends AbstractSessionStore
 	protected function getSessionBag()
 	{
 		if ($this->bag === null){
-			session_start();
 			$this->bag = $_SESSION;
 		}
 		return $this->bag;

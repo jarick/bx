@@ -59,10 +59,6 @@ trait EntityTrait
 				}
 			}
 		}
-		$filters = $this->filter();
-		for($i = 0; $i < count($filters); $i+=2){
-			$this->filters[] = [$filters[$i],$filters[$i + 1]];
-		}
 		return $this;
 	}
 	/**
@@ -187,6 +183,15 @@ trait EntityTrait
 	public function exists($key)
 	{
 		return array_key_exists($this->string()->toUpper($key),$this->value);
+	}
+	/**
+	 * Return array of name fields
+	 *
+	 * @return array
+	 */
+	public function getKeys()
+	{
+		return array_keys($this->value);
 	}
 	/**
 	 * Print value
@@ -338,38 +343,6 @@ trait EntityTrait
 			}
 		}
 		return $this;
-	}
-	/**
-	 * Return filter
-	 *
-	 * @return array
-	 */
-	protected function filter()
-	{
-		return [];
-	}
-	/**
-	 * Return filter array
-	 *
-	 * @param array $data
-	 * @return array
-	 */
-	public function getFilter($data = null)
-	{
-		if ($data === null){
-			$data = $this->getData();
-		}
-		$this->validator = $this->validator($this->filters,$this->labels);
-		if ($this->validator->check($data)){
-			foreach($data as $key => $value){
-				if ($this->string()->length($value) === 0){
-					unset($data[$key]);
-				}
-			}
-			return $data;
-		}else{
-			return array();
-		}
 	}
 	/**
 	 * Load validator

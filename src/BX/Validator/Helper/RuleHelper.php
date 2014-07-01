@@ -1,14 +1,14 @@
 <?php namespace BX\Validator\Helper;
-use BX\Validator\Collection\Boolean;
-use BX\Validator\Collection\Custom;
-use BX\Validator\Collection\DateTime;
-use BX\Validator\Collection\DateTimeFilter;
+use BX\Validator\Collection\BooleanValidator;
+use BX\Validator\Collection\CustomValidator;
+use BX\Validator\Collection\DateTimeValidator;
+use BX\Validator\Collection\DateTimeFilterValidator;
 use BX\Validator\Collection\File;
-use BX\Validator\Collection\Multy;
-use BX\Validator\Collection\Number;
-use BX\Validator\Collection\Safe;
+use BX\Validator\Collection\MultyValidator;
+use BX\Validator\Collection\NumberValidator;
+use BX\Validator\Collection\SafeValidator;
 use BX\Validator\Collection\Setter;
-use BX\Validator\Collection\String;
+use BX\Validator\Collection\StringValidator;
 use BX\Validator\IValidator;
 
 class RuleHelper
@@ -16,76 +16,76 @@ class RuleHelper
 	/**
 	 * Return boolean validator
 	 *
-	 * @return Boolean
+	 * @return BooleanValidator
 	 */
 	public function boolean()
 	{
-		return Boolean::create();
+		return BooleanValidator::create();
 	}
 	/**
 	 * Return custom validator
 	 *
 	 * @param string $function
-	 * @return Custom
+	 * @return CustomValidator
 	 */
 	public function custom($function)
 	{
-		return Custom::create($function);
+		return CustomValidator::create($function);
 	}
 	/**
 	 * Return date validator
 	 *
-	 * @return DateTime
+	 * @return DateTimeValidator
 	 */
 	public function date()
 	{
-		return DateTime::create();
+		return DateTimeValidator::create();
 	}
 	/**
 	 * Return datetime filter validator
 	 *
-	 * @return DateTime
+	 * @return DateTimeValidator
 	 */
 	public function datetime_filter()
 	{
-		return DateTimeFilter::create();
+		return DateTimeFilterValidator::create();
 	}
 	/**
 	 * Return datetime validator
 	 *
-	 * @return DateTime
+	 * @return DateTimeValidator
 	 */
 	public function datetime()
 	{
-		return DateTime::create()->withTime();
+		return DateTimeValidator::create()->withTime();
 	}
 	/**
 	 * Return multy validator
 	 *
 	 * @param IValidator $validator
-	 * @return Multy
+	 * @return MultyValidator
 	 */
 	public function multy(IValidator $validator)
 	{
-		return Multy::create($validator);
+		return MultyValidator::create($validator);
 	}
 	/**
 	 * Get number validator
 	 *
-	 * @return Number
+	 * @return NumberValidator
 	 */
 	public function number()
 	{
-		return Number::create();
+		return NumberValidator::create();
 	}
 	/**
 	 * Return safe validator
 	 *
-	 * @return Safe
+	 * @return SafeValidator
 	 */
 	public function safe()
 	{
-		return Safe::create();
+		return SafeValidator::create();
 	}
 	/**
 	 * Return setter
@@ -99,11 +99,11 @@ class RuleHelper
 	/**
 	 * Return string validator
 	 *
-	 * @return String
+	 * @return StringValidator
 	 */
 	public function string()
 	{
-		return String::create();
+		return StringValidator::create();
 	}
 	/**
 	 * Return file validator

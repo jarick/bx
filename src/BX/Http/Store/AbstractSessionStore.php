@@ -2,6 +2,9 @@
 
 abstract class AbstractSessionStore implements \ArrayAccess
 {
+	/**
+	 * @var array
+	 */
 	protected $bag = null;
 	abstract protected function getSessionBag();
 	abstract protected function saveSessionBag();
@@ -52,22 +55,39 @@ abstract class AbstractSessionStore implements \ArrayAccess
 	public function offsetSet($offset,$value)
 	{
 		$key = (array)$offset;
-		$bag = $this->getSessionBag();
 		$data = $value;
 		for($i = count($key) - 1; $i > 0; $i--){
 			$data = [$key[$i] => $data];
 		}
-		#if (isset($this->bag[$key[0]])){
-		#	$data = array_merge_recursive($this->bag[$key[0]],$data);
-		#}
 		$this->bag[$key[0]] = $data;
 	}
+	/**
+	 * Unset value
+	 *
+	 * @param array $offset
+	 * @return boolean
+	 */
 	public function offsetUnset($offset)
 	{
-
+		$key = (array)$offset;
+		$data = null;
+		for($i = count($key) - 1; $i > 0; $i--){
+			$data = [$key[$i] => $data];
+		}
+		$this->bag[$key[0]] = $data;
 	}
+	/**
+	 * Save session
+	 */
 	public function save()
 	{
 		$this->saveSessionBag();
+	}
+	/**
+	 * Clear session
+	 */
+	public function clear()
+	{
+		$this->bag = [];
 	}
 }

@@ -6,17 +6,17 @@ use PhpSpec\ObjectBehavior;
 
 class AuthManagerSpec extends ObjectBehavior
 {
-	use \BX\DB\DBTrait;
+	use \BX\DB\DBTrait,
+	 \BX\Http\HttpTrait;
 	function let()
 	{
 		Schema::loadFromYamlFile();
-		session_start();
-		$_SESSION[AuthManager::KEY] = [
+		$session = [
 			'ID'		 => 1,
 			'USER_ID'	 => 1,
 			'GUID'		 => 'qwerty',
 		];
-		session_write_close();
+		$this->session()->set(AuthManager::KEY,$session);
 	}
 	function it_is_initializable()
 	{
@@ -25,9 +25,9 @@ class AuthManagerSpec extends ObjectBehavior
 	function it_login()
 	{
 		$this->login()->shouldBe(true);
-		$this->resetSession();
+		$this->session()->remove(AuthManager::KEY);
 		$this->login('qwerty','qwerty')->shouldBe(true);
-		$this->getSession()->shouldNotBe(null);
+		$this->get()->shouldNotBe(null);
 	}
 	function it_logout()
 	{
@@ -37,7 +37,7 @@ class AuthManagerSpec extends ObjectBehavior
 		if ($count !== 0){
 			throw new \RuntimeException('Fall test');
 		}
-		$this->getSession()->shouldBe(null);
+		$this->get()->shouldBe(null);
 	}
 	function it_add()
 	{
@@ -60,6 +60,6 @@ class AuthManagerSpec extends ObjectBehavior
 	}
 	function it_current()
 	{
-		$this->getSession()->shouldHaveType(AccessEntity::getClass());
+		$this->get()->shouldHaveType(AccessEntity::getClass());
 	}
 }

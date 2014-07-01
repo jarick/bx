@@ -1,9 +1,11 @@
 <?php namespace BX\User;
 use BX\DB\Filter\SqlBuilder;
+use BX\Validator\Exception\ValidateException;
 use BX\User\Store\TableUserStore;
 use BX\User\Entity\UserEntity;
 use BX\Event\Event;
 use BX\Cache\Cache;
+use Illuminate\Support\MessageBag;
 
 class UserManager
 {
@@ -41,23 +43,32 @@ class UserManager
 		$entity = new UserEntity();
 		$entity->setData($user);
 		$repo = $this->store()->getRepository('user');
-		$filter = array(
-			'LOGIC'				 => 'OR',
-			UserEntity::C_LOGIN	 => $user[UserEntity::C_LOGIN],
-			UserEntity::C_EMAIL	 => $user[UserEntity::C_EMAIL],
-		);
-		$copy = $this->finder()->filter($filter)->get();
-		if ($copy !== false){
-			$repo->rollback();
-			if ($copy->getValue(UserEntity::C_LOGIN) === $user[UserEntity::C_LOGIN]){
-				throw new \RuntimeException('Dublicate login');
-			}
-			if ($copy->getValue(UserEntity::C_EMAIL) === $user[UserEntity::C_EMAIL]){
-				throw new \RuntimeException('Dublicate email');
-			}
-			throw new \RuntimeException('Dublicate login or email');
-		}
 		$event = $this->store()->getEvent();
+		if ($this->string()->length($event) > 0){
+			$event_after = 'OnBefore'.$this->string()->ucwords($event).'Add';
+			Event::on($event_after,function($user){
+				$filter = array(
+					'LOGIC'				 => 'OR',
+					UserEntity::C_LOGIN	 => $user[UserEntity::C_LOGIN],
+					UserEntity::C_EMAIL	 => $user[UserEntity::C_EMAIL],
+				);
+				$copy = $this->finder()->filter($filter)->get();
+				if ($copy !== false){
+					$error = new MessageBag();
+					if ($copy->getValue(UserEntity::C_LOGIN) === $user[UserEntity::C_LOGIN]){
+						$error->add(UserEntity::C_LOGIN,$this->trans('user.manager.add.dublicate_login'));
+						throw new ValidateException($error);
+					}
+					if ($copy->getValue(UserEntity::C_EMAIL) === $user[UserEntity::C_EMAIL]){
+						$error->add(UserEntity::C_EMAIL,$this->trans('user.manager.add.dublicate_email'));
+						throw new ValidateException($error);
+					}
+					$error->add(UserEntity::C_LOGIN,$this->trans('user.manager.add.dublicate_login_or_email'));
+					$error->add(UserEntity::C_EMAIL,$this->trans('user.manager.add.dublicate_login_or_email'));
+					throw new ValidateException($error);
+				}
+			});
+		}
 		if ($this->string()->length($event) > 0){
 			$event_after = 'OnAfter'.$this->string()->ucwords($event).'Add';
 			Event::on($event_after,function(){
@@ -82,33 +93,40 @@ class UserManager
 			throw new \RuntimeException("Error user is not found.");
 		}
 		$entity->setData($user);
-		$filter = array(
-			array(
-				'LOGIC'				 => 'OR',
-				UserEntity::C_LOGIN	 => $entity->login,
-				UserEntity::C_EMAIL	 => $entity->email,
-			),
-			'!ID' => $id,
-		);
-		$copy = $this->finder()->filter($filter)->get();
-		if ($copy !== false){
-			$repo->rollback();
-			if ($copy->getValue(UserEntity::C_LOGIN) === $entity->login){
-				throw new \RuntimeException('Dublicate login');
-			}
-			if ($copy->getValue(UserEntity::C_EMAIL) === $entity->email){
-				throw new \RuntimeException('Dublicate email');
-			}
-			throw new \RuntimeException('Dublicate login or email');
-		}
 		$event = $this->store()->getEvent();
+		if ($this->string()->length($event) > 0){
+			$event_after = 'OnBefore'.$this->string()->ucwords($event).'Update';
+			Event::on($event_after,function($id,$user){
+				$filter = array(
+					array(
+						'LOGIC'				 => 'OR',
+						UserEntity::C_LOGIN	 => $user[UserEntity::C_LOGIN],
+						UserEntity::C_EMAIL	 => $user[UserEntity::C_EMAIL],
+					),
+					'!ID' => $id,
+				);
+				$copy = $this->finder()->filter($filter)->get();
+				if ($copy !== false){
+					if ($copy->getValue(UserEntity::C_LOGIN) === $user[UserEntity::C_LOGIN]){
+						throw new ValidateException($this->trans('user.manager.add.dublicate_login'));
+					}
+					if ($copy->getValue(UserEntity::C_EMAIL) === $user[UserEntity::C_EMAIL]){
+						throw new ValidateException($this->trans('user.manager.add.dublicate_email'));
+					}
+					throw new ValidateException($this->trans('user.manager.add.dublicate_login_or_email'));
+				}
+			});
+		}
 		if ($this->string()->length($event) > 0){
 			$event_after = 'OnAfter'.$this->string()->ucwords($event).'Update';
 			Event::on($event_after,function(){
 				Cache::clearByTags('user');
 			});
 		}
-		return $this->store()->update($repo,$entity);
+		if (!$this->store()->update($repo,$entity)){
+			throw new ValidateException($entity->getErrors());
+		}
+		return true;
 	}
 	/**
 	 * Delete user

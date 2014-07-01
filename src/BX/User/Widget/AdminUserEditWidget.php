@@ -5,7 +5,7 @@ use BX\MVC\Exception\PageNotFound;
 use BX\User\Entity\UserEntity;
 use BX\User\UserGroup;
 use BX\User\UserGroupMember;
-use BX\User\Entity\PasswordForm;
+use BX\User\Form\PasswordForm;
 use BX\Validator\IEntity;
 
 class AdminUserEditWidget extends Widget
@@ -48,31 +48,25 @@ class AdminUserEditWidget extends Widget
 		return $return;
 	}
 	/**
-	 * Return current object of UserEntity
+	 * Return form
 	 *
 	 * @param integer $id
 	 * @param integer $copy
-	 * @return \BX\User\Entity\UserEntity
+	 * @return \BX\User\Form\UserEditForm
 	 * @throws PageNotFound
 	 */
-	private function getUser($id = 0,$copy = 0)
+	private function getForm($id = 0,$copy = 0)
 	{
-		$post = $this->request()->post()->get('FORM');
+		$form = new BX\User\Form\UserEditForm();
 		if ($id > 0){
 			$user = User::GetByID($id);
 			if ($user === false){
 				throw new PageNotFound($this->trans('user.widgets.edit.user_not_found'));
 			}
-			if ($post !== null){
-				$user->setData($post);
-				if ($this->checkFields($post,$user) && $user->checkFields($post,false)){
-					if (User::update($id,$post)){
-						$this->session()->setFlash(self::FLASH_KEY,$this->trans('user.widgets.edit.update_success'));
-						$this->onLocalRedirect($id);
-					}else{
-						$user->addError(false,$this->trans('user.widgets.edit.update_error'));
-					}
-				}
+			$form->setEntity($user);
+			if ($form->update($id)){
+				$this->session()->setFlash(self::FLASH_KEY,$this->trans('user.widgets.edit.update_success'));
+				$this->onLocalRedirect($id);
 			}
 		}else{
 			if ($copy > 0){
@@ -80,20 +74,13 @@ class AdminUserEditWidget extends Widget
 				if ($user === false){
 					throw new PageNotFound($this->trans('user.widgets.edit.user_not_found'));
 				}
+				$form->setEntity($user);
 			}else{
-				$user = new UserEntity();
+				$form->setEntity(new UserEntity());
 			}
-			if ($post !== null){
-				$user->setData($this->trim($post));
-				if ($this->checkFields($post,$user) && $user->checkFields($post,true)){
-					$id = User::add($post);
-					if ($id !== false){
-						$this->session()->setFlash(self::FLASH_KEY,$this->trans('user.widgets.edit.add_success'));
-						$this->onLocalRedirect($id);
-					}else{
-						$user->addError(false,$this->trans('user.widgets.edit.add_error'));
-					}
-				}
+			if ($form->add()){
+				$this->session()->setFlash(self::FLASH_KEY,$this->trans('user.widgets.edit.add_success'));
+				$this->onLocalRedirect($id);
 			}
 		}
 		return $user;
@@ -169,23 +156,13 @@ class AdminUserEditWidget extends Widget
 	}
 	/**
 	 * Change password
-	 *
-	 * @param integer $id
 	 */
-	private function actionChangePassword($id)
+	private function actionChangePassword()
 	{
-		$post = $this->request()->post()->get('PASSWORD');
-		if ($id > 0 && $post !== null){
-			$form = new PasswordForm();
-			$form->setData($post);
-			if ($this->checkFields($post,$form) && $form->checkFields($post)){
-				if (!User::updatePassword($form->user_id,$form->new)){
-					$error = $this->trans('user.widgets.user_edit.password_change_error');
-					$form->addError(false,$error);
-				}
-			}
-			if ($form->hasErrors()){
-				$error = implode(', ',$form->getErrors()->all());
+		$form = new PasswordForm();
+		if ($this->request()->post()->get($form->getFormName()) !== null){
+			if ($form->save()){
+				$error = implode('<br/> ',$form->getErrors()->all());
 				$this->view->json(['status' => 0,'message' => $error]);
 			}else{
 				$error = $this->trans('user.widgets.user_edit.password_change_success');
@@ -220,22 +197,16 @@ class AdminUserEditWidget extends Widget
 		if ($id > 0){
 			$this->actionChangePassword($id);
 			$this->actionDelete($id);
-			$user = $this->getUser($id);
+			$form = $this->getForm($id);
 		}elseif ($copy > 0){
-			$user = $this->getUser($id,$copy);
+			$form = $this->getForm($id,$copy);
 		}else{
-			$user = $this->getUser();
+			$form = $this->getForm();
 		}
 		$message = $this->session()->getFlash(self::FLASH_KEY);
-		if ($user->hasErrors()){
-			$error = $user->getErrors();
-		}else{
-			$error = false;
-		}
 		$groups = $this->getGroups();
 		$members = $this->getGroupsIdByUserId($id);
-		$session_id = $this->session()->getId();
-		$params = compact('user','message','id','error','groups','members','session_id');
+		$params = compact('form','message','id','groups','members','session_id');
 		$this->render('admin/user/edit',$params);
 	}
 }

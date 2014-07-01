@@ -52,12 +52,15 @@ class TranslateManager
 	/**
 	 * Load messages from php class
 	 *
-	 * @param string $lang
 	 * @param string $package
 	 * @param string $service
+	 * @param string $lang
 	 */
-	private function load($lang,$package,$service)
+	public function load($package,$service,$lang = null)
 	{
+		if ($lang === null){
+			$lang = $this->lang;
+		}
 		$key = $package.'.'.$service.'.'.$lang;
 		if (!array_key_exists($key,$this->files)){
 			$class = $package."\\".$service."\\Message\\".ucwords($lang);
@@ -97,7 +100,7 @@ class TranslateManager
 	 */
 	public function trans($message,array $params = [],$lang = false,$package = false,$service = false)
 	{
-		$this->load($lang,$package,$service);
+		$this->load($package,$service,$lang);
 		return $this->adaptor()->trans($message,$params);
 	}
 	/**
@@ -113,7 +116,7 @@ class TranslateManager
 	 */
 	public function choice($message,$number,array $params = [],$lang = false,$package = false,$service = false)
 	{
-		$this->load($lang,$package,$service);
+		$this->load($package,$service,$lang);
 		return $this->adaptor()->transChoice($message,$number,$params);
 	}
 }

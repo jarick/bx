@@ -1,5 +1,4 @@
 <?php namespace BX\User\Entity;
-use BX\Error\Error;
 use BX\User\User;
 
 /**
@@ -32,10 +31,6 @@ class UserEntity implements \BX\Validator\IEntity
 	const C_REGISTERED = 'REGISTERED';
 	const C_ACTIVE = 'ACTIVE';
 	const C_DISPLAY_NAME = 'DISPLAY_NAME';
-	/**
-	 * @var array
-	 */
-	protected $filters = [];
 	/**
 	 * Return labels
 	 *
@@ -87,29 +82,6 @@ class UserEntity implements \BX\Validator\IEntity
 			])->setValue($this->date()->convertTimeStamp()),
 			[self::C_DISPLAY_NAME],
 			$this->rule()->string()->setMax(100),
-			[self::C_REGISTERED,self::C_ACTIVE],
-			$this->rule()->boolean(),
-		];
-	}
-	/**
-	 * Return rules for filter
-	 *
-	 * @return array
-	 */
-	protected function filter()
-	{
-		return[
-			[self::C_ID],
-			$this->rule()->number()->integer()->setMin(1),
-			[self::C_DISPLAY_NAME,self::C_LOGIN,self::C_EMAIL,self::C_LOGIN,self::C_CODE,self::C_GUID],
-			$this->rule()->safe(),
-			[self::C_CREATE_DATE,self::C_TIMESTAMP_X],
-			$this->rule()->datetime_filter()->filter(function($filter){
-				return [
-					$filter->min()->withTime()->setFormat('full'),
-					$filter->max()->withTime()->setFormat('full')
-				];
-			})->setMinKey('from')->setMaxKey('to'),
 			[self::C_REGISTERED,self::C_ACTIVE],
 			$this->rule()->boolean(),
 		];
