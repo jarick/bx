@@ -69,10 +69,6 @@ class ConfigManager implements IConfigManager
 			$args = $args[0];
 		}
 		foreach($args as $name){
-			if (!is_string($name)){
-				var_dump(func_get_args());
-				die();
-			}
 			if (array_key_exists($name,$temp)){
 				$temp = $temp[$name];
 			}else{

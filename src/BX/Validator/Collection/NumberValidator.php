@@ -193,16 +193,6 @@ class NumberValidator extends BaseValidator
 		return $message;
 	}
 	/**
-	 * Set is not empty
-	 *
-	 * @return \BX\Validator\Collection\Number
-	 */
-	public function notEmpty()
-	{
-		$this->empty = false;
-		return $this;
-	}
-	/**
 	 * Set min value
 	 *
 	 * @param float $min

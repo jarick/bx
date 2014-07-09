@@ -155,7 +155,7 @@ class DateField extends BaseField
 		}
 		echo '</label>'
 		.'<input type="datetime" class="form-control"'
-		.' name="'.$this->string()->escape($this->name).'"'
+		.' name="'.$this->string()->escape($this->getFullName()).'"'
 		.' id="'.$this->getId().'"'
 		.' tabindex='.$this->tabindex
 		.' placeholder="'.$placeholder.'"'
@@ -170,6 +170,6 @@ class DateField extends BaseField
 	 */
 	public function renderMulty()
 	{
-
+		throw new \RuntimeException('Function in development');
 	}
 }

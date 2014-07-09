@@ -50,7 +50,16 @@ class SessidField extends BaseField
 	 */
 	public function renderMulty()
 	{
-
+		throw new \RuntimeException('Function in development');
+	}
+	/**
+	 * Return session id
+	 *
+	 * @return string
+	 */
+	public function getSessionId()
+	{
+		return $this->session()->getId();
 	}
 	/**
 	 * Validate value

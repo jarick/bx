@@ -1,0 +1,18 @@
+!!!
+%html
+  %head
+    %meta(charset=$view['charset'])/
+    %title =$view['page_title']
+    %link(rel="icon" href="/img/favicon.png" type="image/x-icon")/
+    - if(isset($view['css']))
+      - foreach($view['css'] as $css)
+        %link(rel="stylesheet" href=$css)/
+    - if(isset($view['head_js']))
+      - foreach($view['head_js'] as $js)
+        %script(type="text/javascript" src=$js)
+  %body
+    =$page            
+    %script(type="text/javascript" src="/js/bootstrap.js")
+    - if(isset($view['footer_js']))
+      - foreach($view['footer_js'] as $js)
+        %script(type="text/javascript" src=$js)

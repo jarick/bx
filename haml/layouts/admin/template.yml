@@ -1,0 +1,35 @@
+layout:
+    menu:
+        fa-dashboard:
+            name: Рабочий стол
+            href: /
+        fa-user:
+            name: Пользователи
+            href: /admin/user/
+            items:
+                fa-user:
+                    name: Список пользователей
+                    href: /admin/user/
+                fa-list:
+                    name: Группы
+                    href: /admin/group/
+        fa-bullhorn:
+            name : Новости
+            href: /admin/news/
+            items:
+                fa-bullhorn:
+                    name: Все новости
+                    href: /admin/news/
+                fa-list:
+                    name: Категории новостей
+                    href: /admin/news/categories/
+        fa-send:
+            name: Письма
+            href: /admin/letter/
+            items:
+                fa-send:
+                    name: Типы писем
+                    href: /admin/letter/
+                fa-list:
+                    name: Шаблоны писем
+                    href: /admin/letter/template/

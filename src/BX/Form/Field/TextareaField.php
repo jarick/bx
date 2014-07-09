@@ -17,7 +17,7 @@ class TextareaField extends TextField
 		}
 		echo '</label>'
 		.'<textarea class="form-control" rows="'.intval($row).'"'
-		.' name="'.$this->string()->escape($this->name).'"'
+		.' name="'.$this->string()->escape($this->getFullName()).'"'
 		.' id="'.$this->getId().'"'
 		.' tabindex='.$this->tabindex
 		.' placeholder="'.$placeholder.'"';

@@ -66,7 +66,7 @@ class SelectboxField extends BaseField
 		}
 		echo '</label>'
 		.'<input type="datetime" class="form-control"'
-		.' name="'.$this->string()->escape($this->name).'"'
+		.' name="'.$this->string()->escape($this->getFullName()).'"'
 		.' id="'.$this->getId().'"'
 		.' tabindex='.$this->tabindex
 		.' placeholder="'.$placeholder.'"'
@@ -81,7 +81,7 @@ class SelectboxField extends BaseField
 	 */
 	public function renderMulty()
 	{
-
+		throw new \RuntimeException('Function in development');
 	}
 	/**
 	 * Validate value
@@ -89,7 +89,7 @@ class SelectboxField extends BaseField
 	 * @param array $data
 	 * @return boolean
 	 */
-	public function validate(&$data)
+	public function validate(array &$data)
 	{
 		if ($this->isEmpty($this->value)){
 			if ($this->required){

@@ -1,0 +1,83 @@
+pdo:
+    dsn: 'sqlite:test/data/db.db'
+lang: ru
+schema:
+    tbl_test:
+        ID: 1
+        TEST: "TEST"
+    tbl_user:
+        ID: 1
+        LOGIN: "admin" 
+        GUID: "qwerty"
+        DISPLAY_NAME: "admin" 
+        EMAIL: "no@email.com" 
+        REGISTERED: 1
+        CREATE_DATE: 1396302774
+        TIMESTAMP_X: 1396302774
+        ACTIVE: 1
+        PASSWORD: "$2y$10$aCL9f7WfJp1WjHz2Qi1wkeuzYreLg.jkanoFmgm.ySsrwuGXKKni."
+        CODE: "admin"
+    tbl_auth: 
+        ID: 1
+        TOKEN: "$2y$10$aCL9f7WfJp1WjHz2Qi1wkeuzYreLg.jkanoFmgm.ySsrwuGXKKni."
+        GUID: "qwerty"
+        USER_ID: 1
+        TIMESTAMP_X: 1396302774
+    tbl_captcha:
+        ID: 1
+        GUID: "qwerty"
+        CODE: "qwerty"
+        TIMESTAMP_X: 1395334052
+    tbl_counter:
+        ID: 1
+        ENTITY: "qwerty"
+        ENTITY_ID: "inc"
+        TIMESTAMP_X: 1395334052
+        COUNTER: 2
+    tbl_remember_password:
+        ID: 1
+        TOKEN: "$2y$10$aCL9f7WfJp1WjHz2Qi1wkeuzYreLg.jkanoFmgm.ySsrwuGXKKni."
+        GUID: "qwerty"
+        USER_ID: 1
+        TIMESTAMP_X: 1396302774
+    tbl_user_group:
+        ID: 1
+        ACTIVE: 1
+        TIMESTAMP_X: 1396302774
+        NAME: "GROUP 1"
+        DESCRIPTION: ""
+        SORT: 500
+    tbl_user_group_member:
+        ID: 1
+        USER_ID: 1
+        GROUP_ID: 1
+        TIMESTAMP_X: 1396302774
+    tbl_news:
+        ID: 1
+        GUID: "qwerty"
+        ACTIVE: 1
+        NAME: "News 1"
+        CODE: "news_1"
+        PREVIEW_TEXT: "PREVIEW_TEXT"
+        PICTURE: "news/59daa7ab2dd0106a4a8b24a5f409480162007912.png"
+        DETAIL_TEXT: "DETAIL_TEXT"
+        SORT: 500
+        TIMESTAMP_X: 1395334052
+        CREATE_DATE: 1395334052
+        USER_ID: 1
+    tbl_news_category:
+        ID: 1
+        GUID: "qwerty"
+        ACTIVE: 1
+        NAME: "Category 1"
+        CODE: "category-1"
+        TEXT: "text"
+        SORT: 500
+        TIMESTAMP_X:  1395334052
+        CREATE_DATE:  1395334052
+        USER_ID: 1
+        PARENT_ID: null
+    tbl_news_category_link:
+        ID: 1
+        NEWS_ID: 1
+        CATEGORY_ID: 1

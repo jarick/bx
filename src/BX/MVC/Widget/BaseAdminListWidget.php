@@ -111,15 +111,15 @@ abstract class BaseAdminListWidget extends Widget
 	/**
 	 * Retrurn sorting array
 	 *
-	 * @param IEntity $entity
+	 * @param \BX\User\Form\AdminFilterForm $form
 	 * @return array
 	 */
-	protected function getSorting(IEntity $entity)
+	protected function getSorting($form)
 	{
 		$value = $this->getQueryParam(self::Q_SORT);
 		if (is_array($value)){
 			foreach($value as $key => &$val){
-				if ($entity->exists($key)){
+				if ($form->exists($key)){
 					if ($this->string()->toLower($val) !== 'asc'){
 						$val = 'desc';
 					}
@@ -290,9 +290,7 @@ abstract class BaseAdminListWidget extends Widget
 		if ($offset >= $limit){
 			$offset = 0;
 		}
-		//TODO
-		#$sort = $this->getSorting($filter);
-		$sort = [];
+		$sort = $this->getSorting($filter);
 		$list = $this->getList($sort,$filter_array,$offset,$limit)->all();
 		$format = $this->request()->query()->get('format');
 		if ($format !== null){

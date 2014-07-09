@@ -1,0 +1,185 @@
+:php
+  if($id > 0){
+    $view['page_title'] = "Редактирование пользователя № $id";
+  }else{
+    $view['page_title'] = "Добавление пользователя";
+  }
+  $view['footer_js'][] = 'http://akibjorklund.com/files/2009/07/multiselectable.js';
+.br
+.row
+  .col-lg-12
+    -if($id > 0)
+      .col-lg-6
+        %ol(class="breadcrumb")
+          %li
+            %a(href="/admin/") Рабочий стол
+          %li
+            %a(href="/admin/user/") Пользователи 
+      %div(class="col-lg-3 text-right omega")
+        %form(role="form" method="post" class="form-inline" id="delete-form" action=$widget->getCurPageParam(['post' => 'y'],['post']) enctype="multipart/form-data")
+          %input(type="hidden" name="DELETE[SESSION_ID]" value=$widget->getSessionId())/
+          %input(type="hidden" name="DELETE[ID]" value=$id)/
+          %button(type="submit" class="btn btn-danger") Удалить пользователя
+      %div(class="col-lg-3 alpa")
+        %a(href="/admin/user/edit" class="btn btn-success") Добавить нового пользователя
+    -else
+      .col-lg-9
+        %ol(class="breadcrumb")
+          %li
+            %a(href="/admin/") Рабочий стол
+          %li
+            %a(href="/admin/user/") Пользователи 
+      .col-lg-3
+        %a(href="/admin/user/edit" class="btn btn-success") Добавить нового пользователя
+.clear
+.row
+  .col-lg-12
+    -if($message !== null)
+      %div(class="alert alert-success") =$message
+    -if($form->hasErrors())
+      %ul(class="alert alert-danger")
+        -foreach($form->getErrors()->all() as $mess)
+          %li =$mess
+%form(role="form" method="post" id="edit-form" action=$widget->getCurPageParam(['post' => 'y'],['post']) enctype="multipart/form-data")
+  %input(type="hidden" name=$form->sessid->getFullName() value=$form->sessid->getSessionId())/
+  %div(class="row page")
+    %ul(class="nav nav-pills")
+      %li(class="active")
+        %a(href="#s1" data-toggle="tab") Пользователь
+      %li
+        %a(href="#s2" data-toggle="tab") Группы
+      -if($id > 0)
+        %li
+          %a(href="#s3" data-toggle="tab") Пароль
+    .tab-content
+      %div(class="tab-pane active col-sm-8" id="s1")
+        .br
+        -#
+          -if($id > 0)
+            .form-group
+              %label(for="input-create-date") =$form->create_date->getLabel()
+              %p(class="form-control-static" id="input-create-date") =$form->create_date->getValue()
+            .form-group
+              %label(for="input-timestamp-x") =$form->timestamp_x->getLabel()
+              %p(class="form-control-static" id="input-timestamp-x") =$form->timestamp_x->getValue()
+        .form-group(class=(($form->login->hasErrors()) ? "has-error" : ""))
+          %label(class="control-label" for="input-login") 
+            =$form->login->getLabel()
+            -if($form->login->isRequired())
+              %span.text-red *
+          %input(class="form-control" type="text" name=$form->login->getFullName() id="input-login" value=$form->login->getValue())/
+        -if($id === 0)
+          .form-group(class=(($form->password->hasErrors()) ? "has-error" : ""))
+            %label(class="control-label" for="input-login") 
+              =$form->password->getLabel()
+              -if($form->password->isRequired())
+                %span.text-red *
+            %input(class="form-control" type="password" name=$form->password->getFullName() id="input-login" value=$form->password->getValue())/
+        .form-group(class=(($form->email->hasErrors()) ? "has-error" : ""))
+          %label(class="control-label" for="input-email") 
+            =$form->email->getLabel()
+            -if($form->email->isRequired())
+              %span.text-red *
+          %input(class="form-control" type="text" name=$form->email->getFullName() id="input-email" value=$form->email->getValue())
+        .form-group(class=(($form->display_name->hasErrors()) ? "has-error" : ""))
+          %label(class="control-label" for="input-display-name")
+            =$form->display_name->getLabel()
+            -if($form->display_name->isRequired())
+              %span.text-red *
+          %input(class="form-control" type="text" name=$form->display_name->getFullName() id="display-name" value=$form->display_name)
+        .form-group(class=(($form->registered->hasErrors()) ? "has-error" : ""))
+          .checkbox
+            %label(for="input-registered" class="control-label") 
+              =$form->registered->getLabel()
+              -if($form->registered->isRequired())
+                %span.text-red *
+            %input(type="hidden" name=$form->registered->getFullName() value="N")/
+            -if($form->registered->getValue() === 'Y')
+              %input(type="checkbox" id="input-registered" name=$form->registered->getFullName() value="Y" checked)/
+            -else
+              %input(type="checkbox" id="input-registered" name=$form->registered->getFullName() value="Y")/
+        .form-group(class=(($form->active->hasErrors()) ? "has-error" : ""))
+          .checkbox
+            %label(for="input-active" class="control-label") 
+              =$form->active->getLabel()
+              -if($form->active->isRequired())
+                %span.text-red *
+            %input(type="hidden" name=$form->active->getFullName() value="N")/
+            -if($form->active->getValue() === 'Y')
+              %input(type="checkbox" id="input-active" name=$form->active->getFullName() value="Y" checked)/
+            -else
+              %input(type="checkbox" id="input-active" name=$form->active->getFullName() value="Y")/
+      %div(class="tab-pane col-sm-8" id="s2")
+        .br
+        :javascript
+          $(function(){
+            $('.multi').multiselectable({ 
+              selectableLabel: 'Все группы:',
+              selectedLabel: 'Выбранные группы:'
+            });
+          });  
+        .form-group(class=(($form->group_id->hasErrors()) ? "has-error" : ""))
+          %select(multiple  name=$form->group_id->getFullName() class="multi" size="8")
+            -foreach($groups as $group)
+              -if(in_array($group,$members))
+                %option(value=$group->id selected) =$group->name
+              -else
+                %option(value=$group->id) =$group->name
+        .br
+      -if($id > 0)  
+        %div(class="tab-pane col-sm-8" id="s3")
+          .br
+          :javascript
+            $(function(){
+              $("#password-change").click(function(){
+                $.post('#{$widget->getCurPageParam()}',{
+                  'PASSWORD[NEW]': $("#password-new").val(),
+                  'PASSWORD[OLD]': $("#password-old").val(),
+                  'PASSWORD[SESSION_ID]': '#{$widget->getSessionId()}',
+                  'PASSWORD[USER_ID]': '#{$id}'
+                },function(data){
+                  if(data.status === 1){
+                    $("#password-message-box").html('<div class="alert alert-success">'+data.message+'</div>');
+                  }else{
+                    $("#password-message-box").html('<div class="alert alert-danger">'+data.message+'</div>');
+                  }
+                });
+                return false;
+              });
+            });
+          %div(class="panel panel-default")
+            %div(class="panel-heading") Смена пароля
+            %div(class="panel-body")
+              #password-message-box
+              .form-group
+                %label(for="password-new" class="control-label") 
+                  Новый пароль
+                  %span.text-red *
+                %input(type="password" id="password-new" value="")/
+              .form-group
+                %label(for="password-old" class="control-label") 
+                  Старый пароль
+                  %span.text-red *
+                %input(type="password" id="password-old" value="")/
+              .form-group
+                %button(id="password-change" class="btn btn-default") Изменить    
+          .br
+      %div(style="clear:both")    
+    .row
+      .col-sm-6
+        :javascript
+          $(function(){
+            $(".button-save").click(function(){
+              $("#edit-form").append('<input type="hidden" name="action" value="'+$(this).attr("data-action")+'" />');
+            });
+          });
+        -if($id > 0)
+          %button(data-action="0" class="button-save btn btn-success") Изменить
+        -else
+          %button(data-action="0" class="button-save btn btn-success") Добавить
+        %button(data-action="1" class="button-save btn btn-default") Сохранить
+        %button(data-action="2" class="button-save btn btn-default") Сохранить и добавить новый
+        %button(type="reset" class="btn btn-danger") Отмена
+      .col-sm-2
+        -if($id > 0)
+          %a(href=$widget->getCurPageParam(['copy' => $id],['id','copy']) class="btn btn-default") Копировать

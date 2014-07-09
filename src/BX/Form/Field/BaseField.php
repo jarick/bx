@@ -26,6 +26,10 @@ abstract class BaseField
 	 */
 	protected $name;
 	/**
+	 * @var string
+	 */
+	protected $form_name;
+	/**
 	 * @var \BX\Validator\Collection\BaseValidator
 	 */
 	protected $validator;
@@ -71,6 +75,26 @@ abstract class BaseField
 	public function getLabel()
 	{
 		return $this->label;
+	}
+	/**
+	 * Set form name
+	 *
+	 * @param string $form_name
+	 * @return \BX\Form\Field\BaseField
+	 */
+	public function setFormName($form_name)
+	{
+		$this->form_name = $form_name;
+		return $this;
+	}
+	/**
+	 * Return form name
+	 *
+	 * @return string
+	 */
+	public function getFormName()
+	{
+		return $this->form_name;
 	}
 	/**
 	 * Print escape label
@@ -129,6 +153,15 @@ abstract class BaseField
 		return $this;
 	}
 	/**
+	 * Return full name
+	 *
+	 * @return string
+	 */
+	public function getFullName()
+	{
+		return "{$this->form_name}[{$this->name}]";
+	}
+	/**
 	 * Return name
 	 *
 	 * @return string
@@ -181,7 +214,16 @@ abstract class BaseField
 		return 'field-'.$this->tabindex;
 	}
 	/**
-	 * Not empty
+	 * Return is required field
+	 *
+	 * @return boolean
+	 */
+	public function isRequired()
+	{
+		return $this->required;
+	}
+	/**
+	 * Set validate is empty field
 	 *
 	 * @param boolean $required
 	 * @return \BX\Form\Field\BaseField
@@ -228,14 +270,14 @@ abstract class BaseField
 	 */
 	public function hasErrors()
 	{
-		return $this->validator->getErrors()->has();
+		return $this->validator->hasErrors();
 	}
 	/**
 	 * Print html code of field
 	 */
 	public function __toString()
 	{
-		$this->render();
+		return $this->render();
 	}
 	/**
 	 * Set field is multy
@@ -275,7 +317,7 @@ abstract class BaseField
 	 */
 	public function validate(array &$data)
 	{
-		$this->validator->notEmpty($this->required);
+		$this->validator->notEmpty(!$this->required);
 		if ($this->multy){
 			$this->validator = MultyValidator::create($this->validator);
 		}
@@ -301,14 +343,17 @@ abstract class BaseField
 	 *
 	 * @return \BX\Form\Field\BaseField
 	 */
-	public function render()
+	public function render($css_class = '',$placeholder = '')
 	{
+		ob_start();
 		if ($this->multy){
-			$this->renderMulty();
+			$this->renderMulty($css_class);
 		}else{
-			$this->renderSingle();
+			$this->renderSingle($css_class,$placeholder);
 		}
-		return $this;
+		$content = ob_get_contents();
+		ob_end_clean();
+		return $content;
 	}
 	abstract public function renderSingle();
 	abstract public function renderMulty();

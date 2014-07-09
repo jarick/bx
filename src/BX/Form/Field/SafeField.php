@@ -36,7 +36,7 @@ class SafeField extends BaseField
 	 */
 	public function renderMulty()
 	{
-
+		
 	}
 	/**
 	 * Validate value

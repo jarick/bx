@@ -19,7 +19,7 @@ class StringValidator extends BaseValidator
 	/**
 	 * @var string
 	 */
-	protected $massage_invalid = false;
+	protected $massage_invalid = null;
 	/**
 	 * @var string
 	 */
@@ -27,19 +27,39 @@ class StringValidator extends BaseValidator
 	/**
 	 * @var string
 	 */
-	protected $massage_min = false;
-	protected $massage_max = false;
-	protected $massage_is = false;
-	protected $words = false;
+	protected $massage_min = null;
+	/**
+	 * @var string
+	 */
+	protected $massage_max = null;
+	/**
+	 * @var string
+	 */
+	protected $massage_is = null;
+	/**
+	 * @var array
+	 */
+	protected $words = null;
+	/**
+	 * Set message invalid
+	 *
+	 * @param string $massage_invalid
+	 * @return \BX\Validator\Collection\StringValidator
+	 */
 	public function setMessageInvalid($massage_invalid)
 	{
 		$this->massage_invalid = $massage_invalid;
 		return $this;
 	}
+	/**
+	 * Return message invalid
+	 *
+	 * @return string
+	 */
 	protected function getMessageInvalid()
 	{
 		$message = $this->massage_invalid;
-		if ($message === false){
+		if ($message === null){
 			$message = $this->trans('validator.collection.string.invalid');
 		}
 		return $message;
@@ -68,58 +88,98 @@ class StringValidator extends BaseValidator
 		}
 		return $message;
 	}
+	/**
+	 * Set min length error
+	 *
+	 * @param string $massage_min
+	 * @return \BX\Validator\Collection\StringValidator
+	 */
 	public function setMessageMin($massage_min)
 	{
 		$this->massage_min = $massage_min;
 		return $this;
 	}
+	/**
+	 * Return min length error
+	 *
+	 * @return integer
+	 */
 	protected function getMessageMin()
 	{
 		$message = $this->massage_min;
-		if ($message === false){
+		if ($message === null){
 			$message = $this->trans('validator.collection.string.min');
 		}
 		return $message;
 	}
+	/**
+	 * Set max length error
+	 *
+	 * @param type $massage_max
+	 * @return \BX\Validator\Collection\StringValidator
+	 */
 	public function setMessageMax($massage_max)
 	{
 		$this->massage_max = $massage_max;
 		return $this;
 	}
+	/**
+	 * Return max length error
+	 *
+	 * @return string
+	 */
 	protected function getMessageMax()
 	{
 		$message = $this->massage_max;
-		if ($message === false){
+		if ($message === null){
 			$message = $this->trans('validator.collection.string.max');
 		}
 		return $message;
 	}
+	/**
+	 * Set length error
+	 *
+	 * @param string $massage_is
+	 * @return \BX\Validator\Collection\StringValidator
+	 */
 	public function setMessageLength($massage_is)
 	{
 		$this->massage_is = $massage_is;
 		return $this;
 	}
+	/**
+	 * Return length error
+	 *
+	 * @return string
+	 */
 	protected function getMessageLength()
 	{
 		$message = $this->massage_max;
-		if ($message === false){
+		if ($message === null){
 			$message = $this->trans('validator.collection.string.length');
 		}
 		return $message;
 	}
+	/**
+	 * Set array of wordds
+	 *
+	 * @param array $words
+	 * @return \BX\Validator\Collection\StringValidator
+	 */
 	public function setWords($words)
 	{
 		$this->words = $words;
 		return $this;
 	}
 	/**
-	 * Get words
+	 * Return array of words
+	 *
 	 * @return array
 	 */
 	protected function getWords()
 	{
 		$words = $this->words;
-		if ($words === false){
+		if ($words === null){
 			$words = [
 				$this->trans('validator.collection.string.words.one'),
 				$this->trans('validator.collection.string.words.two'),
@@ -159,7 +219,8 @@ class StringValidator extends BaseValidator
 		return $this;
 	}
 	/**
-	 * Validate
+	 * Validate field
+	 *
 	 * @param string $key
 	 * @param string $value
 	 * @param string $label

@@ -1,0 +1,24 @@
+sites:
+    admin: { title: 'Административная часть', charset: UTF-8, name: admin, regex: [localhost\/admin\/], folder: /admin/, layout_rule: { admin: [''] }, base: localhost }
+    main: { title: 'Сайт установлен', charset: UTF-8, name: main, regex: [localhost], folder: /, layout_rule: { main: [''] }, base: localhost }
+lang: ru
+date:
+    timezone: Europe/Kaliningrad
+mode: dev
+templating:
+    engine: haml
+    haml: ~/../haml
+    php: ~/../cache
+    doc_root: ~/../www
+cache:
+    type: memcache
+    host: localhost
+    post: 11211
+pdo:
+    dsn: 'sqlite:../db.db'
+zend_search:
+    morphy_dicts: ~/../search/dicts
+    stop_words: ~/../search/stop-words/stop-words-ru.txt
+    index: ~/../search/data
+user:
+    password_min_length: 6

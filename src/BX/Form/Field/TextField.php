@@ -67,13 +67,13 @@ class TextField extends BaseField
 		}
 		echo '">';
 		echo '<label class="control-label" for="'.$this->getId().'">'
-		.$this->string()->escape($this->label);
+		.$this->string()->escape($this->getLabel());
 		if ($this->required){
 			echo '<span class="text-red">*</span>';
 		}
 		echo '</label>'
 		.'<input type="text" class="form-control"'
-		.' name="'.$this->string()->escape($this->name).'"'
+		.' name="'.$this->string()->escape($this->getFullName()).'"'
 		.' id="'.$this->getId().'"'
 		.' tabindex='.$this->tabindex
 		.' placeholder="'.$placeholder.'"';
@@ -91,7 +91,7 @@ class TextField extends BaseField
 	 */
 	public function renderMulty()
 	{
-
+		throw new \RuntimeException('Function in development');
 	}
 	/**
 	 * Validate value

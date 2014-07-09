@@ -78,11 +78,11 @@ class NumberField extends BaseField
 		}
 		echo '</label>'
 		.'<input type="number" class="form-control"'
-		.' name="'.$this->string()->escape($this->name).'"'
+		.' name="'.$this->string()->escape($this->getFullName()).'"'
 		.' id="'.$this->getId().'"'
-		.' tabindex='.$this->tabindex
+		.' tabindex="'.$this->tabindex.'"'
 		.' placeholder="'.$placeholder.'"'
-		.' value="'.$this->value.'"'
+		.' value="'.$this->string()->escape($this->value).'"'
 		.' />';
 		echo '</div>';
 	}
@@ -93,6 +93,6 @@ class NumberField extends BaseField
 	 */
 	public function renderMulty()
 	{
-
+		throw new \RuntimeException('Function in development');
 	}
 }

@@ -1,12 +1,5 @@
 test/BX/ZendSearch/search
 /vendor/
-/www/
-/nbproject/
 /cache/
-/todo/
-/db.db
-/errror.log
 /composer.lock
-/config/
-/haml/
-/search/
+/bin/

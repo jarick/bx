@@ -34,6 +34,10 @@ trait FormTrait
 	 */
 	public $fields = null;
 	/**
+	 * @var MessageBag
+	 */
+	protected $error;
+	/**
 	 * Return form name
 	 *
 	 * @return string
@@ -57,6 +61,24 @@ trait FormTrait
 		}
 		$this->method = $method;
 		return $this;
+	}
+	/**
+	 * Return errror bag
+	 *
+	 * @return MessageBag
+	 */
+	public function getErrors()
+	{
+		return $this->error;
+	}
+	/**
+	 * Return is has errror
+	 *
+	 * @return boolean
+	 */
+	public function hasErrors()
+	{
+		return $this->error->has();
 	}
 	/**
 	 * Set request
@@ -137,13 +159,7 @@ trait FormTrait
 	 */
 	protected function fields()
 	{
-		if ($this->method === 'post'){
-			return [
-				$this->session_token_key => $this->field()->sessid(),
-			];
-		}else{
-			return [];
-		}
+		return [];
 	}
 	/**
 	 * Return fields builder
@@ -177,7 +193,14 @@ trait FormTrait
 	 */
 	public function getFields()
 	{
-		return $this->fields();
+		if ($this->method === 'post'){
+			$fileds = [
+				$this->session_token_key => $this->field()->sessid(),
+			];
+			return array_merge($fileds,$this->fields());
+		}else{
+			return $this->fields();
+		}
 	}
 	/**
 	 * Validate input data
@@ -192,8 +215,6 @@ trait FormTrait
 		foreach($this->fields as $key => $field){
 			if (array_key_exists($key,$post)){
 				$field->setValue($post[$key]);
-			}else{
-				$field->setValue(null);
 			}
 			if (!$field->validate($post,$new)){
 				foreach($field->getErrors() as $error){
@@ -212,6 +233,8 @@ trait FormTrait
 		$this->fields = new FieldsDictionary();
 		$labels = $this->labels();
 		foreach($this->getFields() as $key => $field){
+			$field->setName($key);
+			$field->setFormName($this->getFormName());
 			if ($field->getLabel() === null){
 				if (array_key_exists($key,$labels)){
 					$field->setLabel($labels[$key]);
@@ -246,7 +269,18 @@ trait FormTrait
 		if (!$this->fields->has($key)){
 			throw new \InvalidArgumentException("Field `$key` is not exists");
 		}
-		return $this->fields->get($key)->getValue();
+		return $this->fields->get($key);
+	}
+	/**
+	 * Return is exists field
+	 *
+	 * @param string $key
+	 * @return boolean
+	 */
+	public function exists($key)
+	{
+		$key = Str::toUpper($key);
+		return $this->fields->has($key);
 	}
 	/**
 	 * Return label string
@@ -297,15 +331,19 @@ trait FormTrait
 					return true;
 				}
 			}
+			$this->error = $error;
 			foreach($error->toArray() as $key => $message){
 				$this->fields->get($key)->error[] = $message;
 			}
-		}elseif ($new){
-			foreach($this->default as $key => $value){
-				if ($this->fields->has($key)){
-					$this->fields->get($key)->setValue($value);
-				}else{
-					throw new \RuntimeException("Field $key is not found");
+		}else{
+			$this->error = new MessageBag();
+			if ($new){
+				foreach($this->default as $key => $value){
+					if ($this->fields->has($key)){
+						$this->fields->get($key)->setValue($value);
+					}else{
+						throw new \RuntimeException("Field $key is not found");
+					}
 				}
 			}
 		}

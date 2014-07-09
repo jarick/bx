@@ -1,0 +1,40 @@
+:php
+  $view['page_title'] = 'Настройки';
+-if($entity->hasErrors())
+  %ul(class="alert alert-danger")
+    -foreach($entity->getErrors()->all() as $message)
+      %li
+        =$message
+-elseif($flash !== null)
+  %div(class="alert alert-success")
+    =$flash
+.panel.panel-default
+  .panel-heading 
+    =$view['title']
+  .panel-body
+    %form(action=$widget->getCurPageParam(['post'=>'Y'],['post']) method="post" enctype="multipart/form-data")
+      %input(type="hidden" name="FORM[SESSION_TOKEN]" value=$widget->session()->getID())
+      %div(class=(($post && $entity->getErrors()->has('TITLE')) ? "form-group has-error" : "form-group"))
+        %label(class="control-label") =$entity->printLabel('TITLE')
+        %input(name="FORM[TITLE]" class="form-control" type="text" value=$this->esc($entity->getValue('TITLE')))/
+      %div(class=(($post && $entity->getErrors()->has('NAME')) ? "form-group has-error" : "form-group"))
+        %label(class="control-label") =$entity->printLabel('NAME')
+        %input(name="FORM[NAME]" class="form-control" type="text" value=$this->esc($entity->getValue('NAME')))/
+      %div(class=(($post && $entity->getErrors()->has('KEYWORDS')) ? "form-group has-error" : "form-group"))
+        %label(class="control-label") =$entity->printLabel('KEYWORDS')
+        %input(name="FORM[KEYWORDS]" class="form-control" type="text" value=$this->esc($entity->getValue('KEYWORDS')))/
+      %div(class=(($post && $entity->getErrors()->has('FOLDER')) ? "form-group has-error" : "form-group"))
+        %label(class="control-label") =$entity->printLabel('FOLDER')
+        %input(name="FORM[FOLDER]" class="form-control" type="text" value=$this->esc($entity->getValue('FOLDER')))/
+      %div(class=(($post && $entity->getErrors()->has('REGEX')) ? "form-group has-error" : "form-group"))
+        %label(class="control-label") =$entity->printLabel('REGEX')
+        %div(class="input-box")
+          -if(count($entity->getValue('REGEX')) === 0)
+            %input(name="FORM[REGEX][]" class="multi-input form-control" type="text" value="")/
+          -else
+            -foreach($entity->getValue('REGEX') as $regex)
+              %input(name="FORM[REGEX][]" class="multi-input form-control" type="text" value=$this->esc($regex))/
+        %input(type="button" class="btn btn-link add-input" value="+1")/
+      %div(class="form-group")
+        %button(type="submit" class="btn btn-success") Сохранить
+        %button(type="reset" class="btn btn-default") Отменить

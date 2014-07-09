@@ -58,12 +58,13 @@ abstract class BaseValidator implements IValidator
 		return $this;
 	}
 	/**
-	 * Disable empty value
+	 * Set is not empty validate
+	 *
 	 * @return \BX\Validator\Collection\BaseValidator
 	 */
-	public function notEmpty()
+	public function notEmpty($is_empty = true)
 	{
-		$this->empty = false;
+		$this->empty = $is_empty;
 		return $this;
 	}
 	/**

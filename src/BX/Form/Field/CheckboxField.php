@@ -93,11 +93,11 @@ class CheckboxField extends BaseField
 		}
 		echo '</label>'
 		.'<input type="hidden"'
-		.' name="'.$this->string()->escape($this->name).'"'
+		.' name="'.$this->string()->escape($this->getFullName()).'"'
 		.' value="'.$this->string()->escape($this->none_value).'"'
 		.' />'
 		.'<input type="checkbox" class="form-control"'
-		.' name="'.$this->string()->escape($this->name).'"'
+		.' name="'.$this->string()->escape($this->getFullName()).'"'
 		.' id="'.$this->getId().'"'
 		.' tabindex='.$this->tabindex
 		.' placeholder="'.$placeholder.'"';
@@ -115,7 +115,7 @@ class CheckboxField extends BaseField
 	 */
 	public function renderMulty()
 	{
-
+		throw new \RuntimeException('Function in development');
 	}
 	/**
 	 * Validate value

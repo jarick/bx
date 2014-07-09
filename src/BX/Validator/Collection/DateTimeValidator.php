@@ -138,16 +138,6 @@ class DateTimeValidator extends BaseValidator
 		return $message;
 	}
 	/**
-	 * Set not empty
-	 *
-	 * @return \BX\Validator\Collection\DateTime
-	 */
-	public function notEmpty()
-	{
-		$this->empty = false;
-		return $this;
-	}
-	/**
 	 * Set min value
 	 *
 	 * @param integer $min

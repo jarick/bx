@@ -1,0 +1,296 @@
+:php
+  $view['page_title'] = 'Список пользователей';
+  $view['footer_js'][] = '/js/moment-with-langs.min.js';
+  $view['footer_js'][] = '/js/bootstrap-datetimepicker.min.js';
+  $view['footer_js'][] = '/js/jquery.selectric.min.js';
+  $view['css'][] = '/css/bootstrap-datetimepicker.min.css';
+  $view['css'][] = '/css/selectric.css';
+:javascript
+  $(function(){ 
+    // datetime
+    $('.datetime').datetimepicker({
+      language: 'ru',
+      
+    });
+    //filter collapse
+    var c = document.cookie;
+    $('.collapse').each(function () {
+      if (this.id) {
+        var pos = c.indexOf(this.id + "_collapse_in=");
+        if (pos > -1) {
+          c.substr(pos).split('=')[1].indexOf('false') ? $(this).addClass('in') : $(this).removeClass('in');
+        }
+      }
+    }).on('shown.bs.collapse hidden.bs.collapse', function () {
+      if (this.id) {
+        document.cookie = this.id + "_collapse_in=" + $(this).hasClass('in');
+      }
+    });
+    //select box
+    $('.input-select').selectric();  
+  });
+.row
+  .col-lg-12
+    .br
+    .col-lg-9
+      %ol(class="breadcrumb")
+        %li
+          %a(href="/admin/") Рабочий стол
+        %li
+          %a(href="/admin/user/") Пользователи 
+    .col-lg-3
+      %a(href="/admin/user/edit" class="btn btn-success") Добавить нового пользователя
+%div(class="row page")
+  %div(class="panel-group" id="accordion")
+    %div(class="panel panel-default")
+      .panel-heading
+        %h4(class="panel-title")
+          %a(data-toggle="collapse" data-parent="#accordion" href="#filter-box")
+            Фильтр
+      %div(id="filter-box" class="panel-collapse collapse in")
+        .panel-body
+          %form(role="form" class="form-horizontal" action=$widget->getCurPageParam([],['filter']) method="get")
+            .col-lg-6
+              .form-group
+                %label(class="text_left control-label col-sm-4" for="filter-id") =$filter->getLabel('ID')
+                .col-sm-8
+                  %input(type="number" name="filter[ID]" class="form-control input-sm" id="filter-id" value=$filter->id)
+              .form-group
+                %label(class="text_left control-label col-sm-4" for="filter-guid") =$filter->getLabel('GUID')
+                .col-sm-8
+                  %input(type="text" name="filter[GUID]" class="form-control input-sm" id="filter-guid" value=$filter->guid)
+              .form-group
+                %label(class="text_left control-label col-sm-4" for="filter-registered") =$filter->getLabel('ACTIVE')
+                .col-sm-8
+                  %select(name="filter[ACTIVE]")
+                    %option(value="") (любой)
+                    -if($filter->active === 'Y')
+                      %option(value="Y" selected) Да
+                    -else
+                      %option(value="Y") Да
+                    -if($filter->active === 'N')
+                      %option(value="N" selected) Нет
+                    -else
+                      %option(value="N") Нет
+              .form-group
+                :php
+                  $to = (isset($filter->timestamp_x['to'])) ? $filter->timestamp_x['to'] : null;
+                  $from = (isset($filter->timestamp_x['from'])) ? $filter->timestamp_x['from']: null;
+                %label(class="text_left control-label col-sm-4" for="filter-timestamp-x-from") =$filter->getLabel('TIMESTAMP_X')
+                .col-sm-4
+                  %div(class="input-group date datetime" data-date-format="DD.MM.YYYY hh:mm:ss")
+                    %input(type="datetime" name="filter[TIMESTAMP_X][from]" class="form-control input-sm" id="filter-timestamp-x-from" value=$from)
+                    %span(class="input-group-addon")
+                      %span(class="glyphicon glyphicon-calendar")
+              .form-group
+                %label(class="text_left control-label col-sm-4" for="filter-name") =$filter->getLabel('NAME')
+                .col-sm-8
+                  %input(type="text" name="filter[NAME]" class="form-control input-sm" id="filter-name" value=$filter->name)
+              .form-group
+                %label(class="text_left control-label col-sm-4" for="filter-description") =$filter->getLabel('DESCRIPTION')
+                .col-sm-8
+                  %input(type="text" name="filter[DESCRIPTION]" class="form-control input-sm" id="filter-description" value=$filter->description)
+              .form-group
+                %label(class="text_left control-label col-sm-4" for="filter-description") =$filter->getLabel('SORT')
+                .col-sm-8
+                  %input(type="number" name="filter[SORT]" class="form-control input-sm" id="filter-sort" value=$filter->sort)
+            %div(style="clear:both;")
+            .col-lg-6
+              .form-group
+                .col-sm-4
+                .col-sm-8
+                  %button(type="submit" class="btn btn-default btn-sm") Поиск
+                  %button(type="reset" class="btn btn-danger btn-sm") Отмена  
+.row
+  .col-lg-12
+    .br
+    %table.table
+      -#
+        const C_ACTIVE = 'ACTIVE';
+        const C_TIMESTAMP_X = 'TIMESTAMP_X';
+        const C_NAME = 'NAME';
+        const C_DESCRIPTION = 'DESCRIPTION';
+        const C_SORT = 'SORT';    
+      %tr
+        %td 
+          %span(class="glyphicon glyphicon-pencil")
+        %td
+          -if(isset($sort['ID']))
+            -if($sort['ID'] === 'desc')
+              %a(href=$widget->getCurPageParam(['sort'=>['ID' => 'asc']],['sort'])) 
+                %span &#9660;
+                =$filter->getLabel('ID')
+            -else
+              %a(href=$widget->getCurPageParam(['sort'=>['ID' => 'desc']],['sort']))
+                %span &#9650;
+                =$filter->getLabel('ID')
+          -else    
+            %a(href=$widget->getCurPageParam(['sort'=>['ID' => 'desc']],['sort']))
+              =$filter->getLabel('ID')
+        %td
+          -if(isset($sort['ACTIVE']))
+            -if($sort['ACTIVE'] === 'desc')
+              %a(href=$widget->getCurPageParam(['sort'=>['ACTIVE' => 'asc']],['sort'])) 
+                %span &#9660;
+                =$filter->getLabel('ACTIVE')
+            -else
+              %a(href=$widget->getCurPageParam(['sort'=>['ACTIVE' => 'desc']],['sort']))
+                %span &#9650;
+                =$filter->getLabel('ACTIVE')
+          -else    
+            %a(href=$widget->getCurPageParam(['sort'=>['ACTIVE' => 'desc']],['sort'])) 
+              =$filter->getLabel('ACTIVE')
+        %td
+          -if(isset($sort['TIMESTAMP_X']))
+            -if($sort['TIMESTAMP_X'] === 'desc')
+              %a(href=$widget->getCurPageParam(['sort'=>['TIMESTAMP_X' => 'asc']],['sort'])) 
+                %span &#9660;
+                =$filter->getLabel('TIMESTAMP_X')
+            -else
+              %a(href=$widget->getCurPageParam(['sort'=>['TIMESTAMP_X' => 'desc']],['sort']))
+                %span &#9650;
+                =$filter->getLabel('TIMESTAMP_X')
+          -else    
+            %a(href=$widget->getCurPageParam(['sort'=>['TIMESTAMP_X' => 'desc']],['sort'])) 
+              =$filter->getLabel('TIMESTAMP_X')
+        %td 
+          -if(isset($sort['NAME']))
+            -if($sort['NAME'] === 'desc')
+              %a(href=$widget->getCurPageParam(['sort'=>['NAME' => 'asc']],['sort'])) 
+                %span &#9660;
+                =$filter->getLabel('NAME')
+            -else
+              %a(href=$widget->getCurPageParam(['sort'=>['NAME' => 'desc']],['sort']))
+                %span &#9650;
+                =$filter->getLabel('NAME')
+          -else    
+            %a(href=$widget->getCurPageParam(['sort'=>['NAME' => 'desc']],['sort']))
+              =$filter->getLabel('NAME')
+        %td 
+          -if(isset($sort['DESCRIPTION']))
+            -if($sort['DESCRIPTION'] === 'desc')
+              %a(href=$widget->getCurPageParam(['sort'=>['DESCRIPTION' => 'asc']],['sort'])) 
+                %span &#9660;
+                =$filter->getLabel('DESCRIPTION')
+            -else
+              %a(href=$widget->getCurPageParam(['sort'=>['DESCRIPTION' => 'desc']],['sort']))
+                %span &#9650;
+                =$filter->getLabel('DESCRIPTION')
+          -else    
+            %a(href=$widget->getCurPageParam(['sort'=>['DESCRIPTION' => 'desc']],['sort']))
+              =$filter->getLabel('DESCRIPTION')
+        %td 
+          -if(isset($sort['SORT']))
+            -if($sort['SORT'] === 'desc')
+              %a(href=$widget->getCurPageParam(['sort'=>['SORT' => 'asc']],['sort'])) 
+                %span &#9660;
+                =$filter->getLabel('SORT')
+            -else
+              %a(href=$widget->getCurPageParam(['sort'=>['SORT' => 'desc']],['sort']))
+                %span &#9650;
+                =$filter->getLabel('SORT')
+          -else    
+            %a(href=$widget->getCurPageParam(['sort'=>['SORT' => 'desc']],['sort']))
+              =$filter->getLabel('SORT')
+      -foreach($list as $item)
+        %tr
+          %td 
+            %input(type="checkbox" name="row-#{$item->id}" class="input-action" data-id=$item->id id="row-#{$item->id}")
+          %td 
+            %a(href="/admin/user/group_edit?id=#{$item->id}")
+              =$item->id
+          %td
+            %a(href="/admin/user/group_edit?id=#{$item->id}") 
+              =$item->login
+          %td =$item->email
+          %td =$item->display_name
+          %td 
+            -if($item->registered === 'Y')
+              %span(style="color:green;" class="glyphicon glyphicon-ok")
+            -else
+              %span(style="color:red;" class="glyphicon glyphicon-remove")
+          %td
+            -if($item->active === 'Y')
+              %span(style="color:green;" class="glyphicon glyphicon-ok")
+            -else
+              %span(style="color:red;" class="glyphicon glyphicon-remove")
+          %td =$item->create_date
+          %td =$item->timestamp_x
+      %tr
+        %th(colspan="11")
+          %div(class="form-inline col-sm-4")
+            :javascript
+              $(function(){
+                function action_redraw(){
+                  $("#edit-submit-button").addClass('disabled');
+                  $("#hidden-box-edits").html('');
+                  $('.input-action').each(function(){
+                    if($(this).is(':checked')){
+                      $("#hidden-box-edits").append('<input type="hidden" name="ACTION[ID][]" value="'+$(this).attr("data-id")+'" />');
+                      $("#edit-submit-button").removeClass('disabled');
+                    }
+                  });
+                };
+                $('#check-all').click(function(){
+                  $('.input-action').each(function(){
+                    $(this).prop('checked', $('#check-all').is(':checked'));
+                  });
+                  action_redraw();  
+                });
+                $('.input-action').click(action_redraw);
+              });
+            %form(class="form-inline" action=$widget->getCurPageParam(['post' => 'y'],['post']) method="post" id="edit-form" role="form")
+              #hidden-box-edits
+              .form-group
+                %div(class="checkbox")
+                  %label
+                    %input(type="checkbox" id="check-all") &nbsp;Выбрать все
+              .form-group
+                %select(name="ACTION[ACTION]" class="input-select")
+                  %option(value="delete") Удалить
+              .form-group                
+                %input(type="submit" id="edit-submit-button" value="Отправить" class="disabled btn btn-sm btn-primary")
+          %div(class="col-sm-8 form-inline text_right")
+            .form-group
+              Загрузить:
+              %a(href=$widget->getCurPageParam(['format' => 'json'],['format']) target="_blank") json
+              ,
+              %a(href=$widget->getCurPageParam(['format' => 'xml'],['format']) target="_blank") xml
+              ,
+              %a(href=$widget->getCurPageParam(['format' => 'csv'],['format']) target="_blank") csv
+              ,
+              %a(href=$widget->getCurPageParam(['format' => 'xls'],['format']) target="_blank") xls
+              &nbsp;-&nbsp;
+              #{$offset + 1} / #{intval($count / $limit) + 1}
+              &nbsp;-&nbsp;
+              Всего: #{$count} &nbsp;-&nbsp;
+            .form-group
+              На странице:
+            .form-group
+              :javascript
+                $(function(){
+                  $("#page-size-box").change(function(){
+                    document.location.href = $( this ).find(":selected").attr('data-href');
+                  });
+                })
+              %select(name="limit" id="page-size-box" class="input-select")
+                -foreach([25,50,100,200,500] as $i)
+                  -if($i === $limit)
+                    %option(value=$i data-href=$widget->getCurPageParam(['limit' => $i],['limit']) selected) =$i
+                  -else
+                    %option(value=$i data-href=$widget->getCurPageParam(['limit' => $i],['limit'])) =$i
+-if($count > $limit)
+  .row
+    %ul.pagination
+      %li 
+        %a(href="#") &laquo;
+      %li 
+        %a(href="#") 1
+      %li 
+        %a(href="#") 2
+      %li 
+        %a(href="#") 3
+      %li 
+        %a(href="#") 4
+      %li 
+        %a(href="#") &raquo;

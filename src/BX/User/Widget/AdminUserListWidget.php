@@ -1,7 +1,7 @@
 <?php namespace BX\User\Widget;
 use BX\MVC\Widget\BaseAdminListWidget;
 use BX\User\User;
-use BX\User\Form\AdminFilterForm;
+use BX\User\Form\UserFilterForm;
 
 class AdminUserListWidget extends BaseAdminListWidget
 {
@@ -18,11 +18,11 @@ class AdminUserListWidget extends BaseAdminListWidget
 	/**
 	 * Return filter form
 	 *
-	 * @return \BX\User\Form\AdminFilterForm
+	 * @return \BX\User\Form\UserFilterForm
 	 */
 	protected function getFilterForm()
 	{
-		return new AdminFilterForm();
+		return new UserFilterForm();
 	}
 	/**
 	 * Return flash key
