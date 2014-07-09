@@ -63,6 +63,23 @@ trait FormTrait
 		return $this;
 	}
 	/**
+	 * Set errror in errors bag
+	 *
+	 * @return IForm
+	 */
+	public function addError($key,$message = null)
+	{
+		if ($message === null){
+			$key = 'UNKNOW';
+			$message = $key;
+		}
+		$this->error->add($key,$message);
+		if ($this->fields->has($key)){
+			$this->fields->get($key)->addError($message);
+		}
+		return $this;
+	}
+	/**
 	 * Return errror bag
 	 *
 	 * @return MessageBag

@@ -93,7 +93,7 @@ class UserEditForm
 				}else{
 					$mess = 'Message: '.$error->getMessage().'.Trace: '.$error->getTraceAsString();
 					$this->log('user.form.edit')->err($mess);
-					$this->getEntity()->addError(false,$this->trans('user.form.edit.unknow_error'));
+					$this->addError($this->trans('user.form.edit.unknow_error'));
 				}
 			}else{
 				return true;
@@ -119,7 +119,7 @@ class UserEditForm
 				}else{
 					$mess = 'Message: '.$error->getMessage().'.Trace: '.$error->getTraceAsString();
 					$this->log('user.form.edit')->err($mess);
-					$this->getEntity()->addError(false,$this->trans('user.form.edit.unknow_error'));
+					$this->addError($this->trans('user.form.edit.unknow_error'));
 				}
 			}else{
 				return true;
