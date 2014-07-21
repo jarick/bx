@@ -107,7 +107,7 @@ abstract class Widget
 	 */
 	public function getSessionId()
 	{
-
+		return $this->session()->getId();
 	}
 	/**
 	 * Redirect

@@ -161,6 +161,16 @@ trait FormTrait
 		return $this->default;
 	}
 	/**
+	 * Return value of field
+	 *
+	 * @param string $field
+	 * @return string
+	 */
+	public function getValue($field)
+	{
+		return $this->fields->get($field)->getValue();
+	}
+	/**
 	 * On validate event
 	 *
 	 * @return boolean
@@ -335,7 +345,7 @@ trait FormTrait
 					}
 					if (method_exists($this,$func)){
 						$return = $this->$func($value);
-						if ($this->string()->length($return) > 0){
+						if (Str::length($return) > 0){
 							$error->add($key,$return);
 						}
 					}
@@ -354,13 +364,9 @@ trait FormTrait
 			}
 		}else{
 			$this->error = new MessageBag();
-			if ($new){
-				foreach($this->default as $key => $value){
-					if ($this->fields->has($key)){
-						$this->fields->get($key)->setValue($value);
-					}else{
-						throw new \RuntimeException("Field $key is not found");
-					}
+			foreach($this->default as $key => $value){
+				if ($this->fields->has($key)){
+					$this->fields->get($key)->setValue($value);
 				}
 			}
 		}

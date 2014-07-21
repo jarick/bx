@@ -5,6 +5,7 @@ use BX\Form\Field\SessidField;
 use BX\Form\Field\DateField;
 use BX\Form\Field\CheckboxField;
 use BX\Form\Field\SelectboxField;
+use BX\Form\Field\HiddenField;
 
 class FieldsHelper
 {
@@ -60,6 +61,16 @@ class FieldsHelper
 	public function selectbox($enums,$required = false)
 	{
 		return new SelectboxField(null,$required,$enums);
+	}
+	/**
+	 * Return hidden input
+	 *
+	 * @param boolean $required
+	 * @return \BX\Form\Field\HiddenField
+	 */
+	public function hidden($required = false)
+	{
+		return new HiddenField(null,$required);
 	}
 	/**
 	 * Return sessid input

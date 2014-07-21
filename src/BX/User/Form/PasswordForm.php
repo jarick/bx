@@ -1,6 +1,5 @@
 <?php namespace BX\User\Form;
 use BX\User\User;
-use BX\Validator\IEntity;
 use BX\Form\IForm;
 
 /**
@@ -10,7 +9,8 @@ use BX\Form\IForm;
  */
 class PasswordForm implements IForm
 {
-	use \BX\Form\FormTrait;
+	use \BX\Form\FormTrait,
+	 \BX\Translate\TranslateTrait;
 	const C_NEW = 'NEW';
 	const C_OLD = 'OLD';
 	const C_USER_ID = 'USER_ID';
@@ -42,9 +42,9 @@ class PasswordForm implements IForm
 	protected function fields()
 	{
 		return[
-			self::C_USER_ID	 => $this->field()->hidden()->required(),
-			self::C_OLD		 => $this->field()->text()->required(),
-			self::C_NEW		 => $this->field()->text()->required(),
+			self::C_USER_ID	 => $this->field()->hidden(true),
+			self::C_OLD		 => $this->field()->text(true),
+			self::C_NEW		 => $this->field()->text(true),
 		];
 	}
 	/**
@@ -83,8 +83,7 @@ class PasswordForm implements IForm
 	{
 		if ($this->isValid()){
 			if (!User::updatePassword($this->getValue(self::C_USER_ID),$this->getValue(self::C_NEW))){
-				$error = $this->trans('user.form.password.password_change_error');
-				$this->addError(false,$error);
+				return $this->trans('user.form.password.password_change_error');
 			}else{
 				return true;
 			}

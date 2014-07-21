@@ -71,7 +71,7 @@ class SessidField extends BaseField
 	{
 		$sessid = intval($this->value);
 		if ($sessid === 0 || $this->session()->getId() !== $sessid){
-			$message = $this->trans('form.fields,sessid.error');
+			$message = $this->trans('form.fields.sessid.error');
 			$this->addError($message);
 			return false;
 		}

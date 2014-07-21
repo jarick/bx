@@ -26,6 +26,16 @@ class Ru implements IMessageFile
 			'user.widgets.user_edit.password_change_error'	 => 'Произошла ошибка при сохранении нового пароля, пожалуйста, пересохраните данные.',
 			'user.widgets.edit.update_error'				 => 'Произошла ошибка при изменении пользователя, пожалуйста, пересохраните данные.',
 			'user.widgets.edit.add_error'					 => 'Произошла ошибка при добавлении пользователя, пожалуйста, пересохраните данные.',
+			'user.form.edit.login'							 => 'Логин',
+			'user.form.edit.password'						 => 'Пароль',
+			'user.form.edit.email'							 => 'E-mail',
+			'user.form.edit.code'							 => 'Символьный код',
+			'user.form.edit.active'							 => 'Активность',
+			'user.form.edit.display_name'					 => 'Имя на сайте',
+			'user.form.edit.registered'						 => 'Регистрация',
+			'user.form.password.error_password_min'			 => 'Введенный пароль слишком короткий(минимум #MIN# символов)',
+			'user.form.password.bad_old_password'			 => 'Старый пароль введен не правильно',
+			'user.form.password.password_change_error'		 => 'Произошла ошибка при изменении пароля',
 		];
 	}
 }

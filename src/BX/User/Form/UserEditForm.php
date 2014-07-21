@@ -38,14 +38,14 @@ class UserEditForm
 	protected function labels()
 	{
 		return [
-			self::C_LOGIN		 => $this->trans('user.form.edit.login'),
-			self::C_PASSWORD	 => $this->trans('user.form.edit.password'),
-			self::C_EMAIL		 => $this->trans('user.form.edit.email'),
-			self::C_CODE		 => $this->trans('user.form.edit.code'),
-			self::C_REGISTERED	 => $this->trans('user.form.edit.registered'),
-			self::C_ACTIVE		 => $this->trans('user.form.edit.active'),
-			self::C_DISPLAY_NAME => $this->trans('user.form.edit.display_name'),
-			self::C_GROUP_ID	 => $this->trans('user.form.edit.group_id'),
+		 self::C_LOGIN		 => $this->trans('user.form.edit.login'),
+		 self::C_PASSWORD	 => $this->trans('user.form.edit.password'),
+		 self::C_EMAIL		 => $this->trans('user.form.edit.email'),
+		 self::C_CODE		 => $this->trans('user.form.edit.code'),
+		 self::C_REGISTERED	 => $this->trans('user.form.edit.registered'),
+		 self::C_ACTIVE		 => $this->trans('user.form.edit.active'),
+		 self::C_DISPLAY_NAME => $this->trans('user.form.edit.display_name'),
+		 self::C_GROUP_ID	 => $this->trans('user.form.edit.group_id'),
 		];
 	}
 	/**
@@ -65,15 +65,14 @@ class UserEditForm
 	protected function fields()
 	{
 		return [
-			self::C_LOGIN		 => $this->field()->text(true),
-			#self::C_PASSWORD	 => $this->field()->password(),
-			self::C_PASSWORD	 => $this->field()->text(true),
-			self::C_EMAIL		 => $this->field()->text(true),
-			self::C_CODE		 => $this->field()->text(),
-			self::C_REGISTERED	 => $this->field()->checkbox(),
-			self::C_ACTIVE		 => $this->field()->checkbox(),
-			self::C_DISPLAY_NAME => $this->field()->text(),
-			self::C_GROUP_ID	 => $this->field()->selectbox($this->enums)->multy(),
+		 self::C_LOGIN		 => $this->field()->text(true),
+		 self::C_PASSWORD	 => $this->field()->text(),
+		 self::C_EMAIL		 => $this->field()->text(true),
+		 self::C_CODE		 => $this->field()->text(),
+		 self::C_REGISTERED	 => $this->field()->checkbox(),
+		 self::C_ACTIVE		 => $this->field()->checkbox(),
+		 self::C_DISPLAY_NAME => $this->field()->text(),
+		 self::C_GROUP_ID	 => $this->field()->selectbox($this->enums)->multy(),
 		];
 	}
 	/**

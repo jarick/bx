@@ -62,6 +62,8 @@ class AdminUserEditWidget extends Widget
 			$user = User::GetByID($id);
 			if ($user === false){
 				throw new PageNotFound($this->trans('user.widgets.edit.user_not_found'));
+			}else{
+				$form->setDefault($user->getData());
 			}
 			if ($form->update($id)){
 				$this->session()->setFlash(self::FLASH_KEY,$this->trans('user.widgets.edit.update_success'));
@@ -140,11 +142,11 @@ class AdminUserEditWidget extends Widget
 		$form = new PasswordForm();
 		if ($this->request()->post()->get($form->getFormName()) !== null){
 			if ($form->save()){
+				$mess = $this->trans('user.widgets.user_edit.password_change_success');
+				$this->view->json(['status' => 1,'message' => $mess]);
+			}else{
 				$error = implode('<br/> ',$form->getErrors()->all());
 				$this->view->json(['status' => 0,'message' => $error]);
-			}else{
-				$error = $this->trans('user.widgets.user_edit.password_change_success');
-				$this->view->json(['status' => 1,'message' => $error]);
 			}
 		}
 	}
@@ -157,7 +159,7 @@ class AdminUserEditWidget extends Widget
 	{
 		$post = $this->request()->post()->get('DELETE');
 		if ($id > 0 && $post !== null){
-			if (intval($post['SESSION_ID']) === $this->session()->getId()){
+			if (intval($post['SESSION_ID']) === $this->session()->getId() && $post['ID'] > 0){
 				if (User::delete($post['ID'])){
 					$this->setFlash(self::FLASH_KEY,$this->trans('user.widgets.user_edit.delete_success'));
 					$this->redirect($this->path_to_list);

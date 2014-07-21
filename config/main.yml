@@ -1,6 +1,6 @@
 sites:
-    admin: { title: 'Административная часть', charset: UTF-8, name: admin, regex: [localhost\/admin\/], folder: /admin/, layout_rule: { admin: [''] }, base: localhost }
-    main: { title: 'Сайт установлен', charset: UTF-8, name: main, regex: [localhost], folder: /, layout_rule: { main: [''] }, base: localhost }
+    admin: { title: 'Административная часть', charset: UTF-8, name: admin, regex: [urist39.bx\/admin\/], folder: /admin/, layout_rule: { admin: [''] } }
+    main: { title: 'Сайт установлен', charset: UTF-8, name: main, regex: [urist39.bx], folder: /, layout_rule: { main: [''] } }
 lang: ru
 date:
     timezone: Europe/Kaliningrad

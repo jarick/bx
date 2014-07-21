@@ -53,28 +53,20 @@
           %a(href="#s3" data-toggle="tab") Пароль
     .tab-content
       %div(class="tab-pane active col-sm-8" id="s1")
-        .br
-        -#
-          -if($id > 0)
-            .form-group
-              %label(for="input-create-date") =$form->create_date->getLabel()
-              %p(class="form-control-static" id="input-create-date") =$form->create_date->getValue()
-            .form-group
-              %label(for="input-timestamp-x") =$form->timestamp_x->getLabel()
-              %p(class="form-control-static" id="input-timestamp-x") =$form->timestamp_x->getValue()
+        %br
         .form-group(class=(($form->login->hasErrors()) ? "has-error" : ""))
           %label(class="control-label" for="input-login") 
             =$form->login->getLabel()
             -if($form->login->isRequired())
               %span.text-red *
           %input(class="form-control" type="text" name=$form->login->getFullName() id="input-login" value=$form->login->getValue())/
-        -if($id === 0)
+        - if($id === 0)
           .form-group(class=(($form->password->hasErrors()) ? "has-error" : ""))
-            %label(class="control-label" for="input-login") 
+            %label(class="control-label" for="input-password") 
               =$form->password->getLabel()
               -if($form->password->isRequired())
                 %span.text-red *
-            %input(class="form-control" type="password" name=$form->password->getFullName() id="input-login" value=$form->password->getValue())/
+            %input(class="form-control" type="password" name=$form->password->getFullName() id="input-password" value=$form->password->getValue())/
         .form-group(class=(($form->email->hasErrors()) ? "has-error" : ""))
           %label(class="control-label" for="input-email") 
             =$form->email->getLabel()
@@ -86,7 +78,7 @@
             =$form->display_name->getLabel()
             -if($form->display_name->isRequired())
               %span.text-red *
-          %input(class="form-control" type="text" name=$form->display_name->getFullName() id="display-name" value=$form->display_name)
+          %input(class="form-control" type="text" name=$form->display_name->getFullName() id="input-display-name" value=$form->display_name->getValue())
         .form-group(class=(($form->registered->hasErrors()) ? "has-error" : ""))
           .checkbox
             %label(for="input-registered" class="control-label") 
@@ -135,7 +127,7 @@
                 $.post('#{$widget->getCurPageParam()}',{
                   'PASSWORD[NEW]': $("#password-new").val(),
                   'PASSWORD[OLD]': $("#password-old").val(),
-                  'PASSWORD[SESSION_ID]': '#{$widget->getSessionId()}',
+                  'PASSWORD[SESSID]': '#{$widget->getSessionId()}',
                   'PASSWORD[USER_ID]': '#{$id}'
                 },function(data){
                   if(data.status === 1){
